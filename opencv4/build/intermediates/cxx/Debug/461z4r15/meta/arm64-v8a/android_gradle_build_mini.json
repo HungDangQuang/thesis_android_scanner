@@ -1,0 +1,27 @@
+{
+  "buildFiles": [
+    "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/quanghung/Library/Android/sdk/cmake/3.18.1/bin/ninja",
+      "-C",
+      "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/quanghung/Library/Android/sdk/cmake/3.18.1/bin/ninja",
+    "-C",
+    "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "opencv_jni_shared::@6890427a1f51a3e7e1df": {
+      "artifactName": "opencv_jni_shared",
+      "abi": "arm64-v8a",
+      "output": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/arm64-v8a/libopencv_jni_shared.a",
+      "runtimeFiles": []
+    }
+  }
+}
