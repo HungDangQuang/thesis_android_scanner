@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -11,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -26,6 +29,10 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
     Mat mRGBA,mGrey;
 
     private static final int MY_CAMERA_REQUEST_CODE = 100;
+
+    private MaterialButton captureImageButton;
+    private MaterialButton exitButton;
+    private MaterialButton openGalleryButton;
 
     BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback(Activity_camera.this) {
         @Override
@@ -91,6 +98,20 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
             Log.d(TAG, "Permission prompt");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_CAMERA_REQUEST_CODE);
         }
+
+        captureImageButton = findViewById(R.id.captureImageButton);
+        exitButton = findViewById(R.id.exitButton);
+        openGalleryButton = findViewById(R.id.galleryButton);
+
+        // back to the previous activity
+        exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+
 
     }
 
