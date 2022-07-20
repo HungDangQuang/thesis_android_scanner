@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private MaterialButton openCameraButton;
+    private static String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         openCameraButton = findViewById(R.id.openCameraButton);
-
+        
+        
         openCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -39,4 +41,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }

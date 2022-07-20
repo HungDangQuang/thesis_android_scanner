@@ -57,8 +57,6 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
-
-        getSupportActionBar().hide();
         javaCameraView = findViewById(R.id.frame_surface);
 
 
