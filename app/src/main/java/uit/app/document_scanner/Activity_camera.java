@@ -151,7 +151,7 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
 
         if (OpenCVLoader.initDebug())
         {
-            Log.d(TAG, "OpenCV is Configured or Connected successfully.");
+            Log.d(TAG, "OpenCV is configured or connected successfully.");
             baseLoaderCallback.onManagerConnected(BaseLoaderCallback.SUCCESS);
         }
         else
