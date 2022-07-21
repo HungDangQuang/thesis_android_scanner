@@ -3,9 +3,11 @@ package uit.app.document_scanner;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,14 +15,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.button.MaterialButton;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Activity_camera extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2
 {
@@ -30,9 +40,12 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
 
     private static final int MY_CAMERA_REQUEST_CODE = 100;
 
-    private MaterialButton captureImageButton;
     private MaterialButton exitButton;
     private MaterialButton openGalleryButton;
+
+    private LottieAnimationView captureImage;
+
+    private int takeImage = 0;
 
     BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback(Activity_camera.this) {
         @Override
@@ -99,8 +112,8 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_CAMERA_REQUEST_CODE);
         }
 
-        captureImageButton = findViewById(R.id.captureImageButton);
         exitButton = findViewById(R.id.exitButton);
+        captureImage = findViewById(R.id.captureimage);
         openGalleryButton = findViewById(R.id.galleryButton);
 
         // back to the previous activity
@@ -111,7 +124,19 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
             }
         });
 
-
+        // capture
+        captureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                captureImage.playAnimation();
+                if(takeImage == 0){
+                    takeImage = 1;
+                }
+                else {
+                    takeImage = 0;
+                }
+            }
+        });
 
     }
 
@@ -138,6 +163,12 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
         mRGBA = inputFrame.rgba();
         mGrey = inputFrame.gray();
 
+        // if input = 1
+        // then input = 0
+        // next frame input will be 0
+        // take picture and save it
+
+        takeImage = takePicture(takeImage,mRGBA);
         return mRGBA;
     }
 
@@ -199,6 +230,30 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
             //camera will stay off
             Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private int takePicture(int takeImage, Mat mRGBA){
+
+        if(takeImage == 1){
+
+            Mat picture = new Mat();
+            Core.flip(mRGBA.t(), picture,1);
+            Imgproc.cvtColor(picture,picture,Imgproc.COLOR_RGBA2BGRA);
+            File folder = new File(Environment.getExternalStorageDirectory().getPath() + "/SavedImages");
+
+            Boolean isSuccess = true;
+            if (!folder.exists()){
+                isSuccess = folder.mkdirs();
+            }
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+            String currentDateAndTime = sdf.format(new Date());
+            String fileName = Environment.getExternalStorageDirectory().getPath() + "/SavedImages/" + currentDateAndTime + ".jpg";
+
+            Imgcodecs.imwrite(fileName,picture);
+            takeImage = 0;
+        }
+        return 0;
     }
 
 }

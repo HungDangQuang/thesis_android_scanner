@@ -11,11 +11,11 @@
       "fieldsDescending": {}
     },
     "memoizedSize": -1,
-    "memoizedHashCode": 721932568
+    "memoizedHashCode": -1598533182
   },
   {
     "level_": 0,
-    "message_": "rebuilding JSON /Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/x86/android_gradle_build.json due to:",
+    "message_": "JSON \u0027/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/x86/android_gradle_build.json\u0027 was up-to-date",
     "file_": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
     "tag_": "debug|x86",
     "diagnosticCode_": 0,
@@ -25,119 +25,7 @@
       "fieldsDescending": {}
     },
     "memoizedSize": -1,
-    "memoizedHashCode": 709011688
-  },
-  {
-    "level_": 0,
-    "message_": "- a dependent build file changed",
-    "file_": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
-    "tag_": "debug|x86",
-    "diagnosticCode_": 0,
-    "memoizedIsInitialized": 1,
-    "unknownFields": {
-      "fields": {},
-      "fieldsDescending": {}
-    },
-    "memoizedSize": -1,
-    "memoizedHashCode": -288376743
-  },
-  {
-    "level_": 0,
-    "message_": "  - /Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
-    "file_": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
-    "tag_": "debug|x86",
-    "diagnosticCode_": 0,
-    "memoizedIsInitialized": 1,
-    "unknownFields": {
-      "fields": {},
-      "fieldsDescending": {}
-    },
-    "memoizedSize": -1,
-    "memoizedHashCode": -885699576
-  },
-  {
-    "level_": 0,
-    "message_": "keeping json folder \u0027/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/x86\u0027 but regenerating project",
-    "file_": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
-    "tag_": "debug|x86",
-    "diagnosticCode_": 0,
-    "memoizedIsInitialized": 1,
-    "unknownFields": {
-      "fields": {},
-      "fieldsDescending": {}
-    },
-    "memoizedSize": -1,
-    "memoizedHashCode": 1291980601
-  },
-  {
-    "level_": 0,
-    "message_": "executing cmake Executable : /Users/quanghung/Library/Android/sdk/cmake/3.18.1/bin/cmake\narguments : \n-H/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper\n-DCMAKE_SYSTEM_NAME\u003dAndroid\n-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON\n-DCMAKE_SYSTEM_VERSION\u003d21\n-DANDROID_PLATFORM\u003dandroid-21\n-DANDROID_ABI\u003dx86\n-DCMAKE_ANDROID_ARCH_ABI\u003dx86\n-DANDROID_NDK\u003d/Users/quanghung/Library/Android/sdk/ndk/21.4.7075529\n-DCMAKE_ANDROID_NDK\u003d/Users/quanghung/Library/Android/sdk/ndk/21.4.7075529\n-DCMAKE_TOOLCHAIN_FILE\u003d/Users/quanghung/Library/Android/sdk/ndk/21.4.7075529/build/cmake/android.toolchain.cmake\n-DCMAKE_MAKE_PROGRAM\u003d/Users/quanghung/Library/Android/sdk/cmake/3.18.1/bin/ninja\n-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003d/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/build/intermediates/cxx/Debug/461z4r15/obj/x86\n-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003d/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/build/intermediates/cxx/Debug/461z4r15/obj/x86\n-DCMAKE_BUILD_TYPE\u003dDebug\n-B/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/x86\n-GNinja\n-DANDROID_STL\u003dc++_shared\njvmArgs : \n\n",
-    "file_": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
-    "tag_": "debug|x86",
-    "diagnosticCode_": 0,
-    "memoizedIsInitialized": 1,
-    "unknownFields": {
-      "fields": {},
-      "fieldsDescending": {}
-    },
-    "memoizedSize": -1,
-    "memoizedHashCode": 960995072
-  },
-  {
-    "level_": 0,
-    "message_": "Executable : /Users/quanghung/Library/Android/sdk/cmake/3.18.1/bin/cmake\narguments : \n-H/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper\n-DCMAKE_SYSTEM_NAME\u003dAndroid\n-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON\n-DCMAKE_SYSTEM_VERSION\u003d21\n-DANDROID_PLATFORM\u003dandroid-21\n-DANDROID_ABI\u003dx86\n-DCMAKE_ANDROID_ARCH_ABI\u003dx86\n-DANDROID_NDK\u003d/Users/quanghung/Library/Android/sdk/ndk/21.4.7075529\n-DCMAKE_ANDROID_NDK\u003d/Users/quanghung/Library/Android/sdk/ndk/21.4.7075529\n-DCMAKE_TOOLCHAIN_FILE\u003d/Users/quanghung/Library/Android/sdk/ndk/21.4.7075529/build/cmake/android.toolchain.cmake\n-DCMAKE_MAKE_PROGRAM\u003d/Users/quanghung/Library/Android/sdk/cmake/3.18.1/bin/ninja\n-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003d/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/build/intermediates/cxx/Debug/461z4r15/obj/x86\n-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003d/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/build/intermediates/cxx/Debug/461z4r15/obj/x86\n-DCMAKE_BUILD_TYPE\u003dDebug\n-B/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/x86\n-GNinja\n-DANDROID_STL\u003dc++_shared\njvmArgs : \n\n",
-    "file_": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
-    "tag_": "debug|x86",
-    "diagnosticCode_": 0,
-    "memoizedIsInitialized": 1,
-    "unknownFields": {
-      "fields": {},
-      "fieldsDescending": {}
-    },
-    "memoizedSize": -1,
-    "memoizedHashCode": -1335267073
-  },
-  {
-    "level_": 0,
-    "message_": "Exiting generation of /Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/x86/compile_commands.json.bin normally",
-    "file_": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
-    "tag_": "debug|x86",
-    "diagnosticCode_": 0,
-    "memoizedIsInitialized": 1,
-    "unknownFields": {
-      "fields": {},
-      "fieldsDescending": {}
-    },
-    "memoizedSize": -1,
-    "memoizedHashCode": 1434785198
-  },
-  {
-    "level_": 0,
-    "message_": "done executing cmake",
-    "file_": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
-    "tag_": "debug|x86",
-    "diagnosticCode_": 0,
-    "memoizedIsInitialized": 1,
-    "unknownFields": {
-      "fields": {},
-      "fieldsDescending": {}
-    },
-    "memoizedSize": -1,
-    "memoizedHashCode": -1424251351
-  },
-  {
-    "level_": 0,
-    "message_": "write command file /Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/.cxx/Debug/461z4r15/x86/metadata_generation_command.txt",
-    "file_": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/libcxx_helper/CMakeLists.txt",
-    "tag_": "debug|x86",
-    "diagnosticCode_": 0,
-    "memoizedIsInitialized": 1,
-    "unknownFields": {
-      "fields": {},
-      "fieldsDescending": {}
-    },
-    "memoizedSize": -1,
-    "memoizedHashCode": 818440370
+    "memoizedHashCode": -852631575
   },
   {
     "level_": 0,
@@ -151,6 +39,6 @@
       "fieldsDescending": {}
     },
     "memoizedSize": -1,
-    "memoizedHashCode": 513821733
+    "memoizedHashCode": -1806644017
   }
 ]
