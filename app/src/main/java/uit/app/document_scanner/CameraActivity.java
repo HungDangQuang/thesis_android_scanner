@@ -7,7 +7,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,9 +31,9 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Activity_camera extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2
+public class CameraActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2
 {
-    private static String TAG = Activity_camera.class.getSimpleName();
+    private static String TAG = CameraActivity.class.getSimpleName();
     JavaCameraView javaCameraView;
     Mat mRGBA,mGrey;
 
@@ -47,7 +46,7 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
 
     private int takeImage = 0;
 
-    BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback(Activity_camera.this) {
+    BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback(CameraActivity.this) {
         @Override
         public void onManagerConnected(int status)
         {
@@ -140,7 +139,7 @@ public class Activity_camera extends AppCompatActivity implements CameraBridgeVi
 
     }
 
-    public Activity_camera(){
+    public CameraActivity(){
         Log.i(TAG,"Instantiated new " + this.getClass());
     }
 
