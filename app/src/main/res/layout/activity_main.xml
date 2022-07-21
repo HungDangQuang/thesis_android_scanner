@@ -22,6 +22,7 @@
         app:iconPadding="0dp"
         app:iconGravity="textStart"
         app:backgroundTint="@color/black"
+
         />
 
 </FrameLayout>
