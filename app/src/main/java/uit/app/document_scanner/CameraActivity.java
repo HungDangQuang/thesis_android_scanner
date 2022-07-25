@@ -128,12 +128,10 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
             @Override
             public void onClick(View view) {
                 captureImage.playAnimation();
-                if(takeImage == 0){
-                    takeImage = 1;
-                }
-                else {
-                    takeImage = 0;
-                }
+
+                String filePath = takePicture();
+
+
             }
         });
 
@@ -167,7 +165,7 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
         // next frame input will be 0
         // take picture and save it
 
-        takeImage = takePicture(takeImage,mRGBA);
+//        takeImage = takePicture(takeImage,mRGBA);
         return mRGBA;
     }
 
@@ -231,9 +229,7 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
         }
     }
 
-    private int takePicture(int takeImage, Mat mRGBA){
-
-        if(takeImage == 1){
+    private String takePicture(){
 
             Mat picture = new Mat();
             Core.flip(mRGBA.t(), picture,1);
@@ -250,9 +246,10 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
             String fileName = Environment.getExternalStorageDirectory().getPath() + "/SavedImages/" + currentDateAndTime + ".jpg";
 
             Imgcodecs.imwrite(fileName,picture);
-            takeImage = 0;
-        }
-        return 0;
+
+            return fileName;
+
+
     }
 
 }
