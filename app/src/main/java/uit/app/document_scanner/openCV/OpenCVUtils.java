@@ -2,6 +2,7 @@ package uit.app.document_scanner.openCV;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
@@ -18,9 +19,15 @@ import org.opencv.utils.Converters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import uit.app.document_scanner.cropDocument.PolygonView;
 
 public class OpenCVUtils {
+
+    private String TAG = OpenCVUtils.class.getSimpleName();
     public List<Point> getContourEdgePoints(Bitmap bitmap){
 
         boolean hasContour = false;
@@ -144,6 +151,28 @@ public class OpenCVUtils {
         }
     }
 
+    public Map<Integer,Point> getEdgePoints(Bitmap bitmap, PolygonView polygonView){
+        List<Point> pointFs = getContourEdgePoints(bitmap);
+        return getOrderedValidEdgePoint(bitmap,pointFs,polygonView);
+    }
+
+    private Map<Integer,Point> getOutlinePoints(Bitmap bitmap){
+        HashMap<Integer,Point> outlinePoints = new HashMap<Integer,Point>();
+        outlinePoints.put(0,new Point((double) 0f, (double) 0f));
+        outlinePoints.put(1,new Point((double) bitmap.getWidth(), (double) 0f));
+        outlinePoints.put(2,new Point((double) 0f, (double) bitmap.getHeight()));
+        outlinePoints.put(3,new Point((double) bitmap.getWidth(), (double) bitmap.getHeight()));
+        return outlinePoints;
+    }
+
+    private Map<Integer, Point> getOrderedValidEdgePoint(Bitmap bitmap, List<Point> pointFs, PolygonView polygonView){
+        Map<Integer,Point> orderedPoints = polygonView.getOrderedPoints(pointFs);
+        if (!polygonView.isValidShape(orderedPoints)){
+            orderedPoints = getOutlinePoints(bitmap);
+        }
+        return orderedPoints;
+    }
+
     public Point getCentrePointOfContour(MatOfPoint contour){
         Moments moments = Imgproc.moments(contour);
         if(moments != null){
@@ -157,8 +186,6 @@ public class OpenCVUtils {
         Utils.matToBitmap(m,bm);
         return bm;
     }
-
-
 
     private Mat convertBitmapToMat(Bitmap bitmap){
         Mat mat = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC1);
@@ -289,8 +316,6 @@ public class OpenCVUtils {
         return listPointInContour.get(pos);
     }
 
-
-
     public Point getPointBlWithMaxLength(List<Point> listPointInContour, Point centrePoint, double espX, double espY){
         if (listPointInContour == null || listPointInContour.size() == 0){
             return null;
@@ -323,10 +348,11 @@ public class OpenCVUtils {
         }
         else {
             size = corners.size();
+            Log.d(TAG, "isConvexShape:" + corners.size());
         }
 
         if (size > 0){
-            for (int i = 0; i <= size ; i++) {
+            for (int i = 0; i < size ; i++) {
                 double dx1 = corners.get((i+2) % size).x - corners.get((i+1) % size).x;
                 double dy1 = corners.get((i+2) % size).y - corners.get((i+1) % size).y;
                 double dx2 = corners.get(i).x - corners.get((i+1) % size).x;
@@ -360,8 +386,9 @@ public class OpenCVUtils {
         }
     }
 
-    Bitmap cropReceiptByFourPoints(Bitmap receipt, ArrayList<Point> cornerPoints, int screenWidth, int screenHeight){
-        if (cornerPoints == null || cornerPoints.size() == 4){
+    public Bitmap cropImageByFourPoints(Bitmap receipt, ArrayList<Point> cornerPoints, int screenWidth, int screenHeight){
+        if (cornerPoints == null || cornerPoints.size() != 4){
+            Log.d(TAG, "cropReceiptByFourPoints: if condtion is true");
             return null;
         }
 
@@ -371,7 +398,7 @@ public class OpenCVUtils {
         double heightRatio = (double) receipt.getHeight() / (double) screenHeight;
 
         ArrayList<Point> corners = new ArrayList<Point>();
-        for (int i = 0; i < corners.size(); i++) {
+        for (int i = 0; i < cornerPoints.size(); i++) {
             corners.add(new Point(cornerPoints.get(i).x * widthRatio, cornerPoints.get(i).y * heightRatio));
         }
 
@@ -381,7 +408,7 @@ public class OpenCVUtils {
         double minY = getPointWithMinCorY(corners).y;
 
         double maxX = getPointWithMaxCorX(corners).x;
-        double minX = getPointWithMaxCorY(corners).x;
+        double minX = getPointWithMinCorX(corners).x;
 
         double maxWidth = maxX - minX;
         double maxHeight = maxY - minY;
@@ -394,7 +421,7 @@ public class OpenCVUtils {
 
         Mat transformation = Imgproc.getPerspectiveTransform(srcPoints,destPoints);
         Imgproc.warpPerspective(originalReceiptMat,correctedImage,transformation,correctedImage.size());
-
+        Log.d(TAG, "cropReceiptByFourPoints: correct image size:" + correctedImage.size());
         return convertMatToBitmap(correctedImage);
     }
 

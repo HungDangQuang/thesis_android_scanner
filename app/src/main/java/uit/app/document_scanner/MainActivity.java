@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MaterialButton openCameraButton;
     private static String TAG = MainActivity.class.getSimpleName();
+    public static String KEY_RECEIPT_PATH = "RECEIPT_PATH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -29,10 +29,7 @@
     "intermediatesFolder": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner/opencv4/build/intermediates/cxx/Debug/461z4r15",
     "isDebuggableEnabled": true,
     "validAbiList": [
-      "ARMEABI_V7A",
-      "ARM64_V8A",
-      "X86",
-      "X86_64"
+      "X86"
     ],
     "buildTargetSet": [
       "opencv_jni_shared"
@@ -133,6 +130,7 @@
         "rootBuildGradleFolder": "/Users/quanghung/Documents/năm 4 hk2/mobile app/Document_Scanner",
         "sdkFolder": "/Users/quanghung/Library/Android/sdk",
         "isBuildOnlyTargetAbiEnabled": true,
+        "ideBuildTargetAbi": "x86",
         "isCmakeBuildCohabitationEnabled": false,
         "isPrefabEnabled": false
       },
