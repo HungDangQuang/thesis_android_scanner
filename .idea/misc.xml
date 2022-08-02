@@ -11,7 +11,9 @@
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.168" />
         <entry key="app/src/main/res/drawable/rounded_button.xml" value="0.168" />
         <entry key="app/src/main/res/layout/activity_camera.xml" value="0.25104166666666666" />
+        <entry key="app/src/main/res/layout/activity_crop_image.xml" value="0.19574468085106383" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25104166666666666" />
+        <entry key="app/src/main/res/layout/activity_review_image.xml" value="0.25104166666666666" />
       </map>
     </option>
   </component>

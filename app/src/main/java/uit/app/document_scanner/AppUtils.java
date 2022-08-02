@@ -21,7 +21,7 @@ public class AppUtils {
 
     public Bitmap getBitmap(Uri selectedImg, Activity activity) throws FileNotFoundException {
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 3;
+//        options.inSampleSize = 3;
         AssetFileDescriptor fileDescriptor = null;
         fileDescriptor = activity.getContentResolver().openAssetFileDescriptor(selectedImg,"r");
         return BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(),null,options);
@@ -44,13 +44,13 @@ public class AppUtils {
 
     public File getOutputMediaFile(){
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"MyCameraApp");
+//        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getPath() + "/SavedImages");
         if(!mediaStorageDir.exists()){
             if (!mediaStorageDir.mkdirs()){
                 Log.d("MyCameraApp", "failed to create directory");
                 return null;
             }
         }
-
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");

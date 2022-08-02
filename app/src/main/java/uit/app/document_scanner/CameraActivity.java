@@ -1,7 +1,10 @@
 package uit.app.document_scanner;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -21,6 +24,7 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -129,9 +133,11 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
             public void onClick(View view) {
                 captureImage.playAnimation();
 
-                String filePath = takePicture();
+                Uri filePath = takePicture();
 
-
+                Intent intent = new Intent(CameraActivity.this, CropImageActivity.class);
+                intent.putExtra("imgPath",filePath);
+                startActivity(intent);
             }
         });
 
@@ -229,26 +235,34 @@ public class CameraActivity extends AppCompatActivity implements CameraBridgeVie
         }
     }
 
-    private String takePicture(){
+    private Uri takePicture(){
 
             Mat picture = new Mat();
             Core.flip(mRGBA.t(), picture,1);
-            Imgproc.cvtColor(picture,picture,Imgproc.COLOR_RGBA2BGRA);
-            File folder = new File(Environment.getExternalStorageDirectory().getPath() + "/SavedImages");
+            Imgproc.cvtColor(picture,picture,Imgproc.COLOR_RGBA2RGB);
 
-            Boolean isSuccess = true;
-            if (!folder.exists()){
-                isSuccess = folder.mkdirs();
-            }
+            Bitmap bm = Bitmap.createBitmap(picture.cols(),picture.rows(),Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(picture,bm);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-            String currentDateAndTime = sdf.format(new Date());
-            String fileName = Environment.getExternalStorageDirectory().getPath() + "/SavedImages/" + currentDateAndTime + ".jpg";
+//            File folder = new File(Environment.getExternalStorageDirectory().getPath() + "/SavedImages");
+//
+//            Boolean isSuccess = true;
+//            if (!folder.exists()){
+//                isSuccess = folder.mkdirs();
+//            }
+//
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+//            String currentDateAndTime = sdf.format(new Date());
+//            String filePath = Environment.getExternalStorageDirectory().getPath() + "/SavedImages/" + currentDateAndTime + ".jpg";
+//
+//            Imgcodecs.imwrite(filePath,picture);
+//
+//            Uri imgUri = Uri.parse(filePath);
+//
+//            return imgUri;
 
-            Imgcodecs.imwrite(fileName,picture);
-
-            return fileName;
-
+            Uri imgUri = Uri.parse( "file://" + new AppUtils().saveBitmapToFile(bm));
+            return imgUri;
 
     }
 
