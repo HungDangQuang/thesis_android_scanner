@@ -43,6 +43,7 @@ public class CameraActivity extends AppCompatActivity {
     private LoadingDialog loadingDialog = new LoadingDialog(CameraActivity.this);
     private String TAG = CameraActivity.class.getSimpleName();
     private static int PICK_PHOTO_FROM_GALLERY = 5;
+
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
