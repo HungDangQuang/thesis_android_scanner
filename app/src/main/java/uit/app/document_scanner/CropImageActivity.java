@@ -218,5 +218,7 @@ public class CropImageActivity extends AppCompatActivity{
                 startActivity(intent);
             }
         });
+
+
     }
 }
