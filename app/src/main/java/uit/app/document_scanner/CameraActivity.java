@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
@@ -82,15 +83,17 @@ public class CameraActivity extends AppCompatActivity {
         imageCapture.takePicture(getMainExecutor(), new ImageCapture.OnImageCapturedCallback() {
             @Override
             public void onCaptureSuccess(@NonNull ImageProxy image) {
+                Log.d(TAG,"image is captured");
                 Bitmap bm = imageProxyToBitmap(image);
                 Uri imgUri = Uri.parse("file://" + new AppUtils().saveBitmapToFile(bm));
                 Intent intent = new Intent(CameraActivity.this,CropImageActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("imgPath",imgUri);
                 loadingDialog.dismissDialog();
                 btnImageCapture.setEnabled(true);
+                image.close();
                 startActivity(intent);
                 super.onCaptureSuccess(image);
-
             }
         });
     }

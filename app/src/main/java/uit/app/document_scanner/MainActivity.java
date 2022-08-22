@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void enableCamera(){
         Intent intent = new Intent(this,CameraActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }
 

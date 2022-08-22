@@ -25,12 +25,14 @@
             android:name=".CameraActivity"
             android:configChanges="orientation"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,7 +40,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".CropImageActivity" android:parentActivityName=".CameraActivity"/>
+        <activity
+            android:name=".CropImageActivity"
+            android:parentActivityName=".CameraActivity"
+            android:launchMode="singleInstance"/>
 
         <activity android:name=".ReviewImageActivity" android:parentActivityName=".CropImageActivity"/>
     </application>
