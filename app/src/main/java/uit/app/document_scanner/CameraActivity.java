@@ -1,15 +1,18 @@
 package uit.app.document_scanner;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
@@ -22,6 +25,8 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 
@@ -33,9 +38,11 @@ public class CameraActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderListenableFuture;
     private ImageCapture imageCapture;
     private Button btnImageCapture;
+    private Button btnImageGallery;
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
     private LoadingDialog loadingDialog = new LoadingDialog(CameraActivity.this);
     private String TAG = CameraActivity.class.getSimpleName();
+    private static int PICK_PHOTO_FROM_GALLERY = 5;
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +50,7 @@ public class CameraActivity extends AppCompatActivity {
         previewView = findViewById(R.id.previewView);
         cameraProviderListenableFuture = ProcessCameraProvider.getInstance(this);
         btnImageCapture = findViewById(R.id.imageCapture);
+        btnImageGallery = findViewById(R.id.imageGallery);
         cameraProviderListenableFuture.addListener(new Runnable() {
             @Override
             public void run() {
@@ -63,6 +71,13 @@ public class CameraActivity extends AppCompatActivity {
                 loadingDialog.startLoadingDialog();
                 view.setEnabled(false);
                 capturePhoto();
+            }
+        });
+
+        btnImageGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickImageFromGallery();
             }
         });
     }
@@ -86,13 +101,10 @@ public class CameraActivity extends AppCompatActivity {
                 Log.d(TAG,"image is captured");
                 Bitmap bm = imageProxyToBitmap(image);
                 Uri imgUri = Uri.parse("file://" + new AppUtils().saveBitmapToFile(bm));
-                Intent intent = new Intent(CameraActivity.this,CropImageActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("imgPath",imgUri);
                 loadingDialog.dismissDialog();
                 btnImageCapture.setEnabled(true);
                 image.close();
-                startActivity(intent);
+                startCropImageActivity(imgUri);
                 super.onCaptureSuccess(image);
             }
         });
@@ -103,5 +115,31 @@ public class CameraActivity extends AppCompatActivity {
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
         return BitmapFactory.decodeByteArray(bytes,0,bytes.length,null);
+    }
+
+    private void pickImageFromGallery(){
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent,PICK_PHOTO_FROM_GALLERY);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_PHOTO_FROM_GALLERY && resultCode == Activity.RESULT_OK){
+            if (data == null){
+                Log.d(TAG, "onActivityResult: cannot open image because data is null");
+                return;
+            }
+            Uri selectedImage = data.getData();
+            startCropImageActivity(selectedImage);
+        }
+    }
+
+    private void startCropImageActivity(Uri uri){
+        Intent intent = new Intent(CameraActivity.this,CropImageActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("imgPath",uri);
+        startActivity(intent);
     }
 }
