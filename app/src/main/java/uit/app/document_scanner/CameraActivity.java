@@ -24,6 +24,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 
+import uit.app.document_scanner.view.LoadingDialog;
+
 public class CameraActivity extends AppCompatActivity {
 
     private PreviewView previewView;
@@ -31,6 +33,7 @@ public class CameraActivity extends AppCompatActivity {
     private ImageCapture imageCapture;
     private Button btnImageCapture;
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
+    private LoadingDialog loadingDialog = new LoadingDialog(CameraActivity.this);
     private String TAG = CameraActivity.class.getSimpleName();
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
@@ -56,6 +59,8 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 view.startAnimation(buttonClick);
+                loadingDialog.startLoadingDialog();
+                view.setEnabled(false);
                 capturePhoto();
             }
         });
@@ -81,6 +86,8 @@ public class CameraActivity extends AppCompatActivity {
                 Uri imgUri = Uri.parse("file://" + new AppUtils().saveBitmapToFile(bm));
                 Intent intent = new Intent(CameraActivity.this,CropImageActivity.class);
                 intent.putExtra("imgPath",imgUri);
+                loadingDialog.dismissDialog();
+                btnImageCapture.setEnabled(true);
                 startActivity(intent);
                 super.onCaptureSuccess(image);
 
