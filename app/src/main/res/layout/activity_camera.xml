@@ -20,7 +20,7 @@
             android:layout_height="30dp"
             android:layout_gravity="top|right"
             android:layout_margin="25dp"
-            android:background="@drawable/ic_baseline_flash_auto_24"
+            android:background="@drawable/ic_baseline_flash_off_24"
             app:backgroundTint="@null"/>
 
         <androidx.camera.view.PreviewView
