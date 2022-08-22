@@ -29,7 +29,7 @@ public class CameraActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderListenableFuture;
     private ImageCapture imageCapture;
     private Button btnImageCapture;
-
+    private String TAG = CameraActivity.class.getSimpleName();
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +83,6 @@ public class CameraActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private Bitmap imageProxyToBitmap(ImageProxy image) {
