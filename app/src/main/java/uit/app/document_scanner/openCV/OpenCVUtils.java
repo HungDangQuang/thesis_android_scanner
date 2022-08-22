@@ -40,9 +40,12 @@ public class OpenCVUtils {
         compressDown(matReceipt,matReceipt);
 
         Mat matconvertedGray = new Mat();
-        Imgproc.cvtColor(matReceipt,matconvertedGray,Imgproc.COLOR_BGR2GRAY);
+
+        // source - destination - code
+        Imgproc.cvtColor(matReceipt,matconvertedGray,Imgproc.COLOR_RGB2GRAY);
 
         double otsuThreshold = Imgproc.threshold(matconvertedGray, new Mat(),0.0,255.0,Imgproc.THRESH_OTSU);
+
 
         Mat matMedianFilter = new Mat();
         Imgproc.medianBlur(matconvertedGray,matMedianFilter,11);
@@ -79,12 +82,15 @@ public class OpenCVUtils {
                 MatOfPoint mopOut = new MatOfPoint();
 
                 mopOut.create((int) hull.size().height,1,CvType.CV_32SC2);
+
                 int j = 0;
 
                 while (j < hull.size().height){
                     int index = (int) hull.get(j,0)[0];
+                    Log.d(TAG, "getContourEdgePoints: index:" + index);
                     double[] point = {receiptContour.get(index,0)[0],receiptContour.get(index,0)[1]};
                     mopOut.put(j,0,point);
+
                     j++;
                 }
                 receiptContour = mopOut;
@@ -116,8 +122,8 @@ public class OpenCVUtils {
         ArrayList<Point> cornerPoints = new ArrayList<Point>();
         cornerPoints.add(pointTL);
         cornerPoints.add(pointTR);
-        cornerPoints.add(pointBR);
         cornerPoints.add(pointBL);
+        cornerPoints.add(pointBR);
 
         if (!isConvexShape(cornerPoints)){
             Rect box = Imgproc.boundingRect(receiptContour);
@@ -130,8 +136,8 @@ public class OpenCVUtils {
 
             cornerPoints.add(pointTL);
             cornerPoints.add(pointTR);
-            cornerPoints.add(pointBR);
             cornerPoints.add(pointBL);
+            cornerPoints.add(pointBR);
         }
 
         if (hasContour){
@@ -356,7 +362,7 @@ public class OpenCVUtils {
                 double dx1 = corners.get((i+2) % size).x - corners.get((i+1) % size).x;
                 double dy1 = corners.get((i+2) % size).y - corners.get((i+1) % size).y;
                 double dx2 = corners.get(i).x - corners.get((i+1) % size).x;
-                double dy2 = corners.get((i+2) % size).y - corners.get((i+1) % size).y;
+                double dy2 = corners.get(i).y - corners.get((i+1) % size).y;
                 double crossProduct = dx1 * dy2 - dy1 * dx2;
                 if (i == 0){
                     result = crossProduct > 0 ;
