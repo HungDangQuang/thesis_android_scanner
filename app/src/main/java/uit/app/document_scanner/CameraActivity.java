@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +30,7 @@ public class CameraActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderListenableFuture;
     private ImageCapture imageCapture;
     private Button btnImageCapture;
+    private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
     private String TAG = CameraActivity.class.getSimpleName();
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class CameraActivity extends AppCompatActivity {
         btnImageCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                view.startAnimation(buttonClick);
                 capturePhoto();
             }
         });
