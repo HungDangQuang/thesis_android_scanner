@@ -14,6 +14,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageProxy;
@@ -45,6 +46,7 @@ public class CameraActivity extends AppCompatActivity {
     private String TAG = CameraActivity.class.getSimpleName();
     private static int PICK_PHOTO_FROM_GALLERY = 5;
     int flashMode = ImageCapture.FLASH_MODE_OFF;
+
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,13 +89,7 @@ public class CameraActivity extends AppCompatActivity {
         btnFlashMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    setFlashMode(flashMode);
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                setFlashMode();
             }
         });
     }
@@ -106,7 +102,7 @@ public class CameraActivity extends AppCompatActivity {
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
         imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).setFlashMode(flashMode).build();
-        cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector,preview,imageCapture);
+        cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageCapture);
     }
 
     private void bindCameraUseCases(){
@@ -114,7 +110,11 @@ public class CameraActivity extends AppCompatActivity {
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                 .setFlashMode(flashMode)
                 .build();
+
+        Log.d(TAG, "bindCameraUseCases: build new image capture succeeded");
     }
+
+
 
     private void capturePhoto(){
 
@@ -166,14 +166,13 @@ public class CameraActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void setFlashMode(int flashMode) throws ExecutionException, InterruptedException {
-
-        ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
+    private void setFlashMode() {
 
         switch (flashMode){
             case ImageCapture.FLASH_MODE_OFF:
                 Log.d(TAG, "setFlashMode: flash is off");
                 flashMode = ImageCapture.FLASH_MODE_ON;
+
                 btnFlashMode.setBackgroundResource(R.drawable.ic_baseline_flash_on_24);
                 break;
 
@@ -182,10 +181,8 @@ public class CameraActivity extends AppCompatActivity {
                 flashMode = ImageCapture.FLASH_MODE_OFF;
                 btnFlashMode.setBackgroundResource(R.drawable.ic_baseline_flash_off_24);
                 break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + flashMode);
-
         }
-//        bindCameraUseCases();
+
+        imageCapture.setFlashMode(flashMode);
     }
 }
