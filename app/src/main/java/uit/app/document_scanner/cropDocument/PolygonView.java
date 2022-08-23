@@ -194,7 +194,7 @@ public class PolygonView extends FrameLayout {
             pointer3.setY((float) pointMap.get(2).y - pointer3.getHeight());
         }
 
-        if ((float) pointMap.get(3).y - pointer4.getWidth()/2 < 0){
+        if ((float) pointMap.get(3).x - pointer4.getWidth()/2 < 0){
             pointer4.setX((float)pointMap.get(3).x);
         }
         else {
@@ -212,7 +212,7 @@ public class PolygonView extends FrameLayout {
             pointer1.setX((float)pointMap.get(0).x);
         }
         else {
-            pointer1.setY((float) pointMap.get(0).x - pointer1.getWidth()/2);
+            pointer1.setX((float) pointMap.get(0).x - pointer1.getWidth()/2);
         }
 
         if ((float) pointMap.get(0).y + pointer1.getHeight()/2 > polygonView.getHeight()){
@@ -223,7 +223,7 @@ public class PolygonView extends FrameLayout {
         }
 
         if ((float) pointMap.get(1).x - pointer2.getWidth()/2 < 0){
-            pointer2.setX((float)pointMap.get(1).y);
+            pointer2.setX((float)pointMap.get(1).x);
         }
         else {
             pointer2.setX((float) pointMap.get(1).x - pointer2.getWidth()/2);

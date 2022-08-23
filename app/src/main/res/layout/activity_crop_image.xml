@@ -14,7 +14,8 @@
         android:layout_height="0dp"
         android:layout_above="@id/scanButton"
         android:layout_gravity="center"
-        android:layout_weight="9">
+        android:layout_weight="9"
+        android:layout_margin="15dp">
 
         <ImageView
             android:id="@+id/sourceImageView"
