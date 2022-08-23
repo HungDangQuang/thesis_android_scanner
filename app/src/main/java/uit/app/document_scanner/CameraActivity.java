@@ -39,11 +39,12 @@ public class CameraActivity extends AppCompatActivity {
     private ImageCapture imageCapture;
     private Button btnImageCapture;
     private Button btnImageGallery;
+    private Button btnFlashMode;
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
     private LoadingDialog loadingDialog = new LoadingDialog(CameraActivity.this);
     private String TAG = CameraActivity.class.getSimpleName();
     private static int PICK_PHOTO_FROM_GALLERY = 5;
-
+    int flashMode = ImageCapture.FLASH_MODE_OFF;
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +53,7 @@ public class CameraActivity extends AppCompatActivity {
         cameraProviderListenableFuture = ProcessCameraProvider.getInstance(this);
         btnImageCapture = findViewById(R.id.imageCapture);
         btnImageGallery = findViewById(R.id.imageGallery);
+        btnFlashMode = findViewById(R.id.flash);
         cameraProviderListenableFuture.addListener(new Runnable() {
             @Override
             public void run() {
@@ -81,6 +83,19 @@ public class CameraActivity extends AppCompatActivity {
                 pickImageFromGallery();
             }
         });
+
+        btnFlashMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    setFlashMode(flashMode);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void startCameraX(ProcessCameraProvider cameraProvider){
@@ -90,8 +105,15 @@ public class CameraActivity extends AppCompatActivity {
         CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
-        imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).build();
+        imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).setFlashMode(flashMode).build();
         cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector,preview,imageCapture);
+    }
+
+    private void bindCameraUseCases(){
+        imageCapture = new ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setFlashMode(flashMode)
+                .build();
     }
 
     private void capturePhoto(){
@@ -142,5 +164,28 @@ public class CameraActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         intent.putExtra("imgPath",uri);
         startActivity(intent);
+    }
+
+    private void setFlashMode(int flashMode) throws ExecutionException, InterruptedException {
+
+        ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
+
+        switch (flashMode){
+            case ImageCapture.FLASH_MODE_OFF:
+                Log.d(TAG, "setFlashMode: flash is off");
+                flashMode = ImageCapture.FLASH_MODE_ON;
+                btnFlashMode.setBackgroundResource(R.drawable.ic_baseline_flash_on_24);
+                break;
+
+            case ImageCapture.FLASH_MODE_ON:
+                Log.d(TAG, "setFlashMode: flash is on");
+                flashMode = ImageCapture.FLASH_MODE_OFF;
+                btnFlashMode.setBackgroundResource(R.drawable.ic_baseline_flash_off_24);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + flashMode);
+
+        }
+//        bindCameraUseCases();
     }
 }
