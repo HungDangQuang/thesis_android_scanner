@@ -114,8 +114,6 @@ public class CameraActivity extends AppCompatActivity {
         Log.d(TAG, "bindCameraUseCases: build new image capture succeeded");
     }
 
-
-
     private void capturePhoto(){
 
         imageCapture.takePicture(getMainExecutor(), new ImageCapture.OnImageCapturedCallback() {

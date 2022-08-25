@@ -162,21 +162,14 @@ public class CropImageActivity extends AppCompatActivity{
                 Uri uri = intent.getParcelableExtra("imgPath");
                 try {
                     bm = new AppUtils().getBitmap(uri,CropImageActivity.this);
-//                    bm.setDensity(Bitmap.DENSITY_NONE);
+                    bm.setDensity(Bitmap.DENSITY_NONE);
                     if(bm.getWidth() > bm.getHeight()){
                         bm = new OpenCVUtils().rotate(bm,90);
                     }
 
-                    DisplayMetrics displayMetrics = new DisplayMetrics();
-                    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                    int height = displayMetrics.heightPixels;
-                    int width = displayMetrics.widthPixels;
-
-                    Log.d(TAG, "screen width:" + width + " height:" + height);
-                    Log.d(TAG, "image view width:" + sourceImageView.getWidth() + " height:" + sourceImageView.getHeight());
-                    Log.d(TAG,"bitmap width:" + bm.getWidth() + " height: " + bm.getHeight());
                     Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,sourceImageView.getWidth(),sourceImageView.getHeight(),false);
                     sourceImageView.setImageBitmap(scaledBitmap);
+                    Log.d(TAG, "run: bitmap width and height:" + scaledBitmap.getWidth() +" "+ scaledBitmap.getHeight());
 
                     Map<Integer, Point> pointFs = new OpenCVUtils().getEdgePoints(scaledBitmap,polygonView);
                     polygonView.setPoints(pointFs);
@@ -197,22 +190,10 @@ public class CropImageActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
 
-                if (bm != null){
-                    Log.d(TAG, "onClick: bm is not null");
-                }
-
-                if(polygonView.getListPoint() != null){
-                    Log.d(TAG, "onClick: listpoint is not null " + polygonView.getListPoint().size());
-                }
-                
                 Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-                
-                if (croppedBitmap != null){
-                    Log.d(TAG, "onClick: cropped bm is not null");
-                }
+
                 String savedPath = new AppUtils().saveBitmapToFile(croppedBitmap);
                 Uri imgUri = Uri.parse( "file://" + savedPath);
-                Log.d(TAG, "onClick: uri:" + imgUri);
                 Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
                 intent.putExtra("croppedImage",imgUri);
                 startActivity(intent);

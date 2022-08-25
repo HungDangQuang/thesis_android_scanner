@@ -8,6 +8,7 @@ import android.graphics.PointF;
 import android.media.Image;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +99,7 @@ public class PolygonView extends FrameLayout {
         midPointer12 = getImageView(0, getWidth() / 2);
         midPointer12.setOnTouchListener(new MidPointTouchListenerImpl(pointer1, pointer2));
 
-        midPointer34 = getImageView(0, getWidth() / 2);
+        midPointer34 = getImageView(0, getHeight() / 2);
         midPointer34.setOnTouchListener(new MidPointTouchListenerImpl(pointer3, pointer4));
 
         midPointer24 = getImageView(0, getHeight() / 2);
@@ -121,8 +122,8 @@ public class PolygonView extends FrameLayout {
         ArrayList<Point> listPoints = new ArrayList<Point>();
         listPoints.add(new Point((double) pointer1.getX() + pointer1.getWidth()/2, (double) pointer1.getY() + pointer1.getHeight()/2));
         listPoints.add(new Point((double) pointer2.getX() + pointer1.getWidth()/2, (double) pointer2.getY() + pointer2.getHeight()/2));
-        listPoints.add(new Point((double) pointer4.getX() + pointer1.getWidth()/2, (double) pointer4.getY() + pointer3.getHeight()/2));
-        listPoints.add(new Point((double) pointer3.getX() + pointer1.getWidth()/2, (double) pointer3.getY() + pointer4.getHeight()/2));
+        listPoints.add(new Point((double) pointer4.getX() + pointer1.getWidth()/2, (double) pointer4.getY() + pointer4.getHeight()/2));
+        listPoints.add(new Point((double) pointer3.getX() + pointer1.getWidth()/2, (double) pointer3.getY() + pointer3.getHeight()/2));
         return listPoints;
     }
 
@@ -135,7 +136,7 @@ public class PolygonView extends FrameLayout {
     private void initPaint(){
         paint = new Paint();
         paint.setColor(R.color.crop_color);
-        paint.setStrokeWidth(10f);
+        paint.setStrokeWidth(5f);
         paint.setAntiAlias(true);
 
         circleFillPaint = new Paint();
@@ -180,62 +181,110 @@ public class PolygonView extends FrameLayout {
     }
 
     private void setPointsCoordinates(Map<Integer, Point> pointMap) {
-        if ((float) pointMap.get(2).x - pointer3.getWidth()/2 < 0){
+
+        if ((float) pointMap.get(2).x - pointer3.getWidth()/2 >= 0){
+            Log.d(TAG, "setPointsCoordinates: pointer 3 x is get into condition 1");
             pointer3.setX((float)pointMap.get(2).x);
         }
         else {
+            Log.d(TAG, "setPointsCoordinates: pointer 3 x is get into condition 2");
             pointer3.setX((float) pointMap.get(2).x - pointer3.getWidth()/2);
         }
 
-        if ((float) pointMap.get(2).y + pointer3.getHeight()/2 > polygonView.getHeight()){
+        if ((float) pointMap.get(2).y + pointer3.getHeight()/2 <= polygonView.getHeight()){
+            Log.d(TAG, "setPointsCoordinates: pointer 3 y is get into condition 1");
             pointer3.setY((float)pointMap.get(2).y);
         }
         else {
+            Log.d(TAG, "setPointsCoordinates: pointer 3 y is get into condition 2");
             pointer3.setY((float) pointMap.get(2).y - pointer3.getHeight());
         }
 
-        if ((float) pointMap.get(3).x - pointer4.getWidth()/2 < 0){
+        if ((float) pointMap.get(3).x + pointer4.getWidth()/2 <= polygonView.getWidth()){
+            Log.d(TAG, "setPointsCoordinates: pointer 4 x is get into condition 1");
             pointer4.setX((float)pointMap.get(3).x);
         }
         else {
+            Log.d(TAG, "setPointsCoordinates: pointer 4 x is get into condition 2");
             pointer4.setX((float) pointMap.get(3).x - pointer4.getWidth()/2);
         }
 
-        if ((float) pointMap.get(3).y + pointer4.getHeight()/2 > polygonView.getHeight()){
+        if ((float) pointMap.get(3).y + pointer4.getHeight()/2 <= polygonView.getHeight()){
+            Log.d(TAG, "setPointsCoordinates: pointer 4 y is get into condition 1");
             pointer4.setY((float)pointMap.get(3).y);
         }
         else {
+            Log.d(TAG, "setPointsCoordinates: pointer 4 y is get into condition 2");
             pointer4.setY((float) pointMap.get(3).y - pointer4.getHeight()/2);
         }
 
         if ((float) pointMap.get(0).x - pointer1.getWidth()/2 < 0){
+            Log.d(TAG, "setPointsCoordinates: pointer 1 x is get into condition 1");
             pointer1.setX((float)pointMap.get(0).x);
         }
         else {
+            Log.d(TAG, "setPointsCoordinates: pointer 1 x is get into condition 2");
             pointer1.setX((float) pointMap.get(0).x - pointer1.getWidth()/2);
         }
 
         if ((float) pointMap.get(0).y + pointer1.getHeight()/2 > polygonView.getHeight()){
+            Log.d(TAG, "setPointsCoordinates: pointer 1 y is get into condition 1");
             pointer1.setY((float)pointMap.get(0).y);
         }
         else {
+            Log.d(TAG, "setPointsCoordinates: pointer 1 y is get into condition 2");
             pointer1.setY((float) pointMap.get(0).y - pointer1.getHeight()/2);
         }
 
         if ((float) pointMap.get(1).x - pointer2.getWidth()/2 < 0){
+            Log.d(TAG, "setPointsCoordinates: pointer 2 x is get into condition 1");
             pointer2.setX((float)pointMap.get(1).x);
         }
         else {
+            Log.d(TAG, "setPointsCoordinates: pointer 2 x is get into condition 2");
             pointer2.setX((float) pointMap.get(1).x - pointer2.getWidth()/2);
         }
 
         if ((float) pointMap.get(1).y + pointer2.getHeight() > polygonView.getHeight()){
+            Log.d(TAG, "setPointsCoordinates: pointer 2 y is get into condition 1");
             pointer2.setY((float)pointMap.get(1).y);
         }
         else {
+            Log.d(TAG, "setPointsCoordinates: pointer 2 y is get into condition 2");
             pointer2.setY((float) pointMap.get(1).y - pointer2.getHeight()/2);
         }
+
+
+
+//        midPointer13.setX(pointer3.getX() - ((pointer3.getX() - pointer1.getX()) / 2));
+//        midPointer13.setY(pointer3.getY() - ((pointer3.getY() - pointer1.getY()) / 2));
+//        midPointer24.setX(pointer4.getX() - ((pointer4.getX() - pointer2.getX()) / 2));
+//        midPointer24.setY(pointer4.getY() - ((pointer4.getY() - pointer2.getY()) / 2));
+//        midPointer34.setX(pointer4.getX() - ((pointer4.getX() - pointer3.getX()) / 2));
+//        midPointer34.setY(pointer4.getY() - ((pointer4.getY() - pointer3.getY()) / 2));
+//        midPointer12.setX(pointer2.getX() - ((pointer2.getX() - pointer1.getX()) / 2));
+//        midPointer12.setY(pointer2.getY() - ((pointer2.getY() - pointer1.getY()) / 2));
         invalidate();
+//        pointer1.setX((float) pointMap.get(0).x);
+//        pointer1.setY((float) pointMap.get(0).y);
+//
+//        pointer2.setX((float) pointMap.get(1).x);
+//        pointer2.setY((float) pointMap.get(1).y);
+//
+//        pointer3.setX((float) pointMap.get(2).x);
+//        pointer3.setY((float) pointMap.get(2).y);
+//
+//        pointer4.setX((float) pointMap.get(3).x);
+//        pointer4.setY((float) pointMap.get(3).y);
+//
+//        midPointer13.setX(pointer3.getX() - ((pointer3.getX() - pointer1.getX()) / 2));
+//        midPointer13.setY(pointer3.getY() - ((pointer3.getY() - pointer1.getY()) / 2));
+//        midPointer24.setX(pointer4.getX() - ((pointer4.getX() - pointer2.getX()) / 2));
+//        midPointer24.setY(pointer4.getY() - ((pointer4.getY() - pointer2.getY()) / 2));
+//        midPointer34.setX(pointer4.getX() - ((pointer4.getX() - pointer3.getX()) / 2));
+//        midPointer34.setY(pointer4.getY() - ((pointer4.getY() - pointer3.getY()) / 2));
+//        midPointer12.setX(pointer2.getX() - ((pointer2.getX() - pointer1.getX()) / 2));
+//        midPointer12.setY(pointer2.getY() - ((pointer2.getY() - pointer1.getY()) / 2));
     }
 
     @Override
@@ -255,7 +304,11 @@ public class PolygonView extends FrameLayout {
         midPointer12.setX(pointer2.getX() - ((pointer2.getX() - pointer1.getX()) / 2));
         midPointer12.setY(pointer2.getY() - ((pointer2.getY() - pointer1.getY()) / 2));
 
-        int radius = 30;
+        Log.d(TAG, "dispatchDraw: point 3:" + pointer3.getX() + " " + pointer3.getY());
+        Log.d(TAG, "dispatchDraw: polygon view:" + getWidth() + " " + getHeight());
+        Log.d(TAG,"width:" + pointer1.getWidth() + " " + pointer2.getWidth() + " " + pointer3.getWidth() + " " + pointer4.getWidth());
+
+        int radius = dp2px(context,11);
         canvas.drawCircle(pointer1.getX() + (pointer1.getWidth() / 2), pointer1.getY() + (pointer1.getHeight() / 2), radius, circleFillPaint);
         canvas.drawCircle(pointer2.getX() + (pointer2.getWidth() / 2), pointer2.getY() + (pointer2.getHeight() / 2), radius, circleFillPaint);
         canvas.drawCircle(pointer3.getX() + (pointer3.getWidth() / 2), pointer3.getY() + (pointer3.getHeight() / 2), radius, circleFillPaint);
@@ -422,5 +475,10 @@ public class PolygonView extends FrameLayout {
             polygonView.invalidate();
             return true;
         }
+    }
+
+    public static int dp2px(Context context, float dp) {
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+        return Math.round(px);
     }
 }

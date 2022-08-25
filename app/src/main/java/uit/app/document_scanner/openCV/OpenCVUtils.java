@@ -63,7 +63,8 @@ public class OpenCVUtils {
         Point[] myPoints = {new Point(5.0,5.0),
                             new Point(5.0, (double) height - 5),
                             new Point((double) width - 5, (double) height - 5),
-                            new Point((double) width - 5, 5.0)};
+                            new Point((double) width - 5, 5.0),
+                            };
 
         MatOfPoint receiptContour = new MatOfPoint(myPoints);
 
@@ -122,8 +123,8 @@ public class OpenCVUtils {
         ArrayList<Point> cornerPoints = new ArrayList<Point>();
         cornerPoints.add(pointTL);
         cornerPoints.add(pointTR);
-        cornerPoints.add(pointBL);
         cornerPoints.add(pointBR);
+        cornerPoints.add(pointBL);
 
         if (!isConvexShape(cornerPoints)){
             Rect box = Imgproc.boundingRect(receiptContour);
@@ -136,8 +137,8 @@ public class OpenCVUtils {
 
             cornerPoints.add(pointTL);
             cornerPoints.add(pointTR);
-            cornerPoints.add(pointBL);
             cornerPoints.add(pointBR);
+            cornerPoints.add(pointBL);
         }
 
         if (hasContour){
@@ -164,9 +165,9 @@ public class OpenCVUtils {
 
     private Map<Integer,Point> getOutlinePoints(Bitmap bitmap){
         HashMap<Integer,Point> outlinePoints = new HashMap<Integer,Point>();
-        outlinePoints.put(0,new Point((double) 0f, (double) 0f));
-        outlinePoints.put(1,new Point((double) bitmap.getWidth(), (double) 0f));
-        outlinePoints.put(2,new Point((double) 0f, (double) bitmap.getHeight()));
+        outlinePoints.put(0,new Point((double) 0, (double) 0));
+        outlinePoints.put(1,new Point((double) bitmap.getWidth(), (double) 0));
+        outlinePoints.put(2,new Point((double) 0, (double) bitmap.getHeight()));
         outlinePoints.put(3,new Point((double) bitmap.getWidth(), (double) bitmap.getHeight()));
         return outlinePoints;
     }
@@ -257,12 +258,12 @@ public class OpenCVUtils {
         int pos = 0;
         double maxY = listPoint.get(0).y;
         for (int i = 0; i < listPoint.size(); i++) {
-            if (maxY < listPoint.get(i).x){
+            if (maxY < listPoint.get(i).y){
                 pos = i;
-                maxY = listPoint.get(i).x;
+                maxY = listPoint.get(i).y;
             }
         }
-        return listPoint.get(pos).x;
+        return listPoint.get(pos).y;
     }
 
     public Point getPointTlWithMaxLength(List<Point> listPointInContour, Point centrePoint, double espX, double espY){
@@ -487,8 +488,8 @@ public class OpenCVUtils {
         double minX = listPoint.get(0).x;
         int minXPos = 0;
         for (int i = 0; i < listPoint.size(); i++) {
-            if(minX > listPoint.get(i).y){
-                minX = listPoint.get(i).y;
+            if(minX > listPoint.get(i).x){
+                minX = listPoint.get(i).x;
                 minXPos = i;
             }
         }
