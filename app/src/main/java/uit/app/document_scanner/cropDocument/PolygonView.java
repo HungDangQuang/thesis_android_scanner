@@ -136,7 +136,7 @@ public class PolygonView extends FrameLayout {
     private void initPaint(){
         paint = new Paint();
         paint.setColor(R.color.crop_color);
-        paint.setStrokeWidth(5f);
+        paint.setStrokeWidth(10f);
         paint.setAntiAlias(true);
 
         circleFillPaint = new Paint();
