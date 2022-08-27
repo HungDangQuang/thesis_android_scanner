@@ -155,6 +155,27 @@ public class CropImageActivity extends AppCompatActivity{
 //        actionBar.hide();
         init();
 
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
+
+                String savedPath = new AppUtils().saveBitmapToFile(croppedBitmap);
+                Uri imgUri = Uri.parse( "file://" + savedPath);
+                Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
+                intent.putExtra("croppedImage",imgUri);
+                startActivity(intent);
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         sourceFrame.post(new Runnable() {
             @Override
             public void run() {
@@ -184,22 +205,6 @@ public class CropImageActivity extends AppCompatActivity{
                 }
             }
         });
-
-
-        scanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-
-                String savedPath = new AppUtils().saveBitmapToFile(croppedBitmap);
-                Uri imgUri = Uri.parse( "file://" + savedPath);
-                Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
-                intent.putExtra("croppedImage",imgUri);
-                startActivity(intent);
-            }
-        });
-
 
     }
 }
