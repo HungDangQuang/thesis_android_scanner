@@ -29,92 +29,6 @@ import java.util.Map;
 import uit.app.document_scanner.cropDocument.PolygonView;
 import uit.app.document_scanner.openCV.OpenCVUtils;
 
-//public class CropImageActivity extends AppCompatActivity implements View.OnClickListener {
-//
-//    private Button scanButton = null;
-//    private ImageView sourceImageView;
-//    private PolygonView polygonView;
-//    private FrameLayout sourceFrame;
-//    private Bitmap original = null;
-//
-//    private Uri uri;
-//
-//    private Bitmap bitmap;
-//
-//    public Bitmap getBitmap() {
-//        Uri uri = this.uri;
-//        try {
-//            Bitmap bitmap = new AppUtils().getBitmap(uri,this);
-//            bitmap.setDensity(Bitmap.DENSITY_NONE);
-//            if(bitmap.getWidth() > bitmap.getHeight()){
-//                bitmap = new OpenCVUtils().rotate(bitmap,90);
-//            }
-//            return bitmap;
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-//
-//    public void setOriginal(Bitmap original) {
-//        Bitmap scaledBitmap = Bitmap.createScaledBitmap(original,sourceImageView.getWidth(),sourceImageView.getHeight(),false);
-//        sourceImageView.setImageBitmap(scaledBitmap);
-//        Map<Integer, Point> pointFs =  new OpenCVUtils().getEdgePoints(scaledBitmap,polygonView);
-//        polygonView.setPoints(pointFs);
-//        polygonView.setVisibility(View.VISIBLE);
-//
-//        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(sourceFrame.getWidth(),sourceFrame.getHeight());
-//        layoutParams.gravity = Gravity.CENTER;
-//        polygonView.setLayoutParams(layoutParams);
-//    }
-//
-//    public void setUri() {
-//        uri = new Intent().getParcelableExtra("imgPath");
-//    }
-//
-//    @Override
-//    public void onClick(View view) {
-//        if (view.getId() == R.id.scanButton){
-//            sourceFrame.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                   Bitmap croppedBitmap = new OpenCVUtils().cropReceiptByFourPoints(bitmap,polygonView.getListPoint(),sourceImageView.getMaxWidth(),sourceImageView.getHeight());
-//                   String savedPath = new AppUtils().saveBitmapToFile(croppedBitmap);
-//
-//                }
-//            });
-//        }
-//    }
-//
-//    @Override
-//    protected void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_crop_image);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        init();
-//    }
-//
-//    private void init(){
-//        sourceImageView = findViewById(R.id.sourceImageView);
-//        scanButton = findViewById(R.id.scanButton);
-//        scanButton.setOnClickListener(this);
-//        sourceFrame = findViewById(R.id.sourceFrame);
-//        polygonView = findViewById(R.id.polygonView);
-//
-////        sourceFrame.post(new Runnable() {
-////            @Override
-////            public void run() {
-////
-////            }
-////        });
-////
-////        setUri();
-////        setOriginal(getBitmap());
-//
-//    }
-//
-//}
-
 public class CropImageActivity extends AppCompatActivity{
 
     private Button scanButton = null;
@@ -132,9 +46,6 @@ public class CropImageActivity extends AppCompatActivity{
         polygonView = findViewById(R.id.polygonView);
     }
 
-
-
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
@@ -142,39 +53,7 @@ public class CropImageActivity extends AppCompatActivity{
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_crop_image);
 
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-
-//        View decorView = getWindow().getDecorView();
-        // Hide the status bar.
-//        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-//        decorView.setSystemUiVisibility(uiOptions);
-        // Remember that you should never show the action bar if the
-        // status bar is hidden, so hide that too if necessary.
-//        ActionBar actionBar = getActionBar();
-//        actionBar.hide();
         init();
-
-        scanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-
-                String savedPath = new AppUtils().saveBitmapToFile(croppedBitmap);
-                Uri imgUri = Uri.parse( "file://" + savedPath);
-                Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
-                intent.putExtra("croppedImage",imgUri);
-                startActivity(intent);
-            }
-        });
-
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         sourceFrame.post(new Runnable() {
             @Override
@@ -206,5 +85,27 @@ public class CropImageActivity extends AppCompatActivity{
             }
         });
 
+
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
+
+                String savedPath = new AppUtils().saveBitmapToFile(croppedBitmap);
+                Uri imgUri = Uri.parse( "file://" + savedPath);
+                Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
+                intent.putExtra("croppedImage",imgUri);
+                startActivity(intent);
+                finish();
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: executed");
+        finish();
     }
 }

@@ -429,7 +429,10 @@ public class OpenCVUtils {
         Mat transformation = Imgproc.getPerspectiveTransform(srcPoints,destPoints);
         Imgproc.warpPerspective(originalReceiptMat,correctedImage,transformation,correctedImage.size());
         Log.d(TAG, "cropReceiptByFourPoints: correct image size:" + correctedImage.size());
-        return convertMatToBitmap(correctedImage);
+        Mat result = new Mat();
+        Imgproc.cvtColor(correctedImage,result,Imgproc.COLOR_RGB2GRAY);
+        Imgproc.threshold(result,result,0,255,Imgproc.THRESH_OTSU);
+        return convertMatToBitmap(result);
     }
 
     Point getPointWithMaxCorY(List<Point> listPoint){
