@@ -3,8 +3,10 @@ package uit.app.document_scanner;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -59,7 +61,7 @@ public class CropImageActivity extends AppCompatActivity{
             @Override
             public void run() {
                 Intent intent = getIntent();
-                Uri uri = intent.getParcelableExtra("imgPath");
+                Uri uri = intent.getParcelableExtra("ImagePath");
                 try {
                     bm = new AppUtils().getBitmap(uri,CropImageActivity.this);
                     bm.setDensity(Bitmap.DENSITY_NONE);

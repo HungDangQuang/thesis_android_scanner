@@ -26,7 +26,9 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
@@ -105,15 +107,6 @@ public class CameraActivity extends AppCompatActivity {
         cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageCapture);
     }
 
-    private void bindCameraUseCases(){
-        imageCapture = new ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
-                .setFlashMode(flashMode)
-                .build();
-
-        Log.d(TAG, "bindCameraUseCases: build new image capture succeeded");
-    }
-
     private void capturePhoto(){
 
         imageCapture.takePicture(getMainExecutor(), new ImageCapture.OnImageCapturedCallback() {
@@ -152,15 +145,15 @@ public class CameraActivity extends AppCompatActivity {
                 Log.d(TAG, "onActivityResult: cannot open image because data is null");
                 return;
             }
-            Uri selectedImage = data.getData();
-            startCropImageActivity(selectedImage);
+            Uri uri = data.getData();
+            startCropImageActivity(uri);
         }
     }
 
     private void startCropImageActivity(Uri uri){
         Intent intent = new Intent(CameraActivity.this,CropImageActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        intent.putExtra("imgPath",uri);
+        intent.putExtra("ImagePath",uri);
         startActivity(intent);
     }
 
@@ -170,7 +163,6 @@ public class CameraActivity extends AppCompatActivity {
             case ImageCapture.FLASH_MODE_OFF:
                 Log.d(TAG, "setFlashMode: flash is off");
                 flashMode = ImageCapture.FLASH_MODE_ON;
-
                 btnFlashMode.setBackgroundResource(R.drawable.ic_baseline_flash_on_24);
                 break;
 

@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.airbnb.lottie.L;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -57,4 +58,5 @@ public class AppUtils {
 
         return mediaFile;
     }
+
 }
