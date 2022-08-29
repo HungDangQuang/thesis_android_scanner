@@ -20,6 +20,8 @@ import java.util.Date;
 
 public class AppUtils {
 
+    private final String TAG = AppUtils.class.getSimpleName();
+
     public Bitmap getBitmap(Uri selectedImg, Activity activity) throws FileNotFoundException {
         BitmapFactory.Options options = new BitmapFactory.Options();
 //        options.inSampleSize = 3;
@@ -59,4 +61,11 @@ public class AppUtils {
         return mediaFile;
     }
 
+    public void deleteImage(Uri uri){
+        File fDelete = new File(String.valueOf(uri));
+        if (fDelete.exists()){
+            Log.d(TAG, "deleteImage: file exists");
+            fDelete.delete();
+        }
+    }
 }

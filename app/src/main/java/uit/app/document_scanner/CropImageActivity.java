@@ -38,8 +38,9 @@ public class CropImageActivity extends AppCompatActivity{
     private PolygonView polygonView;
     private FrameLayout sourceFrame;
     private Bitmap bm;
-
+    private Uri imgUri;
     private String TAG = CropImageActivity.class.getSimpleName();
+    private AppUtils appUtils = new AppUtils();
 
     private void init(){
         sourceImageView = findViewById(R.id.sourceImageView);
@@ -61,9 +62,9 @@ public class CropImageActivity extends AppCompatActivity{
             @Override
             public void run() {
                 Intent intent = getIntent();
-                Uri uri = intent.getParcelableExtra("ImagePath");
+                imgUri = intent.getParcelableExtra("ImagePath");
                 try {
-                    bm = new AppUtils().getBitmap(uri,CropImageActivity.this);
+                    bm = new AppUtils().getBitmap(imgUri,CropImageActivity.this);
                     bm.setDensity(Bitmap.DENSITY_NONE);
                     if(bm.getWidth() > bm.getHeight()){
                         bm = new OpenCVUtils().rotate(bm,90);
@@ -94,10 +95,12 @@ public class CropImageActivity extends AppCompatActivity{
 
                 Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
 
-                String savedPath = new AppUtils().saveBitmapToFile(croppedBitmap);
+                String savedPath = appUtils.saveBitmapToFile(croppedBitmap);
                 Uri imgUri = Uri.parse( "file://" + savedPath);
                 Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
                 intent.putExtra("croppedImage",imgUri);
+
+                appUtils.deleteImage(imgUri);
                 startActivity(intent);
                 finish();
             }
