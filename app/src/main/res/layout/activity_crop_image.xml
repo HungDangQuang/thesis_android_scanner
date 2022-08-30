@@ -14,7 +14,7 @@
         android:orientation="horizontal"
         android:padding="16dp"
         android:text="Crop"
-        android:visibility="visible"/>
+        android:visibility="visible" />
 
     <FrameLayout
         android:id="@+id/sourceFrame"

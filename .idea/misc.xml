@@ -21,6 +21,7 @@
         <entry key="app/src/main/res/layout/activity_crop_image.xml" value="0.19574468085106383" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25104166666666666" />
         <entry key="app/src/main/res/layout/activity_review_image.xml" value="0.25104166666666666" />
+        <entry key="app/src/main/res/layout/custom_grid_layout.xml" value="0.25104166666666666" />
         <entry key="app/src/main/res/layout/loading_dialog.xml" value="0.25104166666666666" />
       </map>
     </option>

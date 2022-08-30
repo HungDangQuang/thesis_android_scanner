@@ -94,12 +94,10 @@ public class CropImageActivity extends AppCompatActivity{
             public void onClick(View view) {
 
                 Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-
                 String savedPath = appUtils.saveBitmapToFile(croppedBitmap);
                 Uri imgUri = Uri.parse( "file://" + savedPath);
                 Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
                 intent.putExtra("croppedImage",imgUri);
-
                 appUtils.deleteImage(imgUri);
                 startActivity(intent);
                 finish();

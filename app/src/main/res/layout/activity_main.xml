@@ -7,6 +7,12 @@
     tools:context=".MainActivity"
     android:background="@color/white">
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/datalist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/openCameraButton"
         android:layout_width="70dp"
