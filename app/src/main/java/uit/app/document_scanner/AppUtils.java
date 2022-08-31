@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.airbnb.lottie.L;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -18,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class AppUtils {
+
+    private final String TAG = AppUtils.class.getSimpleName();
 
     public Bitmap getBitmap(Uri selectedImg, Activity activity) throws FileNotFoundException {
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -56,5 +59,13 @@ public class AppUtils {
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
 
         return mediaFile;
+    }
+
+    public void deleteImage(Uri uri){
+        File fDelete = new File(String.valueOf(uri));
+        if (fDelete.exists()){
+            Log.d(TAG, "deleteImage: file exists");
+            fDelete.delete();
+        }
     }
 }

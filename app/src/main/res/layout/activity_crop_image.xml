@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/Theme.AppCompat"
-    android:weightSum="10">
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/scanButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/crop_color"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:text="Crop"
+        android:visibility="visible" />
 
     <FrameLayout
         android:id="@+id/sourceFrame"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_above="@id/scanButton"
-        android:layout_gravity="center"
-        android:layout_weight="9">
+        android:layout_gravity="center">
 
         <ImageView
             android:id="@+id/sourceImageView"
@@ -22,7 +29,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
-            />
+            android:scaleType="fitXY"/>
 
         <uit.app.document_scanner.cropDocument.PolygonView
             android:id="@+id/polygonView"
@@ -33,16 +40,5 @@
 
     </FrameLayout>
 
-    <Button
-        android:id="@+id/scanButton"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:text="Crop"
-        android:visibility="visible"
-        app:backgroundTint="@color/black"
-        android:layout_weight="1"/>
 
-
-</LinearLayout>
+</RelativeLayout>
