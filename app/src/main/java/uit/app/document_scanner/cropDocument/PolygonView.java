@@ -481,4 +481,18 @@ public class PolygonView extends FrameLayout {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
         return Math.round(px);
     }
+
+    public void setScaledPoint(float scaleNumber){
+        pointer1.setX(pointer1.getX() * scaleNumber);
+        pointer1.setY(pointer1.getY() * scaleNumber);
+
+        pointer2.setX(pointer2.getX() * scaleNumber);
+        pointer2.setY(pointer2.getY() * scaleNumber);
+
+        pointer3.setX(pointer3.getX() * scaleNumber);
+        pointer3.setY(pointer3.getY() * scaleNumber);
+
+        pointer4.setX(pointer4.getX() * scaleNumber);
+        pointer4.setY(pointer4.getY() * scaleNumber);
+    }
 }

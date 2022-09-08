@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/mainLayout">
 
 
     <LinearLayout
@@ -90,22 +91,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         android:layout_above="@id/options">
 
         <ImageView
             android:id="@+id/sourceImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
             android:adjustViewBounds="true"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitCenter"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"/>
 
         <uit.app.document_scanner.cropDocument.PolygonView
             android:id="@+id/polygonView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="visible" />
+            android:visibility="visible"
+            />
 
     </FrameLayout>
 
