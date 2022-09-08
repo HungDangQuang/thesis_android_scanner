@@ -105,7 +105,7 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
                     FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(sourceFrame.getWidth(), sourceFrame.getHeight());
                     layoutParams.gravity = Gravity.CENTER;
                     polygonView.setLayoutParams(layoutParams);
-
+                    Log.d(TAG, "polygon view: " + polygonView.getX());
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -215,7 +215,9 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
                 break;
             }
             case R.id.zoomButton:
-                //
+                polygonView.setCornerListPoints();
+                polygonView.requestLayout();
+                Log.d(TAG, "onClick: zoom button");
                 break;
 
             case R.id.okButton:
