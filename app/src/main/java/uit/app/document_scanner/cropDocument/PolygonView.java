@@ -355,23 +355,23 @@ public class PolygonView extends FrameLayout {
                     PointF mv = new PointF(event.getX() - DownPT.x, event.getY() - DownPT.y);
 
                     if (Math.abs(mainPointer1.getX() - mainPointer2.getX()) > Math.abs(mainPointer1.getY() - mainPointer2.getY())) {
-                        if (((mainPointer2.getY() + mv.y + v.getHeight() < polygonView.getHeight()) && (mainPointer2.getY() + mv.y > 0))) {
+                        if (((mainPointer2.getY() + mv.y + v.getHeight()/2 < polygonView.getHeight()) && (mainPointer2.getY() + mv.y > 0))) {
                             v.setX((int) (StartPT.y + mv.y));
                             StartPT = new PointF(v.getX(), v.getY());
                             mainPointer2.setY((int) (mainPointer2.getY() + mv.y));
                         }
-                        if (((mainPointer1.getY() + mv.y + v.getHeight() < polygonView.getHeight()) && (mainPointer1.getY() + mv.y > 0))) {
+                        if (((mainPointer1.getY() + mv.y + v.getHeight()/2 < polygonView.getHeight()) && (mainPointer1.getY() + mv.y > 0))) {
                             v.setX((int) (StartPT.y + mv.y));
                             StartPT = new PointF(v.getX(), v.getY());
                             mainPointer1.setY((int) (mainPointer1.getY() + mv.y));
                         }
                     } else {
-                        if ((mainPointer2.getX() + mv.x + v.getWidth() < polygonView.getWidth()) && (mainPointer2.getX() + mv.x > 0)) {
+                        if ((mainPointer2.getX() + mv.x + v.getWidth()/2 < polygonView.getWidth()) && (mainPointer2.getX() + mv.x > 0)) {
                             v.setX((int) (StartPT.x + mv.x));
                             StartPT = new PointF(v.getX(), v.getY());
                             mainPointer2.setX((int) (mainPointer2.getX() + mv.x));
                         }
-                        if ((mainPointer1.getX() + mv.x + v.getWidth() < polygonView.getWidth()) && (mainPointer1.getX() + mv.x > 0)) {
+                        if ((mainPointer1.getX() + mv.x + v.getWidth()/2 < polygonView.getWidth()) && (mainPointer1.getX() + mv.x > 0)) {
                             v.setX((int) (StartPT.x + mv.x));
                             StartPT = new PointF(v.getX(), v.getY());
                             mainPointer1.setX((int) (mainPointer1.getX() + mv.x));
@@ -431,7 +431,7 @@ public class PolygonView extends FrameLayout {
 
         final PointF DownPT = new PointF(); // Record Mouse Position When Pressed Down
         PointF StartPT = new PointF(); // Record Start Position of 'img'
-//        PointF latestPoint = new PointF();
+        PointF latestPoint = new PointF();
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -439,7 +439,7 @@ public class PolygonView extends FrameLayout {
             switch (eid) {
                 case MotionEvent.ACTION_MOVE:
                     PointF mv = new PointF(event.getX() - DownPT.x, event.getY() - DownPT.y);
-                    if (((StartPT.x + mv.x + v.getWidth()) < polygonView.getWidth() && (StartPT.y + mv.y + v.getHeight() < polygonView.getHeight())) && ((StartPT.x + mv.x) > 0 && StartPT.y + mv.y > 0)) {
+                    if (((StartPT.x + mv.x + v.getWidth()/2) < polygonView.getWidth() && (StartPT.y + mv.y + v.getHeight()/2 < polygonView.getHeight())) && ((StartPT.x + mv.x) >= - v.getWidth()/2 && StartPT.y + mv.y >= - v.getHeight()/2)) {
                         v.setX((int) (StartPT.x + mv.x));
                         v.setY((int) (StartPT.y + mv.y));
                         StartPT = new PointF(v.getX(), v.getY());
@@ -453,19 +453,19 @@ public class PolygonView extends FrameLayout {
                     DownPT.x = event.getX();
                     DownPT.y = event.getY();
                     StartPT = new PointF(v.getX(), v.getY());
-//                    latestPoint = new PointF(v.getX(), v.getY());
+                    latestPoint = new PointF(v.getX(), v.getY());
                     break;
                 case MotionEvent.ACTION_UP:
                     int color;
                     if (isValidShape(getPoints())) {
                         color = getResources().getColor(R.color.crop_color);
-//                        latestPoint.x = v.getX();
-//                        latestPoint.y = v.getY();
+                        latestPoint.x = v.getX();
+                        latestPoint.y = v.getY();
                     } else {
 //                        ScanActivity.allDraggedPointsStack.pop();
                         color = getResources().getColor(R.color.crop_color);
-//                        v.setX(latestPoint.x);
-//                        v.setY(latestPoint.y);
+                        v.setX(latestPoint.x);
+                        v.setY(latestPoint.y);
                     }
                     paint.setColor(color);
                     break;
@@ -480,5 +480,35 @@ public class PolygonView extends FrameLayout {
     public static int dp2px(Context context, float dp) {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
         return Math.round(px);
+    }
+
+    public void setScaledPoint(float scaleNumber){
+        pointer1.setX(pointer1.getX() * scaleNumber);
+        pointer1.setY(pointer1.getY() * scaleNumber);
+
+        pointer2.setX(pointer2.getX() * scaleNumber);
+        pointer2.setY(pointer2.getY() * scaleNumber);
+
+        pointer3.setX(pointer3.getX() * scaleNumber);
+        pointer3.setY(pointer3.getY() * scaleNumber);
+
+        pointer4.setX(pointer4.getX() * scaleNumber);
+        pointer4.setY(pointer4.getY() * scaleNumber);
+    }
+
+    public void setCornerListPoints() {
+
+        pointer1.setX(0 - pointer1.getWidth()/2);
+        pointer1.setY(-pointer1.getHeight()/2);
+
+        pointer2.setX(getWidth() - pointer2.getWidth()/2);
+        pointer2.setY(-pointer2.getHeight()/2);
+
+        pointer3.setX(-pointer3.getWidth()/2);
+        pointer3.setY(getHeight() - pointer3.getHeight()/2);
+
+        pointer4.setX(getWidth() - pointer4.getWidth()/2);
+        pointer4.setY(getHeight() - pointer4.getHeight()/2);
+
     }
 }

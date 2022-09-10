@@ -60,10 +60,10 @@ public class OpenCVUtils {
         int width = matconvertedGray.width();
 
         double maxAreaFound = (double) ((width - 20) * (height - 20)/20);
-        Point[] myPoints = {new Point(5.0,5.0),
-                            new Point(5.0, (double) height - 5),
-                            new Point((double) width - 5, (double) height - 5),
-                            new Point((double) width - 5, 5.0),
+        Point[] myPoints = {new Point(0,5),
+                            new Point(0, (double) height),
+                            new Point((double) width, (double) height),
+                            new Point((double) width, 0),
                             };
 
         MatOfPoint receiptContour = new MatOfPoint(myPoints);
