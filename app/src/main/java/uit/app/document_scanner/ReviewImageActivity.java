@@ -5,8 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +21,8 @@ import uit.app.document_scanner.openCV.OpenCVUtils;
 public class ReviewImageActivity extends AppCompatActivity {
 
     ImageView reviewImage;
-    FrameLayout sourceFrame;
+    LinearLayout sourceFrame;
+    EditText editText;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,12 +31,15 @@ public class ReviewImageActivity extends AppCompatActivity {
 
         sourceFrame = findViewById(R.id.sourceImageView);
         reviewImage = findViewById(R.id.review_image);
+        editText = findViewById(R.id.filename);
 
         sourceFrame.post(new Runnable() {
             @Override
             public void run() {
                 Intent intent = getIntent();
                 Uri uri = intent.getParcelableExtra("croppedImage");
+                File filename = new File(uri.getLastPathSegment());
+                editText.setText(filename.toString());
                 try {
                     Bitmap bm = new AppUtils().getBitmap(uri,ReviewImageActivity.this);
 
@@ -48,6 +54,10 @@ public class ReviewImageActivity extends AppCompatActivity {
                 }
             }
         });
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

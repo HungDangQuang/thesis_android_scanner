@@ -54,5 +54,6 @@ dependencies {
     implementation "androidx.camera:camera-camera2:$camera_x_version"
     implementation "androidx.camera:camera-lifecycle:$camera_x_version"
     implementation "androidx.camera:camera-view:$camera_x_version"
+    implementation 'com.squareup.picasso:picasso:2.8'
 
 }

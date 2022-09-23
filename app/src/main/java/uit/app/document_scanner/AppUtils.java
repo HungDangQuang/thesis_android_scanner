@@ -24,7 +24,7 @@ public class AppUtils {
 
     public Bitmap getBitmap(Uri selectedImg, Activity activity) throws FileNotFoundException {
         BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inSampleSize = 3;
+//        options.inSampleSize = 2;
         AssetFileDescriptor fileDescriptor = null;
         fileDescriptor = activity.getContentResolver().openAssetFileDescriptor(selectedImg,"r");
         return BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(),null,options);
@@ -68,4 +68,5 @@ public class AppUtils {
             fDelete.delete();
         }
     }
+
 }

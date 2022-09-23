@@ -87,6 +87,7 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
             public void run() {
                 Intent intent = getIntent();
                 imgUri = intent.getParcelableExtra("ImagePath");
+
                 try {
                     bm = new AppUtils().getBitmap(imgUri,CropImageActivity.this);
                     bm.setDensity(Bitmap.DENSITY_NONE);
@@ -118,7 +119,7 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: executed");
-        finish();
+//        finish();
     }
 
     @Override
@@ -225,10 +226,11 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
                 String savedPath = appUtils.saveBitmapToFile(croppedBitmap);
                 Uri imgUri = Uri.parse( "file://" + savedPath);
                 Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("croppedImage",imgUri);
                 appUtils.deleteImage(imgUri);
                 startActivity(intent);
-                finish();
+//                finish();
                 break;
 
             default:

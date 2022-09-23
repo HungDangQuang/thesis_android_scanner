@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
@@ -25,6 +26,7 @@ import org.opencv.android.OpenCVLoader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import uit.app.document_scanner.view.LoadingDialog;
@@ -35,8 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST_CODE = 10;
     private LoadingDialog loadingDialog = new LoadingDialog(MainActivity.this);
     private RecyclerView recyclerView;
-    List<String> filenames;
-    List<Bitmap> images;
+    List<File> images;
     AppUtils appUtils = new AppUtils();
     Adapter adapter;
     static {
@@ -50,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
     private MaterialButton openCameraButton;
     private static String TAG = MainActivity.class.getSimpleName();
-    public static String KEY_RECEIPT_PATH = "RECEIPT_PATH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,18 +58,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.datalist);
-        filenames = new ArrayList<>();
-        images = new ArrayList<>();
 
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setNestedScrollingEnabled(false);
+        PreCachingLayoutManager preCachingLayoutManager = new PreCachingLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
+        recyclerView.setLayoutManager(preCachingLayoutManager);
+
+        images = new ArrayList<>();
         try {
             loadDocument();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        adapter = new Adapter(this,filenames,images);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
-        recyclerView.setLayoutManager(gridLayoutManager);
+        adapter = new Adapter(this, images);
         recyclerView.setAdapter(adapter);
 
         openCameraButton = findViewById(R.id.openCameraButton);
@@ -98,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void enableCamera(){
         Intent intent = new Intent(this,CameraActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }
 
@@ -106,13 +109,7 @@ public class MainActivity extends AppCompatActivity {
         String path = Environment.getExternalStorageDirectory().toString()+"/Pictures/MyCameraApp";
         Log.d("Files", "Path: " + path);
         File directory = new File(path);
-        File[] files = directory.listFiles();
-        Log.d("Files", "Size: "+ files.length);
-        for (int i = 0; i < files.length; i++)
-        {
-            filenames.add(files[i].getName());
-            images.add(appUtils.getBitmap(Uri.parse("file://" + files[i].getAbsolutePath()),MainActivity.this));
-        }
+        images = Arrays.asList(directory.listFiles());
     }
 
 
