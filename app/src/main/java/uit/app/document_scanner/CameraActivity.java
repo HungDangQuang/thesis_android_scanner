@@ -67,7 +67,7 @@ public class CameraActivity extends AppCompatActivity {
         Callback callback = new Callback() {
             @Override
             public void SendBitmap(Bitmap bm) {
-                Uri imgUri = Uri.parse("file://" + new AppUtils().saveBitmapToFile(bm));
+                Uri imgUri = Uri.parse("file://" + new AppUtils().saveBitmapToFile(bm, SaveOptions.TEMP));
                 startCropImageActivity(imgUri);
             }
         };

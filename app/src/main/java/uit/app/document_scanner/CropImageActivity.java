@@ -223,7 +223,7 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
 
             case R.id.okButton:
                 Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-                String savedPath = appUtils.saveBitmapToFile(croppedBitmap);
+                String savedPath = appUtils.saveBitmapToFile(croppedBitmap,SaveOptions.APP);
                 Uri imgUri = Uri.parse( "file://" + savedPath);
                 Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

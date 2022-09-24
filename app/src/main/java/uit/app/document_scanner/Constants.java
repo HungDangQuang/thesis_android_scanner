@@ -1,7 +1,8 @@
 package uit.app.document_scanner;
 
-public class Constants {
-    public static final int APP_DIR = 1;
-    public static final int TEMP_DIR = 2;
+import android.os.Environment;
 
+public class Constants {
+    public static final String APP_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "MyCameraApp";
+    public static final String TEMP_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/MyCameraApp/Temp";
 }

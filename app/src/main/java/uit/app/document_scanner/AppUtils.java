@@ -30,8 +30,9 @@ public class AppUtils {
         return BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(),null,options);
     }
 
-    public String saveBitmapToFile(Bitmap bm){
-        File file = getOutputMediaFile();
+    public String saveBitmapToFile(Bitmap bm, SaveOptions option){
+
+        File file = getOutputMediaFile(option);
         try {
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
@@ -45,15 +46,30 @@ public class AppUtils {
         return file.getAbsolutePath();
     }
 
-    public File getOutputMediaFile(){
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/MyCameraApp/temp");
-//        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getPath() + "/SavedImages");
+    public File getOutputMediaFile(SaveOptions option){
+
+        File mediaStorageDir = null;
+
+        switch (option){
+            case APP:
+                mediaStorageDir = new File(Constants.APP_DIR);
+                break;
+            case TEMP:
+                mediaStorageDir = new File(Constants.TEMP_DIR);
+                break;
+
+//            break;
+
+        }
         if(!mediaStorageDir.exists()){
             if (!mediaStorageDir.mkdirs()){
-                Log.d("MyCameraApp", "failed to create directory");
+                Log.d(TAG, "failed to create directory");
                 return null;
             }
         }
+//        return mediaStorageDir;
+//        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getPath() + "/SavedImages");
+
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpg");
