@@ -45,5 +45,7 @@ public class LifeCycleHandler implements Application.ActivityLifecycleCallbacks 
     @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
 
+
+
     }
 }

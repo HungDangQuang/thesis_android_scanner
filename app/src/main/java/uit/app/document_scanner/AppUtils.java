@@ -46,7 +46,7 @@ public class AppUtils {
     }
 
     public File getOutputMediaFile(){
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"MyCameraApp");
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/MyCameraApp/temp");
 //        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getPath() + "/SavedImages");
         if(!mediaStorageDir.exists()){
             if (!mediaStorageDir.mkdirs()){
