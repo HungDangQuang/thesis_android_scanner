@@ -5,6 +5,8 @@ plugins {
 android {
     compileSdk 31
 
+
+
     defaultConfig {
         applicationId "uit.app.document_scanner"
         minSdk 28
@@ -55,5 +57,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:$camera_x_version"
     implementation "androidx.camera:camera-view:$camera_x_version"
     implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'org.apache.commons:commons-io:1.3.2'
+
 
 }

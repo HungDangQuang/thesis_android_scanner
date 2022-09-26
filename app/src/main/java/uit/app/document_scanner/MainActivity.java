@@ -67,14 +67,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(preCachingLayoutManager);
 
         images = new ArrayList<>();
-        try {
-            loadDocument();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        adapter = new Adapter(this, images);
-        recyclerView.setAdapter(adapter);
 
         openCameraButton = findViewById(R.id.openCameraButton);
 
@@ -90,6 +82,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        try {
+            loadDocument();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        adapter = new Adapter(this, images);
+        recyclerView.setAdapter(adapter);
     }
 
     private boolean hasCameraPermission(){
@@ -112,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         File directory = new File(path);
         images = Arrays.asList(directory.listFiles());
     }
+
 
 
 }

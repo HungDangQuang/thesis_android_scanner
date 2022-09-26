@@ -4,9 +4,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
+import org.apache.commons.io.FileUtils;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.io.File;
+import java.io.IOException;
 
 public class LifeCycleHandler implements Application.ActivityLifecycleCallbacks {
 
@@ -29,7 +34,6 @@ public class LifeCycleHandler implements Application.ActivityLifecycleCallbacks 
 
     @Override
     public void onActivityPaused(@NonNull Activity activity) {
-        Log.d(TAG, "onActivityPaused: activity is paused");
     }
 
     @Override
@@ -45,7 +49,14 @@ public class LifeCycleHandler implements Application.ActivityLifecycleCallbacks 
     @Override
     public void onActivityDestroyed(@NonNull Activity activity) {
 
+        File dir = new File(Constants.TEMP_DIR);
 
-
+        if(dir.exists()){
+            try {
+                FileUtils.deleteDirectory(dir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
