@@ -71,18 +71,18 @@ public class CameraActivity extends AppCompatActivity {
                 startCropImageActivity(imgUri);
             }
         };
-        cameraProviderListenableFuture.addListener(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
-                    startCameraX(cameraProvider);
-                }
-                catch (ExecutionException | InterruptedException e){
-                    e.printStackTrace();
-                }
-            }
-        }, ContextCompat.getMainExecutor(this));
+//        cameraProviderListenableFuture.addListener(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
+//                    startCameraX(cameraProvider);
+//                }
+//                catch (ExecutionException | InterruptedException e){
+//                    e.printStackTrace();
+//                }
+//            }
+//        }, ContextCompat.getMainExecutor(this));
 
         btnImageCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +92,7 @@ public class CameraActivity extends AppCompatActivity {
                 loadingDialog.startLoadingDialog();
                 view.setEnabled(false);
                 capturePhoto(callback);
+                view.setEnabled(true);
             }
         });
 
@@ -105,28 +106,16 @@ public class CameraActivity extends AppCompatActivity {
         btnFlashMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setFlashMode();
+                changeFlashMode();
             }
         });
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop: onstop camera");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause camera");
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        recreate();
-    }
+//    @Override
+//    protected void onRestart() {
+//        super.onRestart();
+//        recreate();
+//    }
 
     private void startCameraX(ProcessCameraProvider cameraProvider){
 
@@ -140,7 +129,6 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void capturePhoto(Callback callback){
-
 
         imageCapture.takePicture(getMainExecutor(), new ImageCapture.OnImageCapturedCallback() {
 
@@ -194,8 +182,29 @@ public class CameraActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-    private void setFlashMode() {
+        if(!(flashMode == ImageCapture.FLASH_MODE_OFF)){
+            changeFlashMode();
+        }
+
+        cameraProviderListenableFuture.addListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
+                    startCameraX(cameraProvider);
+                }
+                catch (ExecutionException | InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+        }, ContextCompat.getMainExecutor(this));
+    }
+
+    private void changeFlashMode() {
 
         switch (flashMode){
             case ImageCapture.FLASH_MODE_OFF:
