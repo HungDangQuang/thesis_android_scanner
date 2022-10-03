@@ -55,14 +55,26 @@
             app:backgroundTint="@null"
             />
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/smoke_white"/>
 
     <ImageView
         android:id="@+id/review_image"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scaleType="fitXY"
-        android:layout_weight="9"/>
+        android:layout_weight="9"
+        android:padding="20dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/smoke_white"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -94,13 +106,58 @@
 
             <Button
                 android:id="@+id/colorModeButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_gravity="center"
                 android:background="@drawable/rgb"
                 app:backgroundTint="@null" />
         </FrameLayout>
 
+
+        <FrameLayout
+            android:id="@+id/binaryModeFrame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/binaryModeButton"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:background="@drawable/binary"
+                app:backgroundTint="@null" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/grayModeFrame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/grayModeButton"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:layout_gravity="center"
+                android:background="@drawable/gray"
+                app:backgroundTint="@null" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/confirmFrame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/confirmButton"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:layout_gravity="center"
+                android:background="@drawable/check"
+                app:backgroundTint="@null" />
+        </FrameLayout>
 
     </LinearLayout>
 </LinearLayout>

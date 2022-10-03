@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadDocument() throws FileNotFoundException {
-        String path = Environment.getExternalStorageDirectory().toString()+"/Pictures/MyCameraApp";
+        String path = Constants.APP_DIR;
         Log.d("Files", "Path: " + path);
         File directory = new File(path);
         images = Arrays.asList(directory.listFiles());

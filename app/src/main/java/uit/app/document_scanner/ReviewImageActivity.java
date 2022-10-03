@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -24,6 +25,9 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import uit.app.document_scanner.openCV.OpenCVUtils;
 
@@ -71,6 +75,8 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         });
+
+        HashMap<String, Integer> names = getListOfDocumentNames();
 
         removeTextButton.setOnClickListener(this);
 
@@ -127,5 +133,20 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                 imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                 break;
         }
+    }
+
+    private HashMap<String, Integer> getListOfDocumentNames(){
+        String path = Constants.APP_DIR;
+        File directory = new File(path);
+        File[] files = directory.listFiles();
+
+        HashMap<String, Integer> names = new HashMap<String, Integer>();
+
+        for (int i = 0; i < files.length; i++)
+        {
+            names.put(files[i].getName(), i);
+        }
+
+        return names;
     }
 }
