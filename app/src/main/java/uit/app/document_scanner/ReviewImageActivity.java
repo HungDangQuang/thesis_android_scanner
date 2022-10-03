@@ -1,5 +1,6 @@
 package uit.app.document_scanner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -16,6 +19,8 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,6 +43,8 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
         reviewImage = findViewById(R.id.review_image);
         editText = findViewById(R.id.filename);
         editText.setFocusable(true);
+        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
         removeTextButton = findViewById(R.id.removeTextButton);
 
         sourceFrame.post(new Runnable() {
@@ -46,7 +53,9 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                 Intent intent = getIntent();
                 Uri uri = intent.getParcelableExtra("croppedImage");
                 File filename = new File(uri.getLastPathSegment());
-                editText.setText(filename.toString());
+                String str = filename.toString();
+                str = FilenameUtils.removeExtension(str);
+                editText.setText(str);
 
                 try {
                     Bitmap bm = new AppUtils().getBitmap(uri,ReviewImageActivity.this);
@@ -65,6 +74,14 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 
         removeTextButton.setOnClickListener(this);
 
+
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                editText.setCursorVisible(true);
+            }
+        });
+
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -73,14 +90,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                if(i1 != 0) {
-//                    removeTextButton.setAlpha(1);
-//                    removeTextButton.setEnabled(true);
-//                }
-//                else {
-//                    removeTextButton.setAlpha(0);
-//                    removeTextButton.setEnabled(false);
-//                }
+
             }
 
             @Override
@@ -112,6 +122,9 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                 editText.setText("");
                 view.setEnabled(false);
                 view.setAlpha(0);
+                editText.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                 break;
         }
     }
