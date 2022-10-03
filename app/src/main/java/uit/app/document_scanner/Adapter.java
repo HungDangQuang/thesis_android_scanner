@@ -46,7 +46,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         File file = images.get(position);
-        holder.filename.setText(file.getName());
+        String name = file.getName();
+        holder.filename.setText(name.substring(0,name.lastIndexOf(".")));
         Picasso.get().load(file).into(holder.img);
         Log.d("binding", "onBindViewHolder: " + getItemId(position));
     }
