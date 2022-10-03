@@ -81,12 +81,24 @@
                 android:id="@+id/backButton"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:gravity="center"
+                android:layout_gravity="center"
                 android:background="@drawable/frame"
                 app:backgroundTint="@null" />
+        </FrameLayout>
 
+        <FrameLayout
+            android:id="@+id/colorModeFrame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-
+            <Button
+                android:id="@+id/colorModeButton"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:background="@drawable/rgb"
+                app:backgroundTint="@null" />
         </FrameLayout>
 
 
