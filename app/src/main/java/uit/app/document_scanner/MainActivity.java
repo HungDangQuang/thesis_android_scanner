@@ -19,9 +19,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TableLayout;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.google.android.material.button.MaterialButton;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Mat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,23 +46,36 @@ public class MainActivity extends AppCompatActivity {
     List<File> images;
     AppUtils appUtils = new AppUtils();
     Adapter adapter;
-    static {
-        if(OpenCVLoader.initDebug()){
-            Log.d("MainActivity","OpenCV is loaded");
-        }
-        else {
-            Log.d("MainActivity", "Opencv is not loaded");
-        }
-    }
 
     private MaterialButton openCameraButton;
     private static String TAG = MainActivity.class.getSimpleName();
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i("OpenCV", "OpenCV loaded successfully");
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getApplication().registerActivityLifecycleCallbacks(new LifeCycleHandler());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (! Python.isStarted()) {
+            Log.d(TAG, "onCreate: python is not started");
+            Python.start(new AndroidPlatform(this));
+        }
 
         recyclerView = findViewById(R.id.datalist);
 
@@ -87,6 +106,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if(OpenCVLoader.initDebug()){
+            Log.d("MainActivity","OpenCV is loaded");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+        else {
+            Log.d("MainActivity", "Opencv is not loaded");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION,this,mLoaderCallback);
+        }
 
         try {
             loadDocument();

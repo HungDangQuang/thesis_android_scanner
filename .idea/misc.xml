@@ -8,17 +8,20 @@
         <entry key="app/src/main/res/drawable/button_state_list_anim_material.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/capture_image.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/circle.xml" value="0.1665" />
+        <entry key="app/src/main/res/drawable/custom_selector.xml" value="0.1835" />
         <entry key="app/src/main/res/drawable/dashed_border.xml" value="0.249" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_64.xml" value="0.168" />
         <entry key="app/src/main/res/drawable/ic_baseline_close_24.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/ic_baseline_fiber_manual_record_64.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/ic_baseline_flash_auto_24.xml" value="0.1665" />
+        <entry key="app/src/main/res/drawable/ic_baseline_flash_off_24.xml" value="0.1835" />
         <entry key="app/src/main/res/drawable/ic_baseline_flash_on_24.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/ic_baseline_image_24.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/ic_baseline_photo_camera_24.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/ic_baseline_zoom_out_map_24.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.168" />
         <entry key="app/src/main/res/drawable/rounded_button.xml" value="0.168" />
+        <entry key="app/src/main/res/drawable/touch_selector.xml" value="0.133" />
         <entry key="app/src/main/res/layout/activity_camera.xml" value="0.25104166666666666" />
         <entry key="app/src/main/res/layout/activity_crop_image.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25104166666666666" />

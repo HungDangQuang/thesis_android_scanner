@@ -71,18 +71,6 @@ public class CameraActivity extends AppCompatActivity {
                 startCropImageActivity(imgUri);
             }
         };
-//        cameraProviderListenableFuture.addListener(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
-//                    startCameraX(cameraProvider);
-//                }
-//                catch (ExecutionException | InterruptedException e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        }, ContextCompat.getMainExecutor(this));
 
         btnImageCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,11 +99,6 @@ public class CameraActivity extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    protected void onRestart() {
-//        super.onRestart();
-//        recreate();
-//    }
 
     private void startCameraX(ProcessCameraProvider cameraProvider){
 

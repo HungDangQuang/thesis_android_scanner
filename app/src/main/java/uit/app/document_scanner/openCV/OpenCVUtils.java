@@ -5,6 +5,7 @@ import android.graphics.Matrix;
 import android.util.Log;
 
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
@@ -13,6 +14,7 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 import org.opencv.utils.Converters;
@@ -23,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uit.app.document_scanner.Constants;
 import uit.app.document_scanner.cropDocument.PolygonView;
 
 public class OpenCVUtils {
@@ -32,32 +35,41 @@ public class OpenCVUtils {
 
         boolean hasContour = false;
 
-        Mat matReceipt = new Mat();
+        Mat originalMat = new Mat();
 
-        matReceipt = convertBitmapToMat(bitmap);
+        originalMat = convertBitmapToMat(bitmap);
 
-        compressDown(matReceipt,matReceipt);
-        compressDown(matReceipt,matReceipt);
+//        compressDown(originalMat,originalMat);
+//        compressDown(originalMat,originalMat);
 
-        Mat matconvertedGray = new Mat();
+//        Mat matconvertedGray = new Mat();
 
         // source - destination - code
-        Imgproc.cvtColor(matReceipt,matconvertedGray,Imgproc.COLOR_RGB2GRAY);
+        Imgproc.cvtColor(originalMat,originalMat,Imgproc.COLOR_RGB2GRAY,4);
+        Imgproc.blur(originalMat, originalMat,new Size(Constants.K_SIZE_BLUR,Constants.K_SIZE_BLUR));
+        Core.normalize(originalMat,originalMat,0,255,Core.NORM_MINMAX);
 
-        double otsuThreshold = Imgproc.threshold(matconvertedGray, new Mat(),0.0,255.0,Imgproc.THRESH_OTSU);
+//        double otsuThreshold = Imgproc.threshold(matconvertedGray, new Mat(),0.0,255.0,Imgproc.THRESH_OTSU);
+
+        Imgproc.threshold(originalMat, originalMat, Constants.TRUNC_THRESH, 255.0, Imgproc.THRESH_TRUNC);
+        Core.normalize(originalMat, originalMat, 0.0, 255.0, Core.NORM_MINMAX);
+//        Mat matMedianFilter = new Mat();
+//        Imgproc.medianBlur(matconvertedGray,matMedianFilter,11);
 
 
-        Mat matMedianFilter = new Mat();
-        Imgproc.medianBlur(matconvertedGray,matMedianFilter,11);
+//        Mat matEdges = new Mat();
+//        Imgproc.Canny(matconvertedGray,matEdges,otsuThreshold * 0.05, otsuThreshold);
 
-        Mat matEdges = new Mat();
-        Imgproc.Canny(matconvertedGray,matEdges,otsuThreshold * 0.05, otsuThreshold);
+        Imgproc.Canny(originalMat, originalMat, Constants.CANNY_THRESH_U, Constants.CANNY_THRESH_L);
 
         ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(matEdges,contours, new Mat(), Imgproc.RETR_EXTERNAL,Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(originalMat,contours, new Mat(), Imgproc.RETR_EXTERNAL,Imgproc.CHAIN_APPROX_SIMPLE);
 
-        int height = matconvertedGray.height();
-        int width = matconvertedGray.width();
+//        int height = matconvertedGray.height();
+//        int width = matconvertedGray.width();
+
+        int width = originalMat.width();
+        int height = originalMat.height();
 
         double maxAreaFound = (double) ((width - 20) * (height - 20)/20);
         Point[] myPoints = {new Point(0,5),
@@ -142,7 +154,7 @@ public class OpenCVUtils {
         }
 
         if (hasContour){
-            Bitmap pyrDownReceipt = convertMatToBitmap(matReceipt);
+            Bitmap pyrDownReceipt = convertMatToBitmap(originalMat);
             double widthRatio = ((double) bitmap.getWidth()) / (double) pyrDownReceipt.getWidth();
             double heightRatio = ((double) bitmap.getHeight()) / (double) pyrDownReceipt.getHeight();
 
@@ -428,11 +440,10 @@ public class OpenCVUtils {
 
         Mat transformation = Imgproc.getPerspectiveTransform(srcPoints,destPoints);
         Imgproc.warpPerspective(originalReceiptMat,correctedImage,transformation,correctedImage.size());
-        Log.d(TAG, "cropReceiptByFourPoints: correct image size:" + correctedImage.size());
-        Mat result = new Mat();
-        Imgproc.cvtColor(correctedImage,result,Imgproc.COLOR_RGB2GRAY);
-        Imgproc.threshold(result,result,0,255,Imgproc.THRESH_OTSU);
-        return convertMatToBitmap(result);
+//        Mat result = new Mat();
+//        Imgproc.cvtColor(correctedImage,result,Imgproc.COLOR_RGB2GRAY);
+//        Imgproc.threshold(result,result,0,255,Imgproc.THRESH_OTSU);
+        return convertMatToBitmap(correctedImage);
     }
 
     Point getPointWithMaxCorY(List<Point> listPoint){

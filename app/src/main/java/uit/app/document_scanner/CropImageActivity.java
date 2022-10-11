@@ -28,8 +28,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
 import org.opencv.core.Point;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.List;
@@ -88,14 +94,18 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
                 Intent intent = getIntent();
                 imgUri = intent.getParcelableExtra("ImagePath");
 
+
                 try {
                     bm = new AppUtils().getBitmap(imgUri,CropImageActivity.this);
+
                     bm.setDensity(Bitmap.DENSITY_NONE);
                     if(bm.getWidth() > bm.getHeight()){
                         bm = new OpenCVUtils().rotate(bm,90);
                     }
                     screenRatio = (float) sourceFrame.getWidth() / sourceFrame.getHeight();
                     scaledBitmap = Bitmap.createScaledBitmap(bm,sourceFrame.getWidth(),sourceFrame.getHeight(),false);
+
+
                     sourceImageView.setImageBitmap(scaledBitmap);
                     Log.d(TAG, "run: bitmap width and height:" + scaledBitmap.getWidth() +" "+ scaledBitmap.getHeight());
 
@@ -237,5 +247,6 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
                 break;
         }
     }
+
 
 }

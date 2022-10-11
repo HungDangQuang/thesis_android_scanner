@@ -94,8 +94,9 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
+                app:backgroundTint="@null"
                 android:background="@drawable/frame"
-                app:backgroundTint="@null" />
+                />
         </FrameLayout>
 
         <FrameLayout
