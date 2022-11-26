@@ -19,9 +19,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TableLayout;
 
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
 import com.google.android.material.button.MaterialButton;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -72,10 +69,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (! Python.isStarted()) {
-            Log.d(TAG, "onCreate: python is not started");
-            Python.start(new AndroidPlatform(this));
-        }
 
         recyclerView = findViewById(R.id.datalist);
 

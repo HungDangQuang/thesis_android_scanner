@@ -28,9 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
-
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -38,6 +36,7 @@ import org.opencv.core.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +84,7 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_crop_image);
-
+        OpenCVLoader.initDebug();
         init();
 
         sourceFrame.post(new Runnable() {
@@ -109,7 +108,8 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
                     sourceImageView.setImageBitmap(scaledBitmap);
                     Log.d(TAG, "run: bitmap width and height:" + scaledBitmap.getWidth() +" "+ scaledBitmap.getHeight());
 
-                    Map<Integer, Point> pointFs = new OpenCVUtils().getEdgePoints(scaledBitmap,polygonView);
+                    Map<Integer, Point> pointFs = new HashMap<>();
+                    pointFs = new OpenCVUtils().getEdgePoints(scaledBitmap,polygonView);
                     polygonView.setPoints(pointFs);
                     polygonView.setVisibility(View.VISIBLE);
 

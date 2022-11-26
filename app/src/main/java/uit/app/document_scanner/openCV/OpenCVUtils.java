@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
 
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -171,7 +172,8 @@ public class OpenCVUtils {
     }
 
     public Map<Integer,Point> getEdgePoints(Bitmap bitmap, PolygonView polygonView){
-        List<Point> pointFs = getContourEdgePoints(bitmap);
+        List<Point> pointFs = new ArrayList<>();
+        pointFs = getContourEdgePoints(bitmap);
         return getOrderedValidEdgePoint(bitmap,pointFs,polygonView);
     }
 

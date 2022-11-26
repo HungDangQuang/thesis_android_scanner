@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
-import com.airbnb.lottie.L;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
