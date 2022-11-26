@@ -13,10 +13,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TableLayout;
 
 import com.google.android.material.button.MaterialButton;
@@ -69,6 +71,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Always show status bar
+
+//        if (Build.VERSION.SDK_INT < 16) {
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
+//        else {
+//            View decorView = getWindow().getDecorView();
+//            // Show Status Bar.
+//            int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+//            decorView.setSystemUiVisibility(uiOptions);
+//        }
 
         recyclerView = findViewById(R.id.datalist);
 
@@ -140,10 +153,6 @@ public class MainActivity extends AppCompatActivity {
         images = Arrays.asList(directory.listFiles());
     }
 
-
-    private void testFunction(){
-
-    }
 
 
 }
