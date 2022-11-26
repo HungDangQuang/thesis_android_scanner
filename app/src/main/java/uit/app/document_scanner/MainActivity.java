@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
@@ -20,11 +21,15 @@ import android.widget.TableLayout;
 
 import com.google.android.material.button.MaterialButton;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Mat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import uit.app.document_scanner.view.LoadingDialog;
@@ -35,42 +40,45 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST_CODE = 10;
     private LoadingDialog loadingDialog = new LoadingDialog(MainActivity.this);
     private RecyclerView recyclerView;
-    List<String> filenames;
-    List<Bitmap> images;
+    List<File> images;
     AppUtils appUtils = new AppUtils();
     Adapter adapter;
-    static {
-        if(OpenCVLoader.initDebug()){
-            Log.d("MainActivity","OpenCV is loaded");
-        }
-        else {
-            Log.d("MainActivity", "Opencv is not loaded");
-        }
-    }
 
     private MaterialButton openCameraButton;
     private static String TAG = MainActivity.class.getSimpleName();
-    public static String KEY_RECEIPT_PATH = "RECEIPT_PATH";
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i("OpenCV", "OpenCV loaded successfully");
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getApplication().registerActivityLifecycleCallbacks(new LifeCycleHandler());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         recyclerView = findViewById(R.id.datalist);
-        filenames = new ArrayList<>();
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setNestedScrollingEnabled(false);
+        PreCachingLayoutManager preCachingLayoutManager = new PreCachingLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
+        recyclerView.setLayoutManager(preCachingLayoutManager);
+
         images = new ArrayList<>();
-
-        try {
-            loadDocument();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        adapter = new Adapter(this,filenames,images);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
-        recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(adapter);
 
         openCameraButton = findViewById(R.id.openCameraButton);
 
@@ -88,6 +96,29 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(OpenCVLoader.initDebug()){
+            Log.d("MainActivity","OpenCV is loaded");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+        else {
+            Log.d("MainActivity", "Opencv is not loaded");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION,this,mLoaderCallback);
+        }
+
+        try {
+            loadDocument();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        adapter = new Adapter(this, images);
+        recyclerView.setAdapter(adapter);
+    }
+
     private boolean hasCameraPermission(){
         return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
     }
@@ -98,22 +129,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void enableCamera(){
         Intent intent = new Intent(this,CameraActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }
 
     private void loadDocument() throws FileNotFoundException {
-        String path = Environment.getExternalStorageDirectory().toString()+"/Pictures/MyCameraApp";
+        String path = Constants.APP_DIR;
         Log.d("Files", "Path: " + path);
         File directory = new File(path);
-        File[] files = directory.listFiles();
-        Log.d("Files", "Size: "+ files.length);
-        for (int i = 0; i < files.length; i++)
-        {
-            filenames.add(files[i].getName());
-            images.add(appUtils.getBitmap(Uri.parse("file://" + files[i].getAbsolutePath()),MainActivity.this));
-        }
+        images = Arrays.asList(directory.listFiles());
     }
+
 
 
 }

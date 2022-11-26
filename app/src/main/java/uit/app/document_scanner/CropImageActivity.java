@@ -28,10 +28,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
 import org.opencv.core.Point;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +84,7 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_crop_image);
-
+        OpenCVLoader.initDebug();
         init();
 
         sourceFrame.post(new Runnable() {
@@ -87,18 +92,24 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
             public void run() {
                 Intent intent = getIntent();
                 imgUri = intent.getParcelableExtra("ImagePath");
+
+
                 try {
                     bm = new AppUtils().getBitmap(imgUri,CropImageActivity.this);
+
                     bm.setDensity(Bitmap.DENSITY_NONE);
                     if(bm.getWidth() > bm.getHeight()){
                         bm = new OpenCVUtils().rotate(bm,90);
                     }
                     screenRatio = (float) sourceFrame.getWidth() / sourceFrame.getHeight();
                     scaledBitmap = Bitmap.createScaledBitmap(bm,sourceFrame.getWidth(),sourceFrame.getHeight(),false);
+
+
                     sourceImageView.setImageBitmap(scaledBitmap);
                     Log.d(TAG, "run: bitmap width and height:" + scaledBitmap.getWidth() +" "+ scaledBitmap.getHeight());
 
-                    Map<Integer, Point> pointFs = new OpenCVUtils().getEdgePoints(scaledBitmap,polygonView);
+                    Map<Integer, Point> pointFs = new HashMap<>();
+                    pointFs = new OpenCVUtils().getEdgePoints(scaledBitmap,polygonView);
                     polygonView.setPoints(pointFs);
                     polygonView.setVisibility(View.VISIBLE);
 
@@ -118,7 +129,7 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: executed");
-        finish();
+//        finish();
     }
 
     @Override
@@ -222,18 +233,20 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
 
             case R.id.okButton:
                 Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-                String savedPath = appUtils.saveBitmapToFile(croppedBitmap);
+                String savedPath = appUtils.saveBitmapToFile(croppedBitmap,SaveOptions.APP);
                 Uri imgUri = Uri.parse( "file://" + savedPath);
                 Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("croppedImage",imgUri);
                 appUtils.deleteImage(imgUri);
                 startActivity(intent);
-                finish();
+//                finish();
                 break;
 
             default:
                 break;
         }
     }
+
 
 }

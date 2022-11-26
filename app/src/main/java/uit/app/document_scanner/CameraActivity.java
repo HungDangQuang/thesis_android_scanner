@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
@@ -47,7 +51,9 @@ public class CameraActivity extends AppCompatActivity {
     private LoadingDialog loadingDialog = new LoadingDialog(CameraActivity.this);
     private String TAG = CameraActivity.class.getSimpleName();
     private static int PICK_PHOTO_FROM_GALLERY = 5;
+    private static int CAPTURING_CAMERA = 10;
     int flashMode = ImageCapture.FLASH_MODE_OFF;
+    Preview preview;
 
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
@@ -58,26 +64,23 @@ public class CameraActivity extends AppCompatActivity {
         btnImageCapture = findViewById(R.id.imageCapture);
         btnImageGallery = findViewById(R.id.imageGallery);
         btnFlashMode = findViewById(R.id.flash);
-        cameraProviderListenableFuture.addListener(new Runnable() {
+        Callback callback = new Callback() {
             @Override
-            public void run() {
-                try {
-                    ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
-                    startCameraX(cameraProvider);
-                }
-                catch (ExecutionException | InterruptedException e){
-                    e.printStackTrace();
-                }
+            public void SendBitmap(Bitmap bm) {
+                Uri imgUri = Uri.parse("file://" + new AppUtils().saveBitmapToFile(bm, SaveOptions.TEMP));
+                startCropImageActivity(imgUri);
             }
-        }, ContextCompat.getMainExecutor(this));
+        };
 
         btnImageCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 view.startAnimation(buttonClick);
+                stopCamera();
                 loadingDialog.startLoadingDialog();
                 view.setEnabled(false);
-                capturePhoto();
+                capturePhoto(callback);
+                view.setEnabled(true);
             }
         });
 
@@ -91,15 +94,16 @@ public class CameraActivity extends AppCompatActivity {
         btnFlashMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setFlashMode();
+                changeFlashMode();
             }
         });
     }
 
+
     private void startCameraX(ProcessCameraProvider cameraProvider){
 
         cameraProvider.unbindAll();
-        Preview preview = new Preview.Builder().build();
+        preview = new Preview.Builder().build();
         CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
@@ -107,19 +111,18 @@ public class CameraActivity extends AppCompatActivity {
         cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageCapture);
     }
 
-    private void capturePhoto(){
+    private void capturePhoto(Callback callback){
 
         imageCapture.takePicture(getMainExecutor(), new ImageCapture.OnImageCapturedCallback() {
+
             @Override
             public void onCaptureSuccess(@NonNull ImageProxy image) {
-                Log.d(TAG,"image is captured");
-                Bitmap bm = imageProxyToBitmap(image);
-                Uri imgUri = Uri.parse("file://" + new AppUtils().saveBitmapToFile(bm));
-                loadingDialog.dismissDialog();
-                btnImageCapture.setEnabled(true);
-                image.close();
-                startCropImageActivity(imgUri);
+
                 super.onCaptureSuccess(image);
+                Bitmap bm = imageProxyToBitmap(image);
+                callback.SendBitmap(bm);
+                loadingDialog.dismissDialog();
+                image.close();
             }
         });
     }
@@ -148,16 +151,43 @@ public class CameraActivity extends AppCompatActivity {
             Uri uri = data.getData();
             startCropImageActivity(uri);
         }
+
+        else if(requestCode == CAPTURING_CAMERA){
+            Log.d(TAG, "onActivityResult: case 2");
+            startActivity(data);
+        }
     }
 
     private void startCropImageActivity(Uri uri){
         Intent intent = new Intent(CameraActivity.this,CropImageActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("ImagePath",uri);
         startActivity(intent);
     }
 
-    private void setFlashMode() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(!(flashMode == ImageCapture.FLASH_MODE_OFF)){
+            changeFlashMode();
+        }
+
+        cameraProviderListenableFuture.addListener(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
+                    startCameraX(cameraProvider);
+                }
+                catch (ExecutionException | InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+        }, ContextCompat.getMainExecutor(this));
+    }
+
+    private void changeFlashMode() {
 
         switch (flashMode){
             case ImageCapture.FLASH_MODE_OFF:
@@ -175,4 +205,20 @@ public class CameraActivity extends AppCompatActivity {
 
         imageCapture.setFlashMode(flashMode);
     }
+
+    private void stopCamera(){
+        try {
+            ProcessCameraProvider cameraProvider = cameraProviderListenableFuture.get();
+            cameraProvider.unbind(preview);
+        }
+        catch (ExecutionException | InterruptedException e){
+            e.printStackTrace();
+        }
+    }
+
 }
+
+interface Callback {
+    void SendBitmap(Bitmap bm);
+}
+
