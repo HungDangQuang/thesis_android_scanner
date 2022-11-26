@@ -71,18 +71,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Always show status bar
-
-//        if (Build.VERSION.SDK_INT < 16) {
-//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        }
-//        else {
-//            View decorView = getWindow().getDecorView();
-//            // Show Status Bar.
-//            int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
-//            decorView.setSystemUiVisibility(uiOptions);
-//        }
-
         recyclerView = findViewById(R.id.datalist);
 
         recyclerView.setHasFixedSize(true);

@@ -44,7 +44,7 @@ import java.util.Map;
 import uit.app.document_scanner.cropDocument.PolygonView;
 import uit.app.document_scanner.openCV.OpenCVUtils;
 
-public class CropImageActivity extends AppCompatActivity implements View.OnClickListener{
+public class CropImageActivity extends OptionalActivity implements View.OnClickListener{
 
     private ImageView sourceImageView;
     private PolygonView polygonView;
@@ -61,7 +61,10 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
     private AppUtils appUtils = new AppUtils();
     float screenRatio;
 
-    private void init(){
+    @Override
+    protected void init() {
+        super.init();
+
         sourceImageView = findViewById(R.id.sourceImageView);
         closeButton = findViewById(R.id.closeButton);
         rotateLeftButton = findViewById(R.id.rotateLeftButton);
@@ -71,7 +74,6 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
         sourceFrame = findViewById(R.id.sourceFrame);
         polygonView = findViewById(R.id.polygonView);
 
-
         closeButton.setOnClickListener(this);
         rotateLeftButton.setOnClickListener(this);
         rotateRightButton.setOnClickListener(this);
@@ -80,23 +82,27 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
     }
 
     @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_crop_image;
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crop_image);
-
-        if (Build.VERSION.SDK_INT < 16) {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-        else {
-            View decorView = getWindow().getDecorView();
-            // Show Status Bar.
-            int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-
-        OpenCVLoader.initDebug();
+//        setContentView(R.layout.activity_crop_image);
         init();
+
+//        if (Build.VERSION.SDK_INT < 16) {
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
+//        else {
+//            View decorView = getWindow().getDecorView();
+//            // Show Status Bar.
+//            int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+//            decorView.setSystemUiVisibility(uiOptions);
+//        }
+//        OpenCVLoader.initDebug();
+//        init();
 
         sourceFrame.post(new Runnable() {
             @Override
