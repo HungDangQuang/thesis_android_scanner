@@ -36,7 +36,7 @@ import java.util.List;
 
 import uit.app.document_scanner.view.LoadingDialog;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends OptionalActivity implements View.OnClickListener {
 
     private static final String[] CAMERA_PERMISSION = new String[]{Manifest.permission.CAMERA};
     private static final int CAMERA_REQUEST_CODE = 10;
@@ -67,12 +67,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getApplication().registerActivityLifecycleCallbacks(new LifeCycleHandler());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        init();
+
+
+    }
+
+    @Override
+    protected void init() {
+        super.init();
 
         recyclerView = findViewById(R.id.datalist);
-
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setNestedScrollingEnabled(false);
@@ -82,19 +87,13 @@ public class MainActivity extends AppCompatActivity {
         images = new ArrayList<>();
 
         openCameraButton = findViewById(R.id.openCameraButton);
+        openCameraButton.setOnClickListener(this);
 
-        openCameraButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                startActivity(new Intent(MainActivity.this, CameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                if(hasCameraPermission()){
-                    enableCamera();
-                }
-                else {
-                    requestPermission();
-                }
-            }
-        });
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_main;
     }
 
     @Override
@@ -142,5 +141,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.openCameraButton:
+                if(hasCameraPermission()){
+                    enableCamera();
+                }
+                else {
+                    requestPermission();
+                }
+                break;
 
+            default:
+                break;
+        }
+    }
 }

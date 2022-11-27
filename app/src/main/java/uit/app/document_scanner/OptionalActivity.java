@@ -14,6 +14,7 @@ public class OptionalActivity extends BaseActivity{
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        getApplication().registerActivityLifecycleCallbacks(new LifeCycleHandler());
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResourceId());
     }
