@@ -68,24 +68,37 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // init debug of openCV
+
+        if(OpenCVLoader.initDebug()){
+            Log.d(TAG,"OpenCV is loaded");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+        else {
+            Log.d(TAG, "Opencv is not loaded");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION,this,mLoaderCallback);
+        }
+
         init();
-
-
     }
 
     @Override
     protected void init() {
         super.init();
 
+        // Set up for loading of recyclerView
         recyclerView = findViewById(R.id.datalist);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setNestedScrollingEnabled(false);
+
         PreCachingLayoutManager preCachingLayoutManager = new PreCachingLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(preCachingLayoutManager);
 
         images = new ArrayList<>();
 
+        // Set up camera button
         openCameraButton = findViewById(R.id.openCameraButton);
         openCameraButton.setOnClickListener(this);
 
@@ -99,15 +112,6 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
-
-        if(OpenCVLoader.initDebug()){
-            Log.d("MainActivity","OpenCV is loaded");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }
-        else {
-            Log.d("MainActivity", "Opencv is not loaded");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION,this,mLoaderCallback);
-        }
 
         try {
             loadDocument();
