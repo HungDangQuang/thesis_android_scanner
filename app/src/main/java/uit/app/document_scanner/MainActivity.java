@@ -1,6 +1,8 @@
 package uit.app.document_scanner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ActionBarOverlayLayout;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -42,6 +44,7 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     private static final int CAMERA_REQUEST_CODE = 10;
     private LoadingDialog loadingDialog;
     private RecyclerView recyclerView;
+    private Toolbar toolbar;
     List<File> images;
     AppUtils appUtils;
     Adapter adapter;
@@ -104,6 +107,12 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
 
         loadingDialog = new LoadingDialog(MainActivity.this);
         appUtils = new AppUtils();
+
+        // Set up for tool bar
+        toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+
+
     }
 
     @Override

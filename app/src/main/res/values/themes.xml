@@ -18,6 +18,10 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    
+    <style name="ActionBarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowActionBarOverlay">false</item>
+    </style>
 
     <style name="Theme.Document_Scanner.AppCompat" parent="Theme.AppCompat"/>
 
