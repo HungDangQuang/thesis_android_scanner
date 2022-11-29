@@ -21,6 +21,7 @@
         <entry key="app/src/main/res/drawable/ic_baseline_zoom_out_map_24.xml" value="0.1665" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.168" />
         <entry key="app/src/main/res/drawable/rounded_button.xml" value="0.168" />
+        <entry key="app/src/main/res/drawable/search_bar.xml" value="0.251" />
         <entry key="app/src/main/res/drawable/touch_selector.xml" value="0.133" />
         <entry key="app/src/main/res/layout/activity_camera.xml" value="0.25104166666666666" />
         <entry key="app/src/main/res/layout/activity_crop_image.xml" value="0.1" />
@@ -29,6 +30,8 @@
         <entry key="app/src/main/res/layout/activity_review_image.xml" value="0.628808864265928" />
         <entry key="app/src/main/res/layout/custom_grid_layout.xml" value="0.25104166666666666" />
         <entry key="app/src/main/res/layout/loading_dialog.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/search_view.xml" value="0.25104166666666666" />
+        <entry key="app/src/main/res/xml/search.xml" value="0.15885416666666666" />
       </map>
     </option>
   </component>

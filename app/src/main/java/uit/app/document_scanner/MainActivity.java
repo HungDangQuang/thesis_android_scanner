@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
 
 import android.Manifest;
 import android.content.Intent;
@@ -19,6 +20,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TableLayout;
@@ -72,6 +75,7 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         // init debug of openCV
 
         if(OpenCVLoader.initDebug()){
@@ -108,9 +112,11 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         loadingDialog = new LoadingDialog(MainActivity.this);
         appUtils = new AppUtils();
 
+        openOptionsMenu();
+
         // Set up for tool bar
-        toolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(toolbar);
+//        toolbar = findViewById(R.menu.search_view);
+//        setSupportActionBar(toolbar);
 
 
     }
@@ -155,6 +161,13 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         images = Arrays.asList(directory.listFiles());
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_view,menu);
+//        MenuItem menuItem = menu.findItem(R.id.searchIcon);
+        return true;
+
+    }
 
     @Override
     public void onClick(View view) {
