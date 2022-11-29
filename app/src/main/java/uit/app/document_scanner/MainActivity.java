@@ -47,7 +47,6 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     private static final int CAMERA_REQUEST_CODE = 10;
     private LoadingDialog loadingDialog;
     private RecyclerView recyclerView;
-    private Toolbar toolbar;
     List<File> images;
     AppUtils appUtils;
     Adapter adapter;
@@ -113,11 +112,6 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         appUtils = new AppUtils();
 
         openOptionsMenu();
-
-        // Set up for tool bar
-//        toolbar = findViewById(R.menu.search_view);
-//        setSupportActionBar(toolbar);
-
 
     }
 

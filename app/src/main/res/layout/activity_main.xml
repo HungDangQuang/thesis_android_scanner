@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@color/black_primary_dark">
-
-<!--    <androidx.appcompat.widget.Toolbar-->
-<!--        android:id="@+id/my_toolbar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="?attr/actionBarSize"-->
-<!--        android:background="?attr/colorPrimary"-->
-<!--        android:elevation="4dp"-->
-<!--        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"-->
-<!--        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
-
+    android:background="@color/black_primary_dark"
+    android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/datalist"
@@ -24,10 +15,10 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/openCameraButton"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        app:cornerRadius="35dp"
-        android:layout_gravity="bottom|right"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        app:cornerRadius="28dp"
+        android:layout_gravity="bottom|end"
         android:layout_margin="35dp"
         app:icon="@drawable/ic_baseline_add_64"
         android:insetBottom="0dp"
@@ -36,8 +27,8 @@
         android:insetRight="0dp"
         app:iconPadding="0dp"
         app:iconGravity="textStart"
-        app:backgroundTint="@color/black"
+        app:backgroundTint="@color/teal_font"
 
         />
 
-</FrameLayout>
+</LinearLayout>
