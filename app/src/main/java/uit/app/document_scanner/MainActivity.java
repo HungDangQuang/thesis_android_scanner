@@ -5,6 +5,7 @@ import androidx.appcompat.widget.ActionBarOverlayLayout;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,9 +48,13 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     private static final int CAMERA_REQUEST_CODE = 10;
     private LoadingDialog loadingDialog;
     private RecyclerView recyclerView;
-    List<File> images;
-    AppUtils appUtils;
-    Adapter adapter;
+    private List<File> images;
+    private AppUtils appUtils;
+    private Adapter adapter;
+    private List<String> folderList;
+    private FolderAdapter folderAdapter;
+    private RecyclerView folderRecyclerView;
+
 
     private MaterialButton openCameraButton;
     private static String TAG = MainActivity.class.getSimpleName();
@@ -98,6 +103,8 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setFocusable(false);
 
         PreCachingLayoutManager preCachingLayoutManager = new PreCachingLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(preCachingLayoutManager);
@@ -113,8 +120,43 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
 
         openOptionsMenu();
 
+        // Set up folder recycler view
+        folderList = createSampleFolders();
+        folderRecyclerView = findViewById(R.id.folderList);
+        folderAdapter = new FolderAdapter(folderList);
+        LinearLayoutManager folderLayoutManager = new LinearLayoutManager(getApplicationContext());
+        folderLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        folderRecyclerView.setLayoutManager(folderLayoutManager);
+//        folderRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        folderRecyclerView.setAdapter(folderAdapter);
+        folderRecyclerView.setFocusable(false);
+        folderRecyclerView.setNestedScrollingEnabled(false);
+
+
     }
 
+    private List<String> createSampleFolders(){
+//        for(int i = 0; i < 10; i++){
+//            File dir = new File(Constants.APP_DIR + "/" + i);
+//
+//            try {
+//                if(dir.mkdir()){
+//                    Log.d(TAG,"new folder created");
+//                }
+//                else {
+//                    Log.d(TAG,"failed to create folder");
+//                }
+//            }
+//            catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < 10; i++){
+            names.add(String.valueOf(i));
+        }
+        return names;
+    }
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_main;

@@ -26,20 +26,20 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull FolderAdapter.ViewHolder holder, int position) {
-        holder.foldername.setText(folderNamesList.get(position));
+        holder.folderName.setText(folderNamesList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return folderNamesList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView foldername;
+        TextView folderName;
 
         public ViewHolder(@NonNull View itemView){
             super(itemView);
-            foldername = itemView.findViewById(R.id.folderName);
+            folderName = itemView.findViewById(R.id.folderName);
         }
     }
 }
