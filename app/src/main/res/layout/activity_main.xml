@@ -19,11 +19,33 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
+                android:text="Folders"
+                android:textColor="@color/white_font"
+                android:textStyle="bold"
+                android:textSize="20dp"/>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/folderList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
+                android:text="Files"
+                android:textColor="@color/white_font"
+                android:textStyle="bold"
+                android:textSize="20dp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/datalist"
