@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 
 import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -54,7 +56,7 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     private List<String> folderList;
     private FolderAdapter folderAdapter;
     private RecyclerView folderRecyclerView;
-
+    private SearchView searchView;
 
     private MaterialButton openCameraButton;
     private static String TAG = MainActivity.class.getSimpleName();
@@ -201,6 +203,26 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search_view,menu);
 //        MenuItem menuItem = menu.findItem(R.id.searchIcon);
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.searchIcon).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                folderAdapter.getFilter().filter(query);
+                adapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                folderAdapter.getFilter().filter(newText);
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
         return true;
 
     }
@@ -221,4 +243,6 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
                 break;
         }
     }
+
+
 }
