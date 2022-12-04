@@ -5,23 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="10">
+    android:weightSum="10"
+    android:background="@color/black_primary_dark">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="60dp">
 
-        <ImageView
-            android:id="@+id/documentNameLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/filename"
-            android:layout_marginLeft="10dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@drawable/ic_baseline_document_scanner_24"/>
 
 
         <com.google.android.material.textfield.TextInputEditText
@@ -29,11 +20,11 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="10dp"
             android:layout_weight="8"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white_font"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/documentNameLabel"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:background="@null"
             app:backgroundTint="@null"
@@ -58,10 +49,13 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <View
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/smoke_white"/>
+        android:layout_height="5dp"
+        android:src="@drawable/dotted"
+        android:layerType="software"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
 
     <ImageView
         android:id="@+id/review_image"

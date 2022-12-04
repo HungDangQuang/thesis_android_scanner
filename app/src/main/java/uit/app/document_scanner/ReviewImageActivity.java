@@ -109,6 +109,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review_image);
+        getSupportActionBar().hide();
 
         sourceFrame = findViewById(R.id.sourceImageView);
         reviewImage = findViewById(R.id.review_image);
