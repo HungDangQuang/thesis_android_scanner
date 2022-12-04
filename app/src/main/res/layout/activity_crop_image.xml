@@ -3,10 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
+    android:background="@color/black_primary_dark"
     android:orientation="vertical"
     android:id="@+id/mainLayout">
 
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white_font"
+        android:layout_above="@id/options"/>
 
     <LinearLayout
         android:id="@+id/options"
@@ -19,7 +25,8 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:padding="10dp">
             <Button
                 android:id="@+id/closeButton"
                 android:layout_width="30dp"
@@ -33,7 +40,8 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:padding="10dp">
             <Button
                 android:id="@+id/rotateLeftButton"
                 android:layout_width="30dp"
@@ -47,7 +55,8 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:padding="10dp">
             <Button
                 android:id="@+id/rotateRightButton"
                 android:layout_width="30dp"
@@ -60,7 +69,8 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:padding="10dp">
 
             <Button
                 android:id="@+id/zoomButton"
@@ -74,7 +84,8 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:padding="10dp">
             <Button
                 android:id="@+id/okButton"
                 android:layout_width="30dp"
@@ -93,7 +104,8 @@
         android:layout_gravity="center"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:layout_above="@id/options">
+        android:layout_margin="10dp"
+        android:layout_above="@id/line">
 
         <ImageView
             android:id="@+id/sourceImageView"
