@@ -45,6 +45,14 @@ import androidx.core.graphics.drawable.DrawableCompat;
 //import com.google.mlkit.vision.text.TextRecognition;
 //import com.google.mlkit.vision.text.TextRecognizer;
 //import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.Text;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.apache.commons.io.FilenameUtils;
@@ -143,6 +151,8 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 //                    }
                     Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(),reviewImage.getHeight(),false);
                     originalBitmap = scaledBitmap;
+
+                    recognizeTextUsingMLKit(scaledBitmap);
 
                     try {
                         EfficientdetLiteCid model = EfficientdetLiteCid.newInstance(getApplicationContext());
@@ -359,9 +369,9 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
             RectF location = res.getLocationAsRectF();
             String category = res.getCategoryAsString();
             canvas.drawRect(location,paint);
-//            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
-//            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,24,24,false);
-
+            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
+            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,300,300,false);
+            recognizeTextUsingMLKit(scaledBm);
 //            ImageProcessor imageProcessor = new ImageProcessor.Builder()
 //                                                .add(new ResizeOp(31,200, ResizeOp.ResizeMethod.BILINEAR))
 //                                                .add(new TransformToGrayscaleOp()).build();
@@ -400,5 +410,30 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
         }
 
         return output;
+    }
+
+    private void recognizeTextUsingMLKit(Bitmap bm){
+        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+        InputImage image = InputImage.fromBitmap(bm, 0);
+        Task<Text> result =
+                recognizer.process(image)
+                        .addOnSuccessListener(new OnSuccessListener<Text>() {
+                            @Override
+                            public void onSuccess(Text visionText) {
+                                // Task completed successfully
+                                // ...
+                                Log.d(TAG, "onSuccess: " + visionText.getText());
+                            }
+                        })
+                        .addOnFailureListener(
+                                new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        // Task failed with an exception
+                                        // ...
+                                        Log.d(TAG, "onFailure: failed to implement");
+                                    }
+                                });
+
     }
 }
