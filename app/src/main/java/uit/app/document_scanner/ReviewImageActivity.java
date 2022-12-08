@@ -13,6 +13,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
@@ -45,6 +46,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 //import com.google.mlkit.vision.text.TextRecognition;
 //import com.google.mlkit.vision.text.TextRecognizer;
 //import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -56,6 +58,8 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.apache.commons.io.FilenameUtils;
+//import org.checkerframework.checker.nullness.qual.NonNull;
+//import org.checkerframework.checker.nullness.qual.NonNull;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.KeyPoint;
@@ -88,8 +92,11 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
 import uit.app.document_scanner.openCV.OpenCVUtils;
@@ -110,8 +117,9 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
     Uri uri;
     int flag = 0;
     int imageSize = 224;
+    String str = "";
 
-//    public static final String TESS_DATA = "/tessdata";
+    public static final String TESS_DATA = "/tessdata";
 //    private static final String DATA_PATH = Environment.getExternalStorageDirectory().toString() + "/Tess";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -142,6 +150,9 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                 str = FilenameUtils.removeExtension(str);
                 editText.setText(str);
 
+                // tesseract testing
+                // prepare tess data
+//                prepareTessData();
                 try {
 
                     Bitmap bm = new AppUtils().getBitmap(uri,ReviewImageActivity.this);
@@ -151,8 +162,8 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 //                    }
                     Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(),reviewImage.getHeight(),false);
                     originalBitmap = scaledBitmap;
-
-                    recognizeTextUsingMLKit(scaledBitmap);
+//                    detectText(scaledBitmap);
+//                    recognizeTextUsingMLKit(scaledBitmap);
 
                     try {
                         EfficientdetLiteCid model = EfficientdetLiteCid.newInstance(getApplicationContext());
@@ -164,6 +175,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                         EfficientdetLiteCid.Outputs outputs = model.process(image);
 
                         reviewImage.setImageBitmap(drawDetectionResult(scaledBitmap,outputs.getDetectionResultList()));
+//                        reviewImage.setImageBitmap(scaledBitmap);
                         // Releases model resources if no longer used.
                         model.close();
                     } catch (IOException e) {
@@ -222,41 +234,41 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-//    private void prepareTessData(){
-//        try{
-//            File dir = getExternalFilesDir(TESS_DATA);
-//            if(!dir.exists()){
-//                if (!dir.mkdir()) {
-//                    Toast.makeText(getApplicationContext(), "The folder " + dir.getPath() + "was not created", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            String pathToDataFile = "/storage/emulated/0/Android/data/uit.app.document_scanner/files/tessdata/vie.traineddata";
-//            if(!(new File(pathToDataFile)).exists()){
-//                InputStream in = getAssets().open("vie.traineddata");
-//                OutputStream out = new FileOutputStream(pathToDataFile);
-//                byte [] buff = new byte[1024];
-//                int len ;
-//                while(( len = in.read(buff)) > 0){
-//                    out.write(buff,0,len);
-//                }
-//                in.close();
-//                out.close();
-//            }
-//
-//        } catch (Exception e) {
-//            Log.e(TAG, e.getMessage());
-//        }
-//    }
-//
-//    private void detectText(Bitmap bm){
-//        TessBaseAPI tessBaseAPI = new TessBaseAPI();
-//        String dataPath = getExternalFilesDir("/").getPath() + "/";
-//        tessBaseAPI.init(dataPath,"vie");
-//        tessBaseAPI.setImage(bm);
-//        Log.d(TAG, "detectText: " + tessBaseAPI.getUTF8Text());
-//        tessBaseAPI.end();
-//    }
+    private void prepareTessData(){
+        try{
+            File dir = getExternalFilesDir(TESS_DATA);
+            if(!dir.exists()){
+                if (!dir.mkdir()) {
+                    Toast.makeText(getApplicationContext(), "The folder " + dir.getPath() + "was not created", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            String pathToDataFile = "/storage/emulated/0/Android/data/uit.app.document_scanner/files/tessdata/vie.traineddata";
+            if(!(new File(pathToDataFile)).exists()){
+                InputStream in = getAssets().open("vie.traineddata");
+                OutputStream out = new FileOutputStream(pathToDataFile);
+                byte [] buff = new byte[1024];
+                int len ;
+                while(( len = in.read(buff)) > 0){
+                    out.write(buff,0,len);
+                }
+                in.close();
+                out.close();
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    private void detectText(Bitmap bm){
+        TessBaseAPI tessBaseAPI = new TessBaseAPI();
+        String dataPath = getExternalFilesDir("/").getPath() + "/";
+        tessBaseAPI.init(dataPath,"vie");
+        tessBaseAPI.setImage(bm);
+        Log.d(TAG, "detectText: " + tessBaseAPI.getUTF8Text());
+        tessBaseAPI.end();
+    }
 
     @Override
     public void onBackPressed() {
@@ -357,62 +369,108 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 
 //        prepareTessData();
 
+//        HashMap<String, List<EfficientdetLiteCid.DetectionResult>> hashMap = sortListByCategory(detectionResults);
+//        List<EfficientdetLiteCid.DetectionResult> id = hashMap.get("id");
+//        List<EfficientdetLiteCid.DetectionResult> name = sortOutputsByX(hashMap.get("name"));
+//        List<EfficientdetLiteCid.DetectionResult> dob = hashMap.get("dob");
+//        List<EfficientdetLiteCid.DetectionResult> hometown = hashMap.get("hometown");
+//        List<EfficientdetLiteCid.DetectionResult> address = hashMap.get("address");
+//
+//        HashMap<String,List<EfficientdetLiteCid.DetectionResult>> hashMapAddress = sortBasedOnYDirection(address);
+//        List<EfficientdetLiteCid.DetectionResult> addressLine1 = hashMapAddress.get("line1");
+//        List<EfficientdetLiteCid.DetectionResult> addressLine2 = hashMapAddress.get("line2");
+//        addressLine1 = sortOutputsByX(addressLine1);
+//        addressLine2 = sortOutputsByX(addressLine2);
+
+        HashMap<String,List<TextResult>> hashMap = handleOutputs(bm,detectionResults);
+//        List<TextResult> list = hashMap.get("name");
+//        List<String> res = sortText(list);
+//        for(String s : res){
+//            Log.d(TAG, "text result after sorting: " + s);
+//        }
+        // recognition
+
+//        extractTextFromList(id, bm);
+//        extractTextFromList(name,bm);
+//        extractTextFromList(dob,bm);
+//        extractTextFromList(hometown,bm);
+//        extractTextFromList(address,bm);
+
+//        Log.d(TAG, "drawDetectionResult: unsorted name list");
+//        for(EfficientdetLiteCid.DetectionResult res: nameList) {
+//            RectF location = res.getLocationAsRectF();
+//            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
+//            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,300,300,false);
+//            recognizeTextUsingMLKit(scaledBm);
+//        }
+
         Bitmap output = bm.copy(Bitmap.Config.ARGB_8888,true);
-        Canvas canvas = new Canvas(output);
-        Paint paint = new Paint();
-        paint.setTextAlign(Paint.Align.LEFT);
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(8f);
-//        prepareTessData();
-        for (EfficientdetLiteCid.DetectionResult res : detectionResults){
-            float score = res.getScoreAsFloat();
-            RectF location = res.getLocationAsRectF();
-            String category = res.getCategoryAsString();
-            canvas.drawRect(location,paint);
-            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
-            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,300,300,false);
-            recognizeTextUsingMLKit(scaledBm);
-//            ImageProcessor imageProcessor = new ImageProcessor.Builder()
-//                                                .add(new ResizeOp(31,200, ResizeOp.ResizeMethod.BILINEAR))
-//                                                .add(new TransformToGrayscaleOp()).build();
+//        Canvas canvas = new Canvas(output);
+//        Paint paint = new Paint();
+//        paint.setTextAlign(Paint.Align.LEFT);
+//        paint.setColor(Color.RED);
+//        paint.setStrokeWidth(8f);
+////        prepareTessData();
+//        for (EfficientdetLiteCid.DetectionResult res : detectionResults){
+//            float score = res.getScoreAsFloat();
+//            RectF location = res.getLocationAsRectF();
+//            String category = res.getCategoryAsString();
+//            canvas.drawRect(location,paint);
+//            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
+//            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,300,300,false);
+//            recognizeTextUsingMLKit(scaledBm);
+//            // tesseract testing on each character
+////            detectText(scaledBm);
+////            ImageProcessor imageProcessor = new ImageProcessor.Builder()
+////                                                .add(new ResizeOp(31,200, ResizeOp.ResizeMethod.BILINEAR))
+////                                                .add(new TransformToGrayscaleOp()).build();
+////
+////            TensorImage tensorImage = new TensorImage(DataType.FLOAT32);
+////            tensorImage.load(croppedBm);
+////            tensorImage = imageProcessor.process(tensorImage);
 //
-//            TensorImage tensorImage = new TensorImage(DataType.FLOAT32);
-//            tensorImage.load(croppedBm);
-//            tensorImage = imageProcessor.process(tensorImage);
-
-
-//            TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 //
-//            InputImage image = InputImage.fromBitmap(scaledBm, 0);
-
-
-//            Task<Text> result =
-//                    recognizer.process(image)
-//                            .addOnSuccessListener(new OnSuccessListener<Text>() {
-//                                @Override
-//                                public void onSuccess(Text visionText) {
+////            TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+////
+////            InputImage image = InputImage.fromBitmap(scaledBm, 0);
 //
-//                                    Log.d("onSuccess",visionText.getText());
-//                                    // Task completed successfully
-//                                    // ...
-//                                }
-//                            })
-//                            .addOnFailureListener(
-//                                    new OnFailureListener() {
-//                                        @Override
-//                                        public void onFailure(@NonNull Exception e) {
 //
-//                                            Log.d("onFail","fail to load");
-//                                            // Task failed with an exception
-//                                            // ...
-//                                        }
-//                                    });
-        }
+////            Task<Text> result =
+////                    recognizer.process(image)
+////                            .addOnSuccessListener(new OnSuccessListener<Text>() {
+////                                @Override
+////                                public void onSuccess(Text visionText) {
+////
+////                                    Log.d("onSuccess",visionText.getText());
+////                                    // Task completed successfully
+////                                    // ...
+////                                }
+////                            })
+////                            .addOnFailureListener(
+////                                    new OnFailureListener() {
+////                                        @Override
+////                                        public void onFailure(@NonNull Exception e) {
+////
+////                                            Log.d("onFail","fail to load");
+////                                            // Task failed with an exception
+////                                            // ...
+////                                        }
+////                                    });
+//        }
 
         return output;
     }
 
-    private void recognizeTextUsingMLKit(Bitmap bm){
+//    private void extractTextFromList(List<EfficientdetLiteCid.DetectionResult> list, Bitmap bm){
+//        for (EfficientdetLiteCid.DetectionResult res : list){
+//            RectF location = res.getLocationAsRectF();
+//            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
+//            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,500,500,false);
+//            recognizeTextUsingMLKit(scaledBm);
+//        }
+//    }
+
+    private void recognizeTextUsingMLKit(Bitmap bm, int index, RectF location,  HashMap<String, TextResult> hashMap){
         TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
         InputImage image = InputImage.fromBitmap(bm, 0);
         Task<Text> result =
@@ -422,7 +480,10 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                             public void onSuccess(Text visionText) {
                                 // Task completed successfully
                                 // ...
-                                Log.d(TAG, "onSuccess: " + visionText.getText());
+//                                Log.d(TAG, "onSuccess: " + visionText.getText());
+                                TextResult textResult = new TextResult(visionText.getText(),location);
+                                hashMap.put(String.valueOf(index), textResult);
+
                             }
                         })
                         .addOnFailureListener(
@@ -435,5 +496,208 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                                     }
                                 });
 
+
     }
+
+    private List<TextResult> sortByX(List<TextResult> list){
+//        Collections.sort(list, new Comparator<EfficientdetLiteCid.DetectionResult>() {
+//            @Override
+//            public int compare(EfficientdetLiteCid.DetectionResult t0, EfficientdetLiteCid.DetectionResult t1) {
+//                return Float.compare(t0.getLocationAsRectF().left,t1.getLocationAsRectF().left);
+//            }
+//        });
+//        return list;
+        Collections.sort(list, new Comparator<TextResult>() {
+            @Override
+            public int compare(TextResult t0, TextResult t1) {
+                return Float.compare(t0.getCoordinates().left, t1.getCoordinates().left);
+            }
+        });
+
+        return list;
+    }
+
+    private float calculateAverageY(List<TextResult> list){
+        float sumOfYCoordinates = 0;
+        for(TextResult res: list){
+            sumOfYCoordinates += res.getCoordinates().top;
+        }
+        return sumOfYCoordinates/list.size();
+    }
+
+    private HashMap<String, List<TextResult>> sortByY(List<TextResult> list){
+        float average = calculateAverageY(list);
+        HashMap<String,List<TextResult>> hashMap = new HashMap<>();
+        List<TextResult> line1 = new ArrayList<>();
+        List<TextResult> line2 = new ArrayList<>();
+
+        for (TextResult res : list){
+            if(res.getCoordinates().top < average){
+                line1.add(res);
+            }
+            else {
+                line2.add(res);
+            }
+        }
+
+        hashMap.put("line1",line1);
+        hashMap.put("line2",line2);
+        return hashMap;
+    }
+
+    private HashMap<String,List<EfficientdetLiteCid.DetectionResult>> sortListByCategory(List<EfficientdetLiteCid.DetectionResult> list){
+
+        HashMap<String, List<EfficientdetLiteCid.DetectionResult>> sortedResults = new HashMap<>();
+
+        List<EfficientdetLiteCid.DetectionResult> resID = new ArrayList<>();
+        List<EfficientdetLiteCid.DetectionResult> resName = new ArrayList<>();
+        List<EfficientdetLiteCid.DetectionResult> resDOB = new ArrayList<>();
+        List<EfficientdetLiteCid.DetectionResult> resHometown = new ArrayList<>();
+        List<EfficientdetLiteCid.DetectionResult> resAddress = new ArrayList<>();
+
+        for(EfficientdetLiteCid.DetectionResult res : list){
+            String category = res.getCategoryAsString().toLowerCase();
+            switch (category){
+                case "id":
+                    resID.add(res);
+                    break;
+                case "name":
+                    resName.add(res);
+                    break;
+                case "dob":
+                    resDOB.add(res);
+                case "hometown":
+                    resHometown.add(res);
+                    break;
+                case "address":
+                    resAddress.add(res);
+                    break;
+            }
+        }
+
+        sortedResults.put("id", resID);
+        sortedResults.put("name",resName);
+        sortedResults.put("dob",resDOB);
+        sortedResults.put("hometown",resHometown);
+        sortedResults.put("address",resAddress);
+        return sortedResults;
+    }
+
+    private Bitmap resizeBitmap(Bitmap bm, int width, int height){
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bm,width,height,false);
+        return resizedBitmap;
+    }
+
+
+    private HashMap<String,List<TextResult>> handleOutputs(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
+
+//        HashMap<String, TextResult> id = new HashMap<>();
+//        HashMap<String, TextResult> name = new HashMap<>();
+//        HashMap<String, TextResult> dob = new HashMap<>();
+//        HashMap<String, TextResult> hometown = new HashMap<>();
+//        HashMap<String, TextResult> address = new HashMap<>();
+        List<TextResult> id = new ArrayList<>();
+        List<TextResult> name = new ArrayList<>();
+        List<TextResult> dob = new ArrayList<>();
+        List<TextResult> hometown = new ArrayList<>();
+        List<TextResult> address = new ArrayList<>();
+        List<Integer> flag = new ArrayList<>();
+        for (int i = 0; i  < list.size(); i++){
+
+            int index = i;
+
+            RectF location = list.get(index).getLocationAsRectF();
+            String category = list.get(index).getCategoryAsString();
+            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
+            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,500,500,false);
+
+            TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+            InputImage image = InputImage.fromBitmap(scaledBm, 0);
+            Task<Text> result =
+                    recognizer.process(image);
+
+
+            result.addOnCompleteListener(new OnCompleteListener<Text>() {
+                @Override
+                public void onComplete(Task<Text> task) {
+                    String result = task.getResult().getText();
+                    TextResult textResult = new TextResult(result,location);
+                    switch (category){
+
+                        case "id":
+                            id.add(textResult);
+//                            Log.d(TAG, "onComplete: id size: " + id.size());
+                            break;
+
+                        case "name":
+                            name.add(textResult);
+                            break;
+
+                        case "dob":
+                            dob.add(textResult);
+                            break;
+
+                        case "hometown":
+                            hometown.add(textResult);
+                            Log.d(TAG, "home town: " + hometown.size());
+                            break;
+
+                        case "address":
+                            address.add(textResult);
+                            break;
+                    }
+                }
+            });
+
+            
+
+        }
+
+//        while (flag.size() != list.size()){
+//            Log.d(TAG, "handleOutputs: " + address.size() + " " + id.size());
+//        }
+
+        HashMap<String,List<TextResult>> hashMap = new HashMap<>();
+//        hashMap.put("id",id);
+//        hashMap.put("name",name);
+//        hashMap.put("dob",dob);
+//        hashMap.put("hometown",hometown);
+//        hashMap.put("address",address);
+        return hashMap;
+    }
+
+    private List<String> sortText(List<TextResult> list){
+
+        List<String> resList = new ArrayList<>();
+
+        if(list.size() == 0){
+            return null;
+        }
+        else if (list.size() == 1){
+            resList.add(list.get(0).getText());
+            return resList;
+        }
+
+        else {
+            HashMap<String,List<TextResult>> hashMap = sortByY(list);
+            List<TextResult> line1 = hashMap.get("line1");
+            List<TextResult> line2 = hashMap.get("line2");
+
+            line1 = sortByX(line1);
+            line2 = sortByX(line2);
+
+            line1.addAll(line2);
+
+            for(TextResult res : line1) {
+                resList.add(res.getText());
+            }
+            return resList;
+        }
+    }
+
+//    private class TaskRecognition extends AsyncTask<>{}
+
 }
+
+
+
