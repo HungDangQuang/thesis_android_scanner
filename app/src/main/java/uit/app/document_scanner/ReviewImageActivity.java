@@ -369,107 +369,12 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
     private Bitmap drawDetectionResult(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> detectionResults){
 
 //        prepareTessData();
-
-//        HashMap<String, List<EfficientdetLiteCid.DetectionResult>> hashMap = sortListByCategory(detectionResults);
-//        List<EfficientdetLiteCid.DetectionResult> id = hashMap.get("id");
-//        List<EfficientdetLiteCid.DetectionResult> name = sortOutputsByX(hashMap.get("name"));
-//        List<EfficientdetLiteCid.DetectionResult> dob = hashMap.get("dob");
-//        List<EfficientdetLiteCid.DetectionResult> hometown = hashMap.get("hometown");
-//        List<EfficientdetLiteCid.DetectionResult> address = hashMap.get("address");
-//
-//        HashMap<String,List<EfficientdetLiteCid.DetectionResult>> hashMapAddress = sortBasedOnYDirection(address);
-//        List<EfficientdetLiteCid.DetectionResult> addressLine1 = hashMapAddress.get("line1");
-//        List<EfficientdetLiteCid.DetectionResult> addressLine2 = hashMapAddress.get("line2");
-//        addressLine1 = sortOutputsByX(addressLine1);
-//        addressLine2 = sortOutputsByX(addressLine2);
-
         handleOutputs(bm,detectionResults);
-//        List<TextResult> list = hashMap.get("name");
-//        List<String> res = sortText(list);
-//        for(String s : res){
-//            Log.d(TAG, "text result after sorting: " + s);
-//        }
-        // recognition
-
-//        extractTextFromList(id, bm);
-//        extractTextFromList(name,bm);
-//        extractTextFromList(dob,bm);
-//        extractTextFromList(hometown,bm);
-//        extractTextFromList(address,bm);
-
-//        Log.d(TAG, "drawDetectionResult: unsorted name list");
-//        for(EfficientdetLiteCid.DetectionResult res: nameList) {
-//            RectF location = res.getLocationAsRectF();
-//            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
-//            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,300,300,false);
-//            recognizeTextUsingMLKit(scaledBm);
-//        }
 
         Bitmap output = bm.copy(Bitmap.Config.ARGB_8888,true);
-//        Canvas canvas = new Canvas(output);
-//        Paint paint = new Paint();
-//        paint.setTextAlign(Paint.Align.LEFT);
-//        paint.setColor(Color.RED);
-//        paint.setStrokeWidth(8f);
-////        prepareTessData();
-//        for (EfficientdetLiteCid.DetectionResult res : detectionResults){
-//            float score = res.getScoreAsFloat();
-//            RectF location = res.getLocationAsRectF();
-//            String category = res.getCategoryAsString();
-//            canvas.drawRect(location,paint);
-//            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
-//            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,300,300,false);
-//            recognizeTextUsingMLKit(scaledBm);
-//            // tesseract testing on each character
-////            detectText(scaledBm);
-////            ImageProcessor imageProcessor = new ImageProcessor.Builder()
-////                                                .add(new ResizeOp(31,200, ResizeOp.ResizeMethod.BILINEAR))
-////                                                .add(new TransformToGrayscaleOp()).build();
-////
-////            TensorImage tensorImage = new TensorImage(DataType.FLOAT32);
-////            tensorImage.load(croppedBm);
-////            tensorImage = imageProcessor.process(tensorImage);
-//
-//
-////            TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-////
-////            InputImage image = InputImage.fromBitmap(scaledBm, 0);
-//
-//
-////            Task<Text> result =
-////                    recognizer.process(image)
-////                            .addOnSuccessListener(new OnSuccessListener<Text>() {
-////                                @Override
-////                                public void onSuccess(Text visionText) {
-////
-////                                    Log.d("onSuccess",visionText.getText());
-////                                    // Task completed successfully
-////                                    // ...
-////                                }
-////                            })
-////                            .addOnFailureListener(
-////                                    new OnFailureListener() {
-////                                        @Override
-////                                        public void onFailure(@NonNull Exception e) {
-////
-////                                            Log.d("onFail","fail to load");
-////                                            // Task failed with an exception
-////                                            // ...
-////                                        }
-////                                    });
-//        }
 
         return output;
     }
-
-//    private void extractTextFromList(List<EfficientdetLiteCid.DetectionResult> list, Bitmap bm){
-//        for (EfficientdetLiteCid.DetectionResult res : list){
-//            RectF location = res.getLocationAsRectF();
-//            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
-//            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,500,500,false);
-//            recognizeTextUsingMLKit(scaledBm);
-//        }
-//    }
 
     private void recognizeTextUsingMLKit(Bitmap bm, int index, RectF location,  HashMap<String, TextResult> hashMap){
         TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
@@ -501,13 +406,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
     }
 
     private List<TextResult> sortByX(List<TextResult> list){
-//        Collections.sort(list, new Comparator<EfficientdetLiteCid.DetectionResult>() {
-//            @Override
-//            public int compare(EfficientdetLiteCid.DetectionResult t0, EfficientdetLiteCid.DetectionResult t1) {
-//                return Float.compare(t0.getLocationAsRectF().left,t1.getLocationAsRectF().left);
-//            }
-//        });
-//        return list;
+
         Collections.sort(list, new Comparator<TextResult>() {
             @Override
             public int compare(TextResult t0, TextResult t1) {
@@ -546,57 +445,8 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
         return hashMap;
     }
 
-    private HashMap<String,List<EfficientdetLiteCid.DetectionResult>> sortListByCategory(List<EfficientdetLiteCid.DetectionResult> list){
-
-        HashMap<String, List<EfficientdetLiteCid.DetectionResult>> sortedResults = new HashMap<>();
-
-        List<EfficientdetLiteCid.DetectionResult> resID = new ArrayList<>();
-        List<EfficientdetLiteCid.DetectionResult> resName = new ArrayList<>();
-        List<EfficientdetLiteCid.DetectionResult> resDOB = new ArrayList<>();
-        List<EfficientdetLiteCid.DetectionResult> resHometown = new ArrayList<>();
-        List<EfficientdetLiteCid.DetectionResult> resAddress = new ArrayList<>();
-
-        for(EfficientdetLiteCid.DetectionResult res : list){
-            String category = res.getCategoryAsString().toLowerCase();
-            switch (category){
-                case "id":
-                    resID.add(res);
-                    break;
-                case "name":
-                    resName.add(res);
-                    break;
-                case "dob":
-                    resDOB.add(res);
-                case "hometown":
-                    resHometown.add(res);
-                    break;
-                case "address":
-                    resAddress.add(res);
-                    break;
-            }
-        }
-
-        sortedResults.put("id", resID);
-        sortedResults.put("name",resName);
-        sortedResults.put("dob",resDOB);
-        sortedResults.put("hometown",resHometown);
-        sortedResults.put("address",resAddress);
-        return sortedResults;
-    }
-
-    private Bitmap resizeBitmap(Bitmap bm, int width, int height){
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bm,width,height,false);
-        return resizedBitmap;
-    }
-
-
     private void handleOutputs(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
 
-//        HashMap<String, TextResult> id = new HashMap<>();
-//        HashMap<String, TextResult> name = new HashMap<>();
-//        HashMap<String, TextResult> dob = new HashMap<>();
-//        HashMap<String, TextResult> hometown = new HashMap<>();
-//        HashMap<String, TextResult> address = new HashMap<>();
         List<TextResult> id = new ArrayList<>();
         List<TextResult> name = new ArrayList<>();
         List<TextResult> dob = new ArrayList<>();
