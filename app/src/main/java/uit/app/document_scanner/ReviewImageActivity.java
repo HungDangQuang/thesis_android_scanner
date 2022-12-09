@@ -2,6 +2,7 @@ package uit.app.document_scanner;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -382,7 +383,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 //        addressLine1 = sortOutputsByX(addressLine1);
 //        addressLine2 = sortOutputsByX(addressLine2);
 
-        HashMap<String,List<TextResult>> hashMap = handleOutputs(bm,detectionResults);
+        handleOutputs(bm,detectionResults);
 //        List<TextResult> list = hashMap.get("name");
 //        List<String> res = sortText(list);
 //        for(String s : res){
@@ -589,7 +590,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private HashMap<String,List<TextResult>> handleOutputs(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
+    private void handleOutputs(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
 
 //        HashMap<String, TextResult> id = new HashMap<>();
 //        HashMap<String, TextResult> name = new HashMap<>();
@@ -601,7 +602,6 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
         List<TextResult> dob = new ArrayList<>();
         List<TextResult> hometown = new ArrayList<>();
         List<TextResult> address = new ArrayList<>();
-        List<Integer> flag = new ArrayList<>();
         for (int i = 0; i  < list.size(); i++){
 
             int index = i;
@@ -617,11 +617,13 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                     recognizer.process(image);
 
 
+
             result.addOnCompleteListener(new OnCompleteListener<Text>() {
                 @Override
                 public void onComplete(Task<Text> task) {
                     String result = task.getResult().getText();
                     TextResult textResult = new TextResult(result,location);
+
                     switch (category){
 
                         case "id":
@@ -646,36 +648,38 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                             address.add(textResult);
                             break;
                     }
+                    int sumOfTexts = id.size() + name.size() + dob.size() + hometown.size() + address.size();
+
+                    if (sumOfTexts == list.size()) {
+                        // create hash map to store key-category and value-list result
+                        InputParam inpId = new InputParam("id",id);
+                        InputParam inpName = new InputParam("name",name);
+                        InputParam inpDob = new InputParam("dob",dob);
+                        InputParam inpHometown = new InputParam("hometown",hometown);
+                        InputParam inpAddress = new InputParam("address",address);
+
+                        new ReorderTextTask().execute(inpId);
+                        new ReorderTextTask().execute(inpName);
+                        new ReorderTextTask().execute(inpDob);
+                        new ReorderTextTask().doInBackground(inpHometown);
+                        new ReorderTextTask().doInBackground(inpAddress);
+                    }
                 }
             });
 
             
 
         }
-
-//        while (flag.size() != list.size()){
-//            Log.d(TAG, "handleOutputs: " + address.size() + " " + id.size());
-//        }
-
-        HashMap<String,List<TextResult>> hashMap = new HashMap<>();
-//        hashMap.put("id",id);
-//        hashMap.put("name",name);
-//        hashMap.put("dob",dob);
-//        hashMap.put("hometown",hometown);
-//        hashMap.put("address",address);
-        return hashMap;
     }
 
-    private List<String> sortText(List<TextResult> list){
+    private String sortText(List<TextResult> list){
 
-        List<String> resList = new ArrayList<>();
 
         if(list.size() == 0){
             return null;
         }
         else if (list.size() == 1){
-            resList.add(list.get(0).getText());
-            return resList;
+            return list.get(0).getText();
         }
 
         else {
@@ -688,16 +692,32 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 
             line1.addAll(line2);
 
+            String str = "";
+
             for(TextResult res : line1) {
-                resList.add(res.getText());
+                str = str + " " + res.getText();
             }
-            return resList;
+            return str;
         }
     }
 
 //    private class TaskRecognition extends AsyncTask<>{}
 
+    private class ReorderTextTask extends AsyncTask<InputParam,Void, Void>{
+
+        @Override
+        protected Void doInBackground(InputParam... inputParams) {
+
+            InputParam inputParam = inputParams[0];
+            String str = sortText(inputParam.getTextResultList());
+
+            SharedPreferences sharedPreferences = ReviewImageActivity.this.getSharedPreferences("ordered text", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(inputParam.getKeyName(), str);
+            Log.d(TAG, "doInBackground: " + inputParam.getKeyName() + " :" + str);
+
+            return null;
+        }
+    }
+
 }
-
-
-
