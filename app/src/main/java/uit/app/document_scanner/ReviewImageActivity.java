@@ -162,6 +162,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 //                        bm = new OpenCVUtils().rotate(bm,90);
 //                    }
                     Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(),reviewImage.getHeight(),false);
+                    Log.d(TAG, "run: " + reviewImage.getHeight() + " w:" + reviewImage.getWidth());
                     originalBitmap = scaledBitmap;
 //                    detectText(scaledBitmap);
 //                    recognizeTextUsingMLKit(scaledBitmap);

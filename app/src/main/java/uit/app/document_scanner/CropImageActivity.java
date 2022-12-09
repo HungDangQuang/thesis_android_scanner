@@ -20,10 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +40,7 @@ import org.opencv.core.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +63,8 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
     private Uri imgUri;
     private String TAG = CropImageActivity.class.getSimpleName();
     private AppUtils appUtils = new AppUtils();
-    float screenRatio;
-
+    private float screenRatio;
+    private Spinner spinner;
     @Override
     protected void init() {
         super.init();
@@ -73,6 +77,14 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         cropButton = findViewById(R.id.okButton);
         sourceFrame = findViewById(R.id.sourceFrame);
         polygonView = findViewById(R.id.polygonView);
+
+        spinner = findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
+                                                    .createFromResource(this,R.array.document_type,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+        staticAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+
+        spinner.setAdapter(staticAdapter);
+
 
         closeButton.setOnClickListener(this);
         rotateLeftButton.setOnClickListener(this);

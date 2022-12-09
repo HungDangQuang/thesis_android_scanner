@@ -1,26 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_primary_dark"
     android:orientation="vertical"
-    android:id="@+id/mainLayout">
+    android:id="@+id/mainLayout"
+    android:weightSum="10">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.95">
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/topLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white_font"/>
+
+    <FrameLayout
+        android:id="@+id/sourceFrame"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:layout_margin="10dp"
+        android:layout_weight="8.1">
+
+        <ImageView
+            android:id="@+id/sourceImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"/>
+
+        <uit.app.document_scanner.cropDocument.PolygonView
+            android:id="@+id/polygonView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            />
+
+    </FrameLayout>
 
     <View
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/white_font"
-        android:layout_above="@id/options"/>
+        android:background="@color/white_font"/>
 
     <LinearLayout
         android:id="@+id/options"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:weightSum="5">
+        android:weightSum="5"
+        android:layout_weight="0.95">
 
         <FrameLayout
             android:layout_width="0dp"
@@ -97,34 +146,6 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/sourceFrame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:layout_margin="10dp"
-        android:layout_above="@id/line">
-
-        <ImageView
-            android:id="@+id/sourceImageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:layout_gravity="center"
-            android:layout_centerInParent="true"/>
-
-        <uit.app.document_scanner.cropDocument.PolygonView
-            android:id="@+id/polygonView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:visibility="visible"
-            />
-
-    </FrameLayout>
 
 
-</RelativeLayout>
+</LinearLayout>
