@@ -119,6 +119,8 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
     int flag = 0;
     int imageSize = 224;
     String str = "";
+    private int rotatedAngle;
+    private OpenCVUtils utils;
 
     public static final String TESS_DATA = "/tessdata";
 //    private static final String DATA_PATH = Environment.getExternalStorageDirectory().toString() + "/Tess";
@@ -141,6 +143,9 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
         grayscaleModeButton = findViewById(R.id.grayModeButton);
         confirmButton = findViewById(R.id.confirmButton);
 
+        utils = new OpenCVUtils();
+
+
         sourceFrame.post(new Runnable() {
             @Override
             public void run() {
@@ -150,6 +155,8 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                 String str = filename.toString();
                 str = FilenameUtils.removeExtension(str);
                 editText.setText(str);
+                rotatedAngle = intent.getExtras().getInt("rotatedAngle");
+                Log.d(TAG, "rotated angle: " + rotatedAngle);
 
                 // tesseract testing
                 // prepare tess data
@@ -157,10 +164,12 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                 try {
 
                     Bitmap bm = new AppUtils().getBitmap(uri,ReviewImageActivity.this);
+                    bm = utils.rotate(bm,rotatedAngle);
 
 //                    if(bm.getWidth() > bm.getHeight()){
 //                        bm = new OpenCVUtils().rotate(bm,90);
 //                    }
+
                     Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(),reviewImage.getHeight(),false);
                     Log.d(TAG, "run: " + reviewImage.getHeight() + " w:" + reviewImage.getWidth());
                     originalBitmap = scaledBitmap;
@@ -459,7 +468,10 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 
             RectF location = list.get(index).getLocationAsRectF();
             String category = list.get(index).getCategoryAsString();
-            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(location.left),Math.round(location.top),Math.round(location.width()),Math.round(location.height()));
+
+            RectF validLocation = createValidLocation(bm,location);
+
+            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(validLocation.left),Math.round(validLocation.top),Math.round(validLocation.width()),Math.round(validLocation.height()));
             Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,500,500,false);
 
             TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
@@ -569,6 +581,31 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 
             return null;
         }
+    }
+
+    private RectF createValidLocation(Bitmap bm, RectF location){
+        float x = location.left;
+        float y = location.top;
+        float right = location.right;
+        float bottom = location.bottom;
+
+        if(x < 0){
+            x = 0;
+        }
+
+        if(y < 0){
+            y = 0;
+        }
+
+        if (right > bm.getWidth()){
+            right = bm.getWidth();
+        }
+
+        if(bottom > bm.getHeight()){
+            bottom = bm.getHeight();
+        }
+
+        return new RectF(x,y,right,bottom);
     }
 
 }

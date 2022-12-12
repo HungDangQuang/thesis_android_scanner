@@ -65,6 +65,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
     private AppUtils appUtils = new AppUtils();
     private float screenRatio;
     private Spinner spinner;
+    private int rotatedAngle;
     @Override
     protected void init() {
         super.init();
@@ -91,6 +92,8 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         rotateRightButton.setOnClickListener(this);
         zoomButton.setOnClickListener(this);
         cropButton.setOnClickListener(this);
+
+        rotatedAngle = 0;
     }
 
     @Override
@@ -240,6 +243,8 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                             lp.height = (int) (h/screenRatio);
                         }
                         sourceImageView.requestLayout();
+                        // update angle for the next activity
+                        rotatedAngle = angle;
                     }
 
                     @Override
@@ -267,6 +272,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                 Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("croppedImage",imgUri);
+                intent.putExtra("rotatedAngle",rotatedAngle);
                 appUtils.deleteImage(imgUri);
                 startActivity(intent);
 //                finish();
