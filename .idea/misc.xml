@@ -28,11 +28,14 @@
         <entry key="app/src/main/res/layout/activity_crop_image.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_detect_text.xml" value="0.1828125" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_result.xml" value="0.11979166666666667" />
         <entry key="app/src/main/res/layout/activity_review_image.xml" value="0.628808864265928" />
         <entry key="app/src/main/res/layout/custom_grid_layout.xml" value="0.25104166666666666" />
         <entry key="app/src/main/res/layout/drop_down_item.xml" value="0.140625" />
         <entry key="app/src/main/res/layout/folder_card_view.xml" value="0.18229166666666666" />
         <entry key="app/src/main/res/layout/loading_dialog.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/tool_bar.xml" value="0.5410640171595982" />
+        <entry key="app/src/main/res/menu/option_view.xml" value="0.4780181884765624" />
         <entry key="app/src/main/res/menu/search_view.xml" value="0.25104166666666666" />
         <entry key="app/src/main/res/xml/drop_down_items.xml" value="0.140625" />
         <entry key="app/src/main/res/xml/search.xml" value="0.15885416666666666" />

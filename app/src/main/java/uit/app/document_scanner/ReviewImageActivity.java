@@ -333,10 +333,9 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                 break;
 
             case R.id.confirmButton:
-//                Intent intent = new Intent(ReviewImageActivity.this,DetectTextActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//                intent.putExtra("imageToDetect",uri);
-//                startActivity(intent);
+                Intent intent = new Intent(ReviewImageActivity.this,ResultActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
 
         }
     }

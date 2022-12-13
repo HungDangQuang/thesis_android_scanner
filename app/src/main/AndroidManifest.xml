@@ -59,6 +59,13 @@
             android:parentActivityName=".CropImageActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".ResultActivity"
+            android:parentActivityName=".ReviewImageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Document_Scanner"
+            />
+
     </application>
 
 </manifest>
