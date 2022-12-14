@@ -63,7 +63,7 @@
             android:name=".ResultActivity"
             android:parentActivityName=".ReviewImageActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Document_Scanner"
+            android:theme="@style/ResultActivityTheme"
             />
 
     </application>

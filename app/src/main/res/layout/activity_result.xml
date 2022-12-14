@@ -25,6 +25,8 @@
         android:background="@drawable/custom_input"
         android:maxLines="1"
         android:inputType="number"
+        android:textColor="@color/white_font"
+
         />
 
     <EditText
@@ -45,6 +47,7 @@
         android:drawableStart="@drawable/custom_user_icon"
         android:maxLines="1"
         android:inputType="text"
+        android:textColor="@color/white_font"
         />
 
     <EditText
@@ -65,6 +68,7 @@
         android:drawableStart="@drawable/custom_dob_icon"
         android:maxLines="1"
         android:inputType="date"
+        android:textColor="@color/white_font"
         />
 
     <EditText
@@ -85,6 +89,7 @@
         android:drawableStart="@drawable/custom_hometown_icon"
         android:maxLines="1"
         android:inputType="text"
+        android:textColor="@color/white_font"
         />
 
     <EditText
@@ -105,6 +110,7 @@
         android:drawableStart="@drawable/custom_address_icon"
         android:maxLines="1"
         android:inputType="text"
+        android:textColor="@color/white_font"
         />
 
     <com.google.android.material.button.MaterialButton
