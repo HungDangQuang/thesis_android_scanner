@@ -1,6 +1,8 @@
 package uit.app.document_scanner;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -62,6 +64,46 @@ public class ResultActivity extends OptionalActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
+        editableID.post(new Runnable() {
+            @Override
+            public void run() {
+                String id = getValueFromSharedPreferences("id");
+                editableID.setText(id);
+            }
+        });
+
+        editableName.post(new Runnable() {
+            @Override
+            public void run() {
+                String name = getValueFromSharedPreferences("name");
+                editableName.setText(name);
+            }
+        });
+
+        editableDOB.post(new Runnable() {
+            @Override
+            public void run() {
+                String dob = getValueFromSharedPreferences("dob");
+                editableDOB.setText(dob);
+            }
+        });
+
+        editableHometown.post(new Runnable() {
+            @Override
+            public void run() {
+                String hometown = getValueFromSharedPreferences("hometown");
+                editableHometown.setText(hometown);
+            }
+        });
+
+        editableAddress.post(new Runnable() {
+            @Override
+            public void run() {
+                String address = getValueFromSharedPreferences("address");
+                editableAddress.setText(address);
+            }
+        });
+
     }
 
     @Override
@@ -78,9 +120,14 @@ public class ResultActivity extends OptionalActivity {
     }
 
     private void updateLabel(){
-        String myFormat="dd-mm-yyyy";
+        String myFormat="dd-MM-yyyy";
         SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
         editableDOB.setText(dateFormat.format(myCalendar.getTime()));
     }
 
+    private String getValueFromSharedPreferences(String key){
+        SharedPreferences mPrefs = getSharedPreferences("ordered text", Context.MODE_PRIVATE);
+        String str = mPrefs.getString(key, "");
+        return str;
+    }
 }

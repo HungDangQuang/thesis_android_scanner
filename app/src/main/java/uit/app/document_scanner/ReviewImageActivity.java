@@ -69,6 +69,7 @@ import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.features2d.AgastFeatureDetector;
 import org.opencv.imgproc.Imgproc;
 import org.tensorflow.lite.DataType;
@@ -472,7 +473,6 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 
             Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(validLocation.left),Math.round(validLocation.top),Math.round(validLocation.width()),Math.round(validLocation.height()));
             Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,500,500,false);
-
             TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
             InputImage image = InputImage.fromBitmap(scaledBm, 0);
             Task<Text> result =
@@ -576,6 +576,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
             SharedPreferences sharedPreferences = ReviewImageActivity.this.getSharedPreferences("ordered text", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(inputParam.getKeyName(), str);
+            editor.commit();
             Log.d(TAG, "doInBackground: " + inputParam.getKeyName() + " :" + str);
 
             return null;
