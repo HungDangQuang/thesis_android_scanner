@@ -3,24 +3,28 @@ package uit.app.document_scanner;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ResultActivity extends OptionalActivity {
+public class ResultActivity extends OptionalActivity{
 
     private static String TAG = ResultActivity.class.getSimpleName();
     final Calendar myCalendar= Calendar.getInstance();
@@ -30,6 +34,7 @@ public class ResultActivity extends OptionalActivity {
     private EditText editableDOB;
     private EditText editableHometown;
     private EditText editableAddress;
+    private Button confirmButton;
 
     @Override
     protected void init() {
@@ -39,6 +44,7 @@ public class ResultActivity extends OptionalActivity {
         editableDOB = findViewById(R.id.editableDOB);
         editableHometown = findViewById(R.id.editableHometown);
         editableAddress = findViewById(R.id.editableAddress);
+        confirmButton = findViewById(R.id.acceptButton);
         editableDOB.setFocusable(false);
 
         DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
@@ -56,6 +62,18 @@ public class ResultActivity extends OptionalActivity {
             public void onClick(View view) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(ResultActivity.this,date,myCalendar.get(Calendar.DAY_OF_MONTH),myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.YEAR));
                 datePickerDialog.show();
+            }
+        });
+
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Person person = new Person(editableID.getText().toString(),
+                        editableName.getText().toString(),
+                        editableDOB.getText().toString(),
+                        editableHometown.getText().toString(),
+                        editableAddress.getText().toString());
+                new DatabaseHandler().execute(person);
             }
         });
     }
@@ -129,5 +147,29 @@ public class ResultActivity extends OptionalActivity {
         SharedPreferences mPrefs = getSharedPreferences("ordered text", Context.MODE_PRIVATE);
         String str = mPrefs.getString(key, "");
         return str;
+    }
+
+    private class DatabaseHandler extends AsyncTask<Person,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Person... people) {
+            Person person = people[0];
+            PersonRoomDatabase personDatabase = PersonRoomDatabase.getInstance(ResultActivity.this);
+            List<Person> list = personDatabase.personDao().getListOfPeople();
+            Log.d(TAG, "doInBackground: " + list.get(0).personName);
+            personDatabase.personDao().insertPerson(person);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            Context context = getApplicationContext();
+            CharSequence text = "Information is saved";
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
     }
 }
