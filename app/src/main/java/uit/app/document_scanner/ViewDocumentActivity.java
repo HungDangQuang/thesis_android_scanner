@@ -1,10 +1,15 @@
 package uit.app.document_scanner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 public class ViewDocumentActivity extends OptionalActivity {
 
@@ -29,6 +34,11 @@ public class ViewDocumentActivity extends OptionalActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        String filePath = bundle.getString("filePath");
+        File image = new File(filePath);
+        Picasso.get().load(image).into(imageView);
     }
 
     @Override

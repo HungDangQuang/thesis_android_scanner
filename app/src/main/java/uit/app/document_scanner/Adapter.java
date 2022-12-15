@@ -56,6 +56,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
         String name = file.getName();
         holder.filename.setText(name.substring(0,name.lastIndexOf(".")));
         Picasso.get().load(file).into(holder.img);
+        holder.filePath = file.getAbsolutePath();
         Log.d("binding", "onBindViewHolder: " + getItemId(position));
     }
 
@@ -68,6 +69,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
         TextView filename;
         ImageView img;
         private Context context;
+        String filePath;
 
         public ViewHolder(@NonNull View itemView){
             super(itemView);
@@ -80,6 +82,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, ViewDocumentActivity.class);
+            intent.putExtra("filePath", filePath);
             context.startActivity(intent);
         }
     }
