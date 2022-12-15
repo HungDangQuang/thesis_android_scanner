@@ -47,7 +47,7 @@ public class ResultActivity extends OptionalActivity{
         confirmButton = findViewById(R.id.acceptButton);
         editableDOB.setFocusable(false);
 
-        DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int day) {
                 myCalendar.set(Calendar.YEAR, year);
@@ -82,6 +82,10 @@ public class ResultActivity extends OptionalActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
+
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         editableID.post(new Runnable() {
             @Override
             public void run() {
@@ -171,5 +175,11 @@ public class ResultActivity extends OptionalActivity{
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }
