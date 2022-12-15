@@ -294,7 +294,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
             changeIconTintColorToOriginalColor(flag);
         }
 
-        if (view.getId() != R.id.removeTextButton) {
+        if (view.getId() != R.id.removeTextButton && view.getId() != R.id.confirmButton) {
             changeIconTintColorToFocusedColor(view);
             flag = view.getId();
         }
@@ -523,8 +523,8 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
                         new ReorderTextTask().execute(inpId);
                         new ReorderTextTask().execute(inpName);
                         new ReorderTextTask().execute(inpDob);
-                        new ReorderTextTask().doInBackground(inpHometown);
-                        new ReorderTextTask().doInBackground(inpAddress);
+                        new ReorderTextTask().execute(inpHometown);
+                        new ReorderTextTask().execute(inpAddress);
                     }
                 }
             });
