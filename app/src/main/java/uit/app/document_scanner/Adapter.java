@@ -1,6 +1,7 @@
 package uit.app.document_scanner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.util.Log;
@@ -63,14 +64,23 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
         return images.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView filename;
         ImageView img;
+        private Context context;
+
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             filename = itemView.findViewById(R.id.filename);
             img = itemView.findViewById(R.id.img);
+            context = itemView.getContext();
+            itemView.setOnClickListener(this);
+        }
 
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(context, ViewDocumentActivity.class);
+            context.startActivity(intent);
         }
     }
 
@@ -122,4 +132,5 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
             }
         };
     }
+
 }

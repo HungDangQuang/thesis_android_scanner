@@ -1,5 +1,6 @@
 package uit.app.document_scanner;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActionBarOverlayLayout;
 import androidx.appcompat.widget.Toolbar;
@@ -25,6 +26,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TableLayout;
@@ -133,8 +135,6 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         folderRecyclerView.setAdapter(folderAdapter);
         folderRecyclerView.setFocusable(false);
         folderRecyclerView.setNestedScrollingEnabled(false);
-
-
     }
 
     private List<String> createSampleFolders(){
