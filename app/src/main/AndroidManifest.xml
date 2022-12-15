@@ -66,6 +66,10 @@
             android:theme="@style/ResultActivityTheme"
             />
 
+        <activity android:name=".ViewDocumentActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Document_Scanner"/>
+
     </application>
 
 </manifest>
