@@ -61,7 +61,6 @@
 
         <activity
             android:name=".ResultActivity"
-            android:parentActivityName=".ReviewImageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ResultActivityTheme"
             />
