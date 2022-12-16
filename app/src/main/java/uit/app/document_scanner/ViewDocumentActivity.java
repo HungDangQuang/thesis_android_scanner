@@ -6,10 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +21,7 @@ import androidx.annotation.Nullable;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ViewDocumentActivity extends OptionalActivity implements View.OnClickListener {
 
@@ -26,6 +30,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
     private Button addNewDocumentButton;
     private Button ocrButton;
     private Button shareDocumentButton;
+    private String filePath;
 
     @Override
     protected void init() {
@@ -56,7 +61,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         init();
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        String filePath = bundle.getString("filePath");
+        filePath = bundle.getString("filePath");
         File image = new File(filePath);
         Picasso.get().load(image).into(imageView);
     }
@@ -70,6 +75,8 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
+
+
         switch (item.getItemId()){
             case R.id.delete:
 
@@ -80,21 +87,79 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        File file = new File(filePath);
+                        file.delete();
+                        if(file.exists()){
+                            try {
+                                file.getCanonicalFile().delete();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if(file.exists()){
+                                getApplicationContext().deleteFile(file.getName());
+                            }
+                        }
                         dialogInterface.dismiss();
+                        finish();
                     }
                 });
-                builder.setNeutralButton("cancel", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                     }
                 });
 
+
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
 
                 break;
             case R.id.rename:
+                File originalFile = new File(filePath);
+                String dir = originalFile.getParent();
+
+                AlertDialog.Builder renameBuilder = new AlertDialog.Builder(ViewDocumentActivity.this);
+                renameBuilder.setTitle("Document Scanner");
+                renameBuilder.setCancelable(false);
+
+//                final EditText input = new EditText(ViewDocumentActivity.this);
+                String fileName = originalFile.getName();
+                String extension = fileName.substring(fileName.lastIndexOf("."));
+                Log.d(TAG, "extension: " + extension);
+
+
+                LayoutInflater layoutInflater = getLayoutInflater();
+                View dialogLayout = layoutInflater.inflate(R.layout.edit_text_layout,null);
+                EditText input = dialogLayout.findViewById(R.id.textEdit);
+                input.setText(fileName.substring(0,fileName.lastIndexOf(".")));
+                input.setTextColor(getResources().getColor(R.color.black));
+                renameBuilder.setView(dialogLayout);
+                renameBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        String newName = input.getText().toString() + extension;
+                        File renamedFile = new File(dir,newName);
+                        Log.d(TAG, "renamed file: " + renamedFile);
+                        originalFile.renameTo(renamedFile);
+
+                        // update the file path
+                        filePath = renamedFile.getAbsolutePath();
+                        Log.d(TAG, "file path name: " + filePath);
+                        dialogInterface.dismiss();
+                    }
+                });
+                renameBuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+
+                AlertDialog renameDialog = renameBuilder.create();
+                renameDialog.show();
                 break;
         }
 
