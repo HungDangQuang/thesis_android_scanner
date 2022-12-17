@@ -276,9 +276,29 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
                 break;
 
             case R.id.confirmButton:
+                String path = Constants.APP_DIR;
+                OutputStream fOut = null;
+                Integer counter = 0;
+                File file = new File(path, editText.getText().toString() + "_" + getResources().getResourceEntryName(flag) + ".jpg");
+                reviewImage.invalidate();
+                BitmapDrawable drawable = (BitmapDrawable) reviewImage.getDrawable();
+                Bitmap savedBm =  drawable.getBitmap();
+//                savedBm.compress(Bitmap.CompressFormat.JPEG,100,fOut);
+                try {
+                    fOut = new FileOutputStream(file);
+                    savedBm.compress(Bitmap.CompressFormat.JPEG,100,fOut);
+                    fOut.flush();
+                    fOut.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                String filePath = file.getAbsolutePath();
                 Intent intent = new Intent(ReviewImageActivity.this,ViewDocumentActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("filePath",uri.getPath());
+                intent.putExtra("filePath",filePath);
                 startActivity(intent);
 
         }
