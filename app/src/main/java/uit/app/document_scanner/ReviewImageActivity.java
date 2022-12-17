@@ -103,32 +103,32 @@ import java.util.stream.Collectors;
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
 import uit.app.document_scanner.openCV.OpenCVUtils;
 
-public class ReviewImageActivity extends AppCompatActivity implements View.OnClickListener {
+public class ReviewImageActivity extends OptionalActivity implements View.OnClickListener {
     
     private static String TAG = ReviewImageActivity.class.getSimpleName();
-    ImageView reviewImage;
-    LinearLayout sourceFrame;
-    EditText editText;
-    Bitmap originalBitmap;
-    Button removeTextButton;
-    Button backButton;
-    Button rgbModeButton;
-    Button binaryModeButton;
-    Button grayscaleModeButton;
-    Button confirmButton;
-    Uri uri;
-    int flag = 0;
-    int imageSize = 224;
-    String str = "";
+    private ImageView reviewImage;
+    private LinearLayout sourceFrame;
+    private EditText editText;
+    private Bitmap originalBitmap;
+    private Button removeTextButton;
+    private Button backButton;
+    private Button rgbModeButton;
+    private Button binaryModeButton;
+    private Button grayscaleModeButton;
+    private Button confirmButton;
+    private Uri uri;
+    private int flag = 0;
     private int rotatedAngle;
     private OpenCVUtils utils;
+    private AppUtils appUtils;
 
     public static final String TESS_DATA = "/tessdata";
 //    private static final String DATA_PATH = Environment.getExternalStorageDirectory().toString() + "/Tess";
+
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_review_image);
+    protected void init() {
+        super.init();
         getSupportActionBar().hide();
 
         sourceFrame = findViewById(R.id.sourceImageView);
@@ -143,66 +143,10 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
         binaryModeButton = findViewById(R.id.binaryModeButton);
         grayscaleModeButton = findViewById(R.id.grayModeButton);
         confirmButton = findViewById(R.id.confirmButton);
-
+        flag = rgbModeButton.getId();
+        changeIconTintColorToFocusedColor(rgbModeButton);
         utils = new OpenCVUtils();
-
-
-        sourceFrame.post(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = getIntent();
-                uri = intent.getParcelableExtra("croppedImage");
-                File filename = new File(uri.getLastPathSegment());
-                String str = filename.toString();
-                str = FilenameUtils.removeExtension(str);
-                editText.setText(str);
-                rotatedAngle = intent.getExtras().getInt("rotatedAngle");
-                Log.d(TAG, "rotated angle: " + rotatedAngle);
-
-                // tesseract testing
-                // prepare tess data
-//                prepareTessData();
-                try {
-
-                    Bitmap bm = new AppUtils().getBitmap(uri,ReviewImageActivity.this);
-                    bm = utils.rotate(bm,rotatedAngle);
-
-//                    if(bm.getWidth() > bm.getHeight()){
-//                        bm = new OpenCVUtils().rotate(bm,90);
-//                    }
-
-                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(),reviewImage.getHeight(),false);
-                    Log.d(TAG, "run: " + reviewImage.getHeight() + " w:" + reviewImage.getWidth());
-                    originalBitmap = scaledBitmap;
-//                    detectText(scaledBitmap);
-//                    recognizeTextUsingMLKit(scaledBitmap);
-
-                    try {
-                        EfficientdetLiteCid model = EfficientdetLiteCid.newInstance(getApplicationContext());
-
-                        // Creates inputs for reference.
-                        TensorImage image = TensorImage.fromBitmap(scaledBitmap);
-
-                        // Runs model inference and gets result.
-                        EfficientdetLiteCid.Outputs outputs = model.process(image);
-
-                        reviewImage.setImageBitmap(drawDetectionResult(scaledBitmap,outputs.getDetectionResultList()));
-//                        reviewImage.setImageBitmap(scaledBitmap);
-                        // Releases model resources if no longer used.
-                        model.close();
-                    } catch (IOException e) {
-                        // TODO Handle the exception
-                    }
-
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-
-        HashMap<String, Integer> names = getListOfDocumentNames();
+        appUtils = new AppUtils();
 
         removeTextButton.setOnClickListener(this);
         backButton.setOnClickListener(this);
@@ -245,46 +189,44 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_review_image;
 
-    private void prepareTessData(){
-        try{
-            File dir = getExternalFilesDir(TESS_DATA);
-            if(!dir.exists()){
-                if (!dir.mkdir()) {
-                    Toast.makeText(getApplicationContext(), "The folder " + dir.getPath() + "was not created", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            String pathToDataFile = "/storage/emulated/0/Android/data/uit.app.document_scanner/files/tessdata/vie.traineddata";
-            if(!(new File(pathToDataFile)).exists()){
-                InputStream in = getAssets().open("vie.traineddata");
-                OutputStream out = new FileOutputStream(pathToDataFile);
-                byte [] buff = new byte[1024];
-                int len ;
-                while(( len = in.read(buff)) > 0){
-                    out.write(buff,0,len);
-                }
-                in.close();
-                out.close();
-            }
-
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
-
-    private void detectText(Bitmap bm){
-        TessBaseAPI tessBaseAPI = new TessBaseAPI();
-        String dataPath = getExternalFilesDir("/").getPath() + "/";
-        tessBaseAPI.init(dataPath,"vie");
-        tessBaseAPI.setImage(bm);
-        Log.d(TAG, "detectText: " + tessBaseAPI.getUTF8Text());
-        tessBaseAPI.end();
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        init();
+
+        sourceFrame.post(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = getIntent();
+                uri = intent.getParcelableExtra("croppedImage");
+                File filename = new File(uri.getLastPathSegment());
+                String str = filename.toString();
+                str = FilenameUtils.removeExtension(str);
+                editText.setText(str);
+                rotatedAngle = intent.getExtras().getInt("rotatedAngle");
+
+                try {
+
+                    Bitmap bm = appUtils.getBitmap(uri,ReviewImageActivity.this);
+                    bm = utils.rotate(bm,rotatedAngle);
+
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(),reviewImage.getHeight(),false);
+                    reviewImage.setImageBitmap(scaledBitmap);
+                    originalBitmap = scaledBitmap;
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
     }
 
     @Override
@@ -341,20 +283,6 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private HashMap<String, Integer> getListOfDocumentNames(){
-        String path = Constants.APP_DIR;
-        File directory = new File(path);
-        File[] files = directory.listFiles();
-
-        HashMap<String, Integer> names = new HashMap<String, Integer>();
-
-        for (int i = 0; i < files.length; i++)
-        {
-            names.put(files[i].getName(), i);
-        }
-
-        return names;
-    }
 
     private void changeIconTintColorToOriginalColor(int id){
         View view = findViewById(id);
@@ -366,7 +294,7 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
     private void changeIconTintColorToFocusedColor(View view){
         Drawable unwrappedDrawable = view.getBackground();
         Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
-        DrawableCompat.setTint(wrappedDrawable, getColor(R.color.teal_200));
+        DrawableCompat.setTint(wrappedDrawable, getColor(R.color.teal_font));
     }
 
     private Mat convertImage(Bitmap bm, int code){
@@ -375,237 +303,4 @@ public class ReviewImageActivity extends AppCompatActivity implements View.OnCli
         Imgproc.cvtColor(result,result,code);
         return result;
     }
-
-    private Bitmap drawDetectionResult(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> detectionResults){
-
-//        prepareTessData();
-        handleOutputs(bm,detectionResults);
-
-        Bitmap output = bm.copy(Bitmap.Config.ARGB_8888,true);
-
-        return output;
-    }
-
-    private void recognizeTextUsingMLKit(Bitmap bm, int index, RectF location,  HashMap<String, TextResult> hashMap){
-        TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-        InputImage image = InputImage.fromBitmap(bm, 0);
-        Task<Text> result =
-                recognizer.process(image)
-                        .addOnSuccessListener(new OnSuccessListener<Text>() {
-                            @Override
-                            public void onSuccess(Text visionText) {
-                                // Task completed successfully
-                                // ...
-//                                Log.d(TAG, "onSuccess: " + visionText.getText());
-                                TextResult textResult = new TextResult(visionText.getText(),location);
-                                hashMap.put(String.valueOf(index), textResult);
-
-                            }
-                        })
-                        .addOnFailureListener(
-                                new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        // Task failed with an exception
-                                        // ...
-                                        Log.d(TAG, "onFailure: failed to implement");
-                                    }
-                                });
-
-
-    }
-
-    private List<TextResult> sortByX(List<TextResult> list){
-
-        Collections.sort(list, new Comparator<TextResult>() {
-            @Override
-            public int compare(TextResult t0, TextResult t1) {
-                return Float.compare(t0.getCoordinates().left, t1.getCoordinates().left);
-            }
-        });
-
-        return list;
-    }
-
-    private float calculateAverageY(List<TextResult> list){
-        float sumOfYCoordinates = 0;
-        for(TextResult res: list){
-            sumOfYCoordinates += res.getCoordinates().top;
-        }
-        return sumOfYCoordinates/list.size();
-    }
-
-    private HashMap<String, List<TextResult>> sortByY(List<TextResult> list){
-        float average = calculateAverageY(list);
-        HashMap<String,List<TextResult>> hashMap = new HashMap<>();
-        List<TextResult> line1 = new ArrayList<>();
-        List<TextResult> line2 = new ArrayList<>();
-
-        for (TextResult res : list){
-            if(res.getCoordinates().top < average){
-                line1.add(res);
-            }
-            else {
-                line2.add(res);
-            }
-        }
-
-        hashMap.put("line1",line1);
-        hashMap.put("line2",line2);
-        return hashMap;
-    }
-
-    private void handleOutputs(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
-
-        List<TextResult> id = new ArrayList<>();
-        List<TextResult> name = new ArrayList<>();
-        List<TextResult> dob = new ArrayList<>();
-        List<TextResult> hometown = new ArrayList<>();
-        List<TextResult> address = new ArrayList<>();
-        for (int i = 0; i  < list.size(); i++){
-
-            int index = i;
-
-            RectF location = list.get(index).getLocationAsRectF();
-            String category = list.get(index).getCategoryAsString();
-
-            RectF validLocation = createValidLocation(bm,location);
-
-            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(validLocation.left),Math.round(validLocation.top),Math.round(validLocation.width()),Math.round(validLocation.height()));
-            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,500,500,false);
-            TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-            InputImage image = InputImage.fromBitmap(scaledBm, 0);
-            Task<Text> result =
-                    recognizer.process(image);
-
-
-
-            result.addOnCompleteListener(new OnCompleteListener<Text>() {
-                @Override
-                public void onComplete(Task<Text> task) {
-                    String result = task.getResult().getText();
-                    TextResult textResult = new TextResult(result,location);
-
-                    switch (category){
-
-                        case "id":
-                            id.add(textResult);
-//                            Log.d(TAG, "onComplete: id size: " + id.size());
-                            break;
-
-                        case "name":
-                            name.add(textResult);
-                            break;
-
-                        case "dob":
-                            dob.add(textResult);
-                            break;
-
-                        case "hometown":
-                            hometown.add(textResult);
-                            Log.d(TAG, "home town: " + hometown.size());
-                            break;
-
-                        case "address":
-                            address.add(textResult);
-                            break;
-                    }
-                    int sumOfTexts = id.size() + name.size() + dob.size() + hometown.size() + address.size();
-
-                    if (sumOfTexts == list.size()) {
-                        // create hash map to store key-category and value-list result
-                        InputParam inpId = new InputParam("id",id);
-                        InputParam inpName = new InputParam("name",name);
-                        InputParam inpDob = new InputParam("dob",dob);
-                        InputParam inpHometown = new InputParam("hometown",hometown);
-                        InputParam inpAddress = new InputParam("address",address);
-
-                        new ReorderTextTask().execute(inpId);
-                        new ReorderTextTask().execute(inpName);
-                        new ReorderTextTask().execute(inpDob);
-                        new ReorderTextTask().execute(inpHometown);
-                        new ReorderTextTask().execute(inpAddress);
-                    }
-                }
-            });
-
-            
-
-        }
-    }
-
-    private String sortText(List<TextResult> list){
-
-
-        if(list.size() == 0){
-            return null;
-        }
-        else if (list.size() == 1){
-            return list.get(0).getText();
-        }
-
-        else {
-            HashMap<String,List<TextResult>> hashMap = sortByY(list);
-            List<TextResult> line1 = hashMap.get("line1");
-            List<TextResult> line2 = hashMap.get("line2");
-
-            line1 = sortByX(line1);
-            line2 = sortByX(line2);
-
-            line1.addAll(line2);
-
-            String str = "";
-
-            for(TextResult res : line1) {
-                str = str + " " + res.getText();
-            }
-            return str;
-        }
-    }
-
-//    private class TaskRecognition extends AsyncTask<>{}
-
-    private class ReorderTextTask extends AsyncTask<InputParam,Void, Void>{
-
-        @Override
-        protected Void doInBackground(InputParam... inputParams) {
-
-            InputParam inputParam = inputParams[0];
-            String str = sortText(inputParam.getTextResultList());
-
-            SharedPreferences sharedPreferences = ReviewImageActivity.this.getSharedPreferences("ordered text", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(inputParam.getKeyName(), str);
-            editor.commit();
-            Log.d(TAG, "doInBackground: " + inputParam.getKeyName() + " :" + str);
-
-            return null;
-        }
-    }
-
-    private RectF createValidLocation(Bitmap bm, RectF location){
-        float x = location.left;
-        float y = location.top;
-        float right = location.right;
-        float bottom = location.bottom;
-
-        if(x < 0){
-            x = 0;
-        }
-
-        if(y < 0){
-            y = 0;
-        }
-
-        if (right > bm.getWidth()){
-            right = bm.getWidth();
-        }
-
-        if(bottom > bm.getHeight()){
-            bottom = bm.getHeight();
-        }
-
-        return new RectF(x,y,right,bottom);
-    }
-
 }
