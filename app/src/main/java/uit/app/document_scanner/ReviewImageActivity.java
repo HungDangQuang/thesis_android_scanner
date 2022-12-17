@@ -276,8 +276,9 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
                 break;
 
             case R.id.confirmButton:
-                Intent intent = new Intent(ReviewImageActivity.this,ResultActivity.class);
+                Intent intent = new Intent(ReviewImageActivity.this,ViewDocumentActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.putExtra("filePath",uri.getPath());
                 startActivity(intent);
 
         }
