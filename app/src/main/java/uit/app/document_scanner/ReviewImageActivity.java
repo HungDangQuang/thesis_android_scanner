@@ -299,6 +299,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
                 Intent intent = new Intent(ReviewImageActivity.this,ViewDocumentActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("filePath",filePath);
+                intent.putExtra("rgbImagePath",uri.getPath());
                 startActivity(intent);
 
         }

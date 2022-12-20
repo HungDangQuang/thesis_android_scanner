@@ -2,13 +2,13 @@ package uit.app.document_scanner;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -27,11 +27,11 @@ import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 import com.googlecode.tesseract.android.TessBaseAPI;
+import com.squareup.picasso.Picasso;
 
 import org.tensorflow.lite.support.image.TensorImage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,8 +44,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
 
@@ -61,7 +59,7 @@ public class ResultActivity extends OptionalActivity{
     private EditText editableAddress;
     private Button confirmButton;
     public static final String TESS_DATA = "/tessdata";
-
+    private String inputImagePath;
     @Override
     protected void init() {
         super.init();
@@ -102,6 +100,13 @@ public class ResultActivity extends OptionalActivity{
                 new DatabaseHandler().execute(person);
             }
         });
+
+        Intent ocrIntent = getIntent();
+        Bundle bundle = ocrIntent.getExtras();
+        inputImagePath = bundle.getString("rgbImagePath");
+        Bitmap bitmap = BitmapFactory.decodeFile(inputImagePath);
+        ocr(bitmap);
+
     }
 
     @Override
@@ -112,45 +117,45 @@ public class ResultActivity extends OptionalActivity{
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        editableID.post(new Runnable() {
-            @Override
-            public void run() {
-                String id = getValueFromSharedPreferences("id");
-                editableID.setText(id);
-            }
-        });
-
-        editableName.post(new Runnable() {
-            @Override
-            public void run() {
-                String name = getValueFromSharedPreferences("name");
-                editableName.setText(name);
-            }
-        });
-
-        editableDOB.post(new Runnable() {
-            @Override
-            public void run() {
-                String dob = getValueFromSharedPreferences("dob");
-                editableDOB.setText(dob);
-            }
-        });
-
-        editableHometown.post(new Runnable() {
-            @Override
-            public void run() {
-                String hometown = getValueFromSharedPreferences("hometown");
-                editableHometown.setText(hometown);
-            }
-        });
-
-        editableAddress.post(new Runnable() {
-            @Override
-            public void run() {
-                String address = getValueFromSharedPreferences("address");
-                editableAddress.setText(address);
-            }
-        });
+//        editableID.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                String id = getValueFromSharedPreferences("id");
+//                editableID.setText(id);
+//            }
+//        });
+//
+//        editableName.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                String name = getValueFromSharedPreferences("name");
+//                editableName.setText(name);
+//            }
+//        });
+//
+//        editableDOB.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                String dob = getValueFromSharedPreferences("dob");
+//                editableDOB.setText(dob);
+//            }
+//        });
+//
+//        editableHometown.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                String hometown = getValueFromSharedPreferences("hometown");
+//                editableHometown.setText(hometown);
+//            }
+//        });
+//
+//        editableAddress.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                String address = getValueFromSharedPreferences("address");
+//                editableAddress.setText(address);
+//            }
+//        });
 
     }
 
@@ -221,6 +226,8 @@ public class ResultActivity extends OptionalActivity{
 
             // Releases model resources if no longer used.
             model.close();
+
+            handleOutputs(bm,outputs.getDetectionResultList());
         } catch (IOException e) {
             // TODO Handle the exception
         }
@@ -435,10 +442,10 @@ public class ResultActivity extends OptionalActivity{
         return new RectF(x,y,right,bottom);
     }
 
-    private class ReorderTextTask extends AsyncTask<InputParam,Void, Void>{
+    private class ReorderTextTask extends AsyncTask<InputParam,Void, List<String>>{
 
         @Override
-        protected Void doInBackground(InputParam... inputParams) {
+        protected List<String> doInBackground(InputParam... inputParams) {
 
             InputParam inputParam = inputParams[0];
             String str = sortText(inputParam.getTextResultList());
@@ -447,10 +454,47 @@ public class ResultActivity extends OptionalActivity{
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(inputParam.getKeyName(), str);
             editor.commit();
+            List<String> list = new ArrayList<>();
             Log.d(TAG, "doInBackground: " + inputParam.getKeyName() + " :" + str);
+            list.add(inputParam.getKeyName());
+            list.add(str);
+            return list;
+        }
 
-            return null;
+        @Override
+        protected void onPostExecute(List<String> strings) {
+            super.onPostExecute(strings);
+            String destination = strings.get(0);
+            String content = strings.get(1);
+            switch (destination){
+                case "id":
+                    editableID.setText(content);
+                    break;
+
+                case "name":
+                    editableName.setText(content);
+                    break;
+
+                case "dob":
+                    editableDOB.setText(content);
+                    break;
+
+                case "hometown":
+                    editableHometown.setText(content);
+                    break;
+
+                case "address":
+                    editableAddress.setText(content);
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
+
+
+
+
 
 }

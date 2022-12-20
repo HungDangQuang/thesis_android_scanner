@@ -31,6 +31,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
     private Button ocrButton;
     private Button shareDocumentButton;
     private String filePath;
+    private String colorImageFilePath;
 
     @Override
     protected void init() {
@@ -62,6 +63,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         filePath = bundle.getString("filePath");
+        colorImageFilePath = bundle.getString("rgbImagePath");
         File image = new File(filePath);
         Picasso.get().load(image).into(imageView);
     }
@@ -184,6 +186,8 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
             case R.id.ocrButton:
                 // for testing
                 Intent ocrIntent = new Intent(ViewDocumentActivity.this, ResultActivity.class);
+                ocrIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                ocrIntent.putExtra("rgbImagePath", colorImageFilePath);
                 startActivity(ocrIntent);
                 break;
 
