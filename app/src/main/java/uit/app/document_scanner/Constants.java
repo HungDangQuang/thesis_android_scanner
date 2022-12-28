@@ -11,4 +11,5 @@ public class Constants {
     public static int CANNY_THRESH_U = 185;
     public static int TRUNC_THRESH = 150;
     public static int CUTOFF_THRESH = 155;
+    public static final String URL = "";
 }
