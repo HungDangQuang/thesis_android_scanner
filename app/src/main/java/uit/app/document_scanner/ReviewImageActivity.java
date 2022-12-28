@@ -226,8 +226,9 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
 //                    QRCodeDetector detector = new QRCodeDetector();
 //                    boolean data = detector.detect(mat,points);
 //                    Log.d(TAG, "qrcode detection: " + data);
-
-                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(),reviewImage.getHeight(),false);
+                    int newHeight =  reviewImage.getWidth() * bm.getHeight() / bm.getWidth();
+                    Log.d(TAG, "new height:" + newHeight);
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(), newHeight,false);
 //                    Bitmap croppedQRCodeZone = Bitmap.createBitmap(bm,x,y,width,width);
 //                    bm = utils.rotate(bm,rotatedAngle);
 //                    Mat mat = new Mat();

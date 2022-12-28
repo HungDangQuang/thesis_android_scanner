@@ -98,51 +98,6 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         return stream.toByteArray();
     }
 
-    private RequestBody createImageIntoBody(byte[] byteArray){
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        multipartBodyBuilder.addFormDataPart("image", "Android_Flask_" + ".jpg", RequestBody.create(MediaType.parse("image/*jpg"), byteArray));
-        RequestBody postBodyImage = multipartBodyBuilder.build();
-        return postBodyImage;
-    }
-
-
-    void postRequest(String postUrl, RequestBody postBody) {
-
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url(postUrl)
-                .post(postBody)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                // Cancel the post on failure.
-                call.cancel();
-                Log.d("FAIL", e.getMessage());
-
-                // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(TAG, "run: SUCCESS");
-                    }
-                });
-            }
-        });
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.option_view,menu);
@@ -151,8 +106,6 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-
 
         switch (item.getItemId()){
             case R.id.delete:

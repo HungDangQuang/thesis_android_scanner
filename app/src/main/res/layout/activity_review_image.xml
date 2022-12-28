@@ -57,13 +57,20 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"/>
 
-    <ImageView
-        android:id="@+id/review_image"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:scaleType="fitXY"
         android:layout_weight="9"
-        android:padding="20dp"/>
+        android:padding="20dp">
+
+        <ImageView
+            android:id="@+id/review_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"/>
+
+    </FrameLayout>
+
 
     <View
         android:layout_width="match_parent"

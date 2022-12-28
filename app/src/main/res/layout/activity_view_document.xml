@@ -8,13 +8,19 @@
     android:weightSum="10"
     android:background="@color/black_primary_dark">
 
-    <ImageView
-        android:id="@+id/resultImage"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/black_primary_dark"
         android:layout_weight="9"
-        android:layout_margin="10dp"/>
+        android:padding="20dp">
+
+        <ImageView
+            android:id="@+id/resultImage"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/black_primary_dark" />
+
+    </FrameLayout>
 
     <View
         android:layout_width="match_parent"
