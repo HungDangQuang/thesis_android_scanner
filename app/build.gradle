@@ -101,4 +101,8 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
+
+    implementation 'com.squareup.okhttp3:okhttp:+'
+    implementation 'com.google.mlkit:barcode-scanning:17.0.3'
+
 }

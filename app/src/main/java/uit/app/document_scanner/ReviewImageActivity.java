@@ -72,6 +72,7 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.features2d.AgastFeatureDetector;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.QRCodeDetector;
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.Tensor;
@@ -214,10 +215,43 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
                 try {
 
                     Bitmap bm = appUtils.getBitmap(uri,ReviewImageActivity.this);
-                    bm = utils.rotate(bm,rotatedAngle);
+//                    int x = (int) (0.75 * bm.getWidth());
+//                    int y = (int) (0.05 * bm.getHeight());
+//                    int width = (int) (0.2 * bm.getWidth());
+//                    Bitmap croppedQRCodeZone = Bitmap.createBitmap(bm,x,y,width,width);
+//                    bm = utils.rotate(bm,rotatedAngle);
+//                    Mat mat = new Mat();
+//                    Utils.bitmapToMat(croppedQRCodeZone,mat);
+//                    Mat points = new Mat();
+//                    QRCodeDetector detector = new QRCodeDetector();
+//                    boolean data = detector.detect(mat,points);
+//                    Log.d(TAG, "qrcode detection: " + data);
 
                     Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(),reviewImage.getHeight(),false);
-                    reviewImage.setImageBitmap(scaledBitmap);
+//                    Bitmap croppedQRCodeZone = Bitmap.createBitmap(bm,x,y,width,width);
+//                    bm = utils.rotate(bm,rotatedAngle);
+//                    Mat mat = new Mat();
+//                    Utils.bitmapToMat(scaledBitmap,mat);
+//                    Mat points = new Mat();
+//                    QRCodeDetector detector = new QRCodeDetector();
+//                    boolean data = detector.detect(mat,points);
+//                    Log.d(TAG, "qrcode detection: " + data);
+
+                    try {
+                        EfficientdetLiteCid model = EfficientdetLiteCid.newInstance(getApplicationContext());
+
+                        // Creates inputs for reference.
+                        TensorImage image = TensorImage.fromBitmap(scaledBitmap);
+
+                        // Runs model inference and gets result.
+                        EfficientdetLiteCid.Outputs outputs = model.process(image);
+
+                        reviewImage.setImageBitmap(drawDetectionResult(scaledBitmap,outputs.getDetectionResultList()));
+                        // Releases model resources if no longer used.
+                        model.close();
+                    } catch (IOException e) {
+                        // TODO Handle the exception
+                    }
                     originalBitmap = scaledBitmap;
 
                 } catch (FileNotFoundException e) {
@@ -324,5 +358,25 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
         Utils.bitmapToMat(bm,result);
         Imgproc.cvtColor(result,result,code);
         return result;
+    }
+
+    private Bitmap drawDetectionResult(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> detectionResults){
+
+
+        Bitmap output = bm.copy(Bitmap.Config.ARGB_8888,true);
+        Canvas canvas = new Canvas(output);
+        Paint paint = new Paint();
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(8f);
+        for (EfficientdetLiteCid.DetectionResult res : detectionResults){
+            float score = res.getScoreAsFloat();
+            if (score > 0.3) {
+                RectF location = res.getLocationAsRectF();
+                canvas.drawRect(location,paint);
+            }
+
+        }
+        return output;
     }
 }

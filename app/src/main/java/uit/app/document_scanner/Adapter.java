@@ -83,6 +83,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
         public void onClick(View view) {
             Intent intent = new Intent(context, ViewDocumentActivity.class);
             intent.putExtra("filePath", filePath);
+            intent.putExtra("rgbImagePath",filePath);
             context.startActivity(intent);
         }
     }

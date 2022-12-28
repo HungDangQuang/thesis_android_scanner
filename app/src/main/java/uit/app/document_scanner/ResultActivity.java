@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,15 +30,21 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.squareup.picasso.Picasso;
 
+import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.image.TensorImage;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,6 +52,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
 
 public class ResultActivity extends OptionalActivity{
@@ -228,6 +243,7 @@ public class ResultActivity extends OptionalActivity{
             model.close();
 
             handleOutputs(bm,outputs.getDetectionResultList());
+//            detectText(bm,outputs.getDetectionResultList());
         } catch (IOException e) {
             // TODO Handle the exception
         }
@@ -281,7 +297,7 @@ public class ResultActivity extends OptionalActivity{
         return list;
     }
 
-    private float calculateAverageY(List<TextResult> list){
+    private float calculateAverage(List<TextResult> list){
         float sumOfYCoordinates = 0;
         for(TextResult res: list){
             sumOfYCoordinates += res.getCoordinates().top;
@@ -289,8 +305,10 @@ public class ResultActivity extends OptionalActivity{
         return sumOfYCoordinates/list.size();
     }
 
+
+
     private HashMap<String, List<TextResult>> sortByY(List<TextResult> list){
-        float average = calculateAverageY(list);
+        float average = calculateAverage(list);
         HashMap<String,List<TextResult>> hashMap = new HashMap<>();
         List<TextResult> line1 = new ArrayList<>();
         List<TextResult> line2 = new ArrayList<>();
@@ -327,6 +345,7 @@ public class ResultActivity extends OptionalActivity{
 
             Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(validLocation.left),Math.round(validLocation.top),Math.round(validLocation.width()),Math.round(validLocation.height()));
             Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,500,500,false);
+
             TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
             InputImage image = InputImage.fromBitmap(scaledBm, 0);
             Task<Text> result =
@@ -382,11 +401,200 @@ public class ResultActivity extends OptionalActivity{
                     }
                 }
             });
-
-
-
         }
     }
+
+    private void detectText(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
+        List<BitmapResult> id = new ArrayList<>();
+        List<BitmapResult> name = new ArrayList<>();
+        List<BitmapResult> dob = new ArrayList<>();
+        List<BitmapResult> hometown = new ArrayList<>();
+        List<BitmapResult> address = new ArrayList<>();
+
+        for (int i = 0; i  < list.size(); i++) {
+
+            int index = i;
+
+            RectF location = list.get(index).getLocationAsRectF();
+            String category = list.get(index).getCategoryAsString();
+            float score = list.get(index).getScoreAsFloat();
+            Log.d(TAG, "detectText: " + category +  "_" + score);
+
+            if (score > 0.5) {
+
+                RectF validLocation = createValidLocation(bm, location);
+
+                Bitmap croppedBm = Bitmap.createBitmap(bm, Math.round(validLocation.left), Math.round(validLocation.top), Math.round(validLocation.width()), Math.round(validLocation.height()));
+                Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm, 500, 500, false);
+
+                switch (category){
+                    case "id":
+                        id.add(new BitmapResult(croppedBm,location));
+                        break;
+
+                    case "name":
+                        name.add(new BitmapResult(croppedBm,location));
+                        break;
+
+                    case "dob":
+                        dob.add(new BitmapResult(croppedBm,location));
+                        break;
+
+                    case "hometown":
+                        hometown.add(new BitmapResult(croppedBm,location));
+                        break;
+
+                    case "address":
+                        address.add(new BitmapResult(croppedBm,location));
+                        break;
+                }
+
+            }
+        }
+
+        List<BitmapResult> newName = sortBitmap(name);
+        List<BitmapResult> newHometown = sortBitmap(hometown);
+        List<BitmapResult> newAddress = sortBitmap(address);
+
+        new CallAPI().execute(id);
+        new CallAPI().execute(newName);
+        new CallAPI().execute(dob);
+        new CallAPI().execute(newHometown);
+        new CallAPI().execute(newAddress);
+    }
+
+    private void convertToInputBody(List<BitmapResult> list){
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        int i = 0;
+        Log.d(TAG, "convertToInputBody: " + list.size());
+        for (BitmapResult bmRes : list) {
+            Bitmap bm = bmRes.getBitmapResult();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG,100,stream);
+            byte[] bytes = stream.toByteArray();
+            Log.d(TAG, "convertToInputBody: " + "image" + i + "_Android_Flask_" + i + ".jpg" );
+            multipartBodyBuilder.addFormDataPart("image" + i, "Android_Flask_" + i + ".jpg", RequestBody.create(MediaType.parse("image/*jpg"), bytes));
+            i++;
+        }
+
+        RequestBody postBodyImage = multipartBodyBuilder.build();
+        String postUrl = "http://192.168.1.57:5001";
+        postRequest(postUrl,postBodyImage);
+    }
+
+    void postRequest(String postUrl, RequestBody postBody) {
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(postUrl)
+                .post(postBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // Cancel the post on failure.
+                call.cancel();
+                Log.d("FAIL", e.getMessage());
+
+                // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
+                try {
+                    final String responseData = response.body().string();
+                    Log.d(TAG, "run: SUCCESS " + responseData);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private byte[] createByteArray(String filePath){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap bm = BitmapFactory.decodeFile(filePath,options);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG,100,stream);
+        return stream.toByteArray();
+    }
+
+    private RequestBody createImageIntoBody(byte[] byteArray){
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        multipartBodyBuilder.addFormDataPart("image", "Android_Flask_" + ".jpg", RequestBody.create(MediaType.parse("image/*jpg"), byteArray));
+        RequestBody postBodyImage = multipartBodyBuilder.build();
+        return postBodyImage;
+    }
+
+    private List<BitmapResult> sortBitmap(List<BitmapResult> list){
+        if (list.size() == 0 || list.size() == 1){
+            return list;
+        }
+
+        else {
+            HashMap<String,List<BitmapResult>> hashMap = sortBimapByY(list);
+            List<BitmapResult> line1 = hashMap.get("line1");
+            List<BitmapResult> line2 = hashMap.get("line2");
+
+            line1 = sortBimapByX(line1);
+            line2 = sortBimapByX(line2);
+
+            line1.addAll(line2);
+            return line1;
+        }
+    }
+
+    private List<BitmapResult> sortBimapByX(List<BitmapResult> list){
+        Collections.sort(list, new Comparator<BitmapResult>() {
+            @Override
+            public int compare(BitmapResult t0, BitmapResult t1) {
+                return Float.compare(t0.getCoordinates().left, t1.getCoordinates().left);
+            }
+        });
+
+        return list;
+    }
+
+    private float calculateAverageY(List<BitmapResult> list){
+        float sumOfYCoordinates = 0;
+        for(BitmapResult res: list){
+            sumOfYCoordinates += res.getCoordinates().top;
+        }
+        return sumOfYCoordinates/list.size();
+    }
+
+    private HashMap<String, List<BitmapResult>> sortBimapByY(List<BitmapResult> list){
+
+        float average = calculateAverageY(list);
+        HashMap<String,List<BitmapResult>> hashMap = new HashMap<>();
+        List<BitmapResult> line1 = new ArrayList<>();
+        List<BitmapResult> line2 = new ArrayList<>();
+
+        for (BitmapResult res : list){
+            if(res.getCoordinates().top < average){
+                line1.add(res);
+            }
+            else {
+                line2.add(res);
+            }
+        }
+
+        hashMap.put("line1",line1);
+        hashMap.put("line2",line2);
+        return hashMap;
+
+    }
+
+
 
     private String sortText(List<TextResult> list){
 
@@ -495,6 +703,50 @@ public class ResultActivity extends OptionalActivity{
 
 
 
+    private ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap) {
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1 * 28 * 28);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        byteBuffer.rewind();
+
+        int[] pixels = new int[28 * 28];
+        bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+        Log.i("PIXELS", Arrays.toString(pixels));
+        Log.i("PIXELS_SIZE", String.valueOf(pixels.length));
+
+        for (int k = 0; k < 10; k++) {
+            int pixelValue = pixels[k];
+
+            Log.i("PIXEL_NUMBER", String.valueOf(k));
+            int R = Color.red(pixelValue);
+            Log.i("PIXEL_VALUE_R", String.valueOf(R));
+            int G = Color.green(pixelValue);
+            Log.i("PIXEL_VALUE_G", String.valueOf(G));
+            int B = Color.blue(pixelValue);
+            Log.i("PIXEL_VALUE_B", String.valueOf(B));
+        }
+
+        float mean = 0.0f;
+        float std = 1.0f;
+        for (int i = 0; i < 28; ++i) {
+            for (int j = 0; j < 28; ++j) {
+                int pixelValue = pixels[i * 28 + j];
+                byteBuffer.putFloat((((pixelValue >> 16) & 0xFF) - mean) / std);
+                byteBuffer.putFloat((((pixelValue >> 8) & 0xFF) - mean) / std);
+                byteBuffer.putFloat(((pixelValue & 0xFF) - mean) / std);
+
+            }
+        }
+
+        return byteBuffer;
+    }
 
 
+    private class CallAPI extends AsyncTask<List<BitmapResult>,Void,Void>{
+        @Override
+        protected Void doInBackground(List<BitmapResult>... lists) {
+            List<BitmapResult> res = lists[0];
+            convertToInputBody(res);
+            return null;
+        }
+    }
 }

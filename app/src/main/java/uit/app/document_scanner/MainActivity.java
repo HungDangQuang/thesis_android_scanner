@@ -29,7 +29,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TableLayout;
+import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -40,10 +42,18 @@ import org.opencv.core.Mat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import uit.app.document_scanner.view.LoadingDialog;
 
 public class MainActivity extends OptionalActivity implements View.OnClickListener {
@@ -243,6 +253,7 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
                 break;
         }
     }
+
 
 
 }

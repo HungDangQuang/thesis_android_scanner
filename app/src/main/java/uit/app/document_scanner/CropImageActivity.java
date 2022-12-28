@@ -32,10 +32,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
+import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.barcode.common.Barcode;
+import com.google.mlkit.vision.common.InputImage;
+
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.objdetect.QRCodeDetector;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -79,12 +89,12 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         sourceFrame = findViewById(R.id.sourceFrame);
         polygonView = findViewById(R.id.polygonView);
 
-        spinner = findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
-                                                    .createFromResource(this,R.array.document_type,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-        staticAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-
-        spinner.setAdapter(staticAdapter);
+//        spinner = findViewById(R.id.spinner);
+//        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
+//                                                    .createFromResource(this,R.array.document_type,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+//        staticAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+//
+//        spinner.setAdapter(staticAdapter);
 
 
         closeButton.setOnClickListener(this);

@@ -1,9 +1,12 @@
 package uit.app.document_scanner;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,14 +17,26 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ViewDocumentActivity extends OptionalActivity implements View.OnClickListener {
 
@@ -56,6 +71,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         return R.layout.activity_view_document;
     }
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,8 +80,67 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         Bundle bundle = intent.getExtras();
         filePath = bundle.getString("filePath");
         colorImageFilePath = bundle.getString("rgbImagePath");
+        Log.d(TAG, "onCreate: " + colorImageFilePath);
         File image = new File(filePath);
         Picasso.get().load(image).into(imageView);
+//        String postUrl = "http://192.168.1.57:5001";
+//        byte[] bytes = createByteArray(filePath);
+//        RequestBody requestBody = createImageIntoBody(bytes);
+//        postRequest(postUrl,requestBody);
+    }
+
+    private byte[] createByteArray(String filePath){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap bm = BitmapFactory.decodeFile(filePath,options);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.PNG,100,stream);
+        return stream.toByteArray();
+    }
+
+    private RequestBody createImageIntoBody(byte[] byteArray){
+        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        multipartBodyBuilder.addFormDataPart("image", "Android_Flask_" + ".jpg", RequestBody.create(MediaType.parse("image/*jpg"), byteArray));
+        RequestBody postBodyImage = multipartBodyBuilder.build();
+        return postBodyImage;
+    }
+
+
+    void postRequest(String postUrl, RequestBody postBody) {
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(postUrl)
+                .post(postBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // Cancel the post on failure.
+                call.cancel();
+                Log.d("FAIL", e.getMessage());
+
+                // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "run: SUCCESS");
+                    }
+                });
+            }
+        });
     }
 
     @Override
