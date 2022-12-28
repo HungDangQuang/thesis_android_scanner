@@ -8,3 +8,14 @@ create_cxx_tasks
   create-initial-cxx-model 32ms
 create_cxx_tasks completed in 34ms
 
+# C/C++ build system timings
+create_cxx_tasks
+  create-initial-cxx-model 51ms
+  [gap of 10ms]
+create_cxx_tasks completed in 61ms
+
+# C/C++ build system timings
+create_cxx_tasks
+  create-initial-cxx-model 20ms
+create_cxx_tasks completed in 21ms
+

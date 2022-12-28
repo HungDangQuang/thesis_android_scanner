@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.DisplayMetrics;
@@ -19,23 +20,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
+import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.barcode.common.Barcode;
+import com.google.mlkit.vision.common.InputImage;
+
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.objdetect.QRCodeDetector;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +58,7 @@ import java.util.Map;
 import uit.app.document_scanner.cropDocument.PolygonView;
 import uit.app.document_scanner.openCV.OpenCVUtils;
 
-public class CropImageActivity extends AppCompatActivity implements View.OnClickListener{
+public class CropImageActivity extends OptionalActivity implements View.OnClickListener{
 
     private ImageView sourceImageView;
     private PolygonView polygonView;
@@ -58,9 +73,13 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
     private Uri imgUri;
     private String TAG = CropImageActivity.class.getSimpleName();
     private AppUtils appUtils = new AppUtils();
-    float screenRatio;
+    private float screenRatio;
+    private Spinner spinner;
+    private int rotatedAngle;
+    @Override
+    protected void init() {
+        super.init();
 
-    private void init(){
         sourceImageView = findViewById(R.id.sourceImageView);
         closeButton = findViewById(R.id.closeButton);
         rotateLeftButton = findViewById(R.id.rotateLeftButton);
@@ -70,22 +89,45 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
         sourceFrame = findViewById(R.id.sourceFrame);
         polygonView = findViewById(R.id.polygonView);
 
+//        spinner = findViewById(R.id.spinner);
+//        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
+//                                                    .createFromResource(this,R.array.document_type,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+//        staticAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+//
+//        spinner.setAdapter(staticAdapter);
+
 
         closeButton.setOnClickListener(this);
         rotateLeftButton.setOnClickListener(this);
         rotateRightButton.setOnClickListener(this);
         zoomButton.setOnClickListener(this);
         cropButton.setOnClickListener(this);
+
+        rotatedAngle = 0;
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_crop_image;
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_crop_image);
-        OpenCVLoader.initDebug();
+//        setContentView(R.layout.activity_crop_image);
         init();
+
+//        if (Build.VERSION.SDK_INT < 16) {
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        }
+//        else {
+//            View decorView = getWindow().getDecorView();
+//            // Show Status Bar.
+//            int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+//            decorView.setSystemUiVisibility(uiOptions);
+//        }
+//        OpenCVLoader.initDebug();
+//        init();
 
         sourceFrame.post(new Runnable() {
             @Override
@@ -211,6 +253,8 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
                             lp.height = (int) (h/screenRatio);
                         }
                         sourceImageView.requestLayout();
+                        // update angle for the next activity
+                        rotatedAngle = angle;
                     }
 
                     @Override
@@ -238,6 +282,7 @@ public class CropImageActivity extends AppCompatActivity implements View.OnClick
                 Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("croppedImage",imgUri);
+                intent.putExtra("rotatedAngle",rotatedAngle);
                 appUtils.deleteImage(imgUri);
                 startActivity(intent);
 //                finish();
