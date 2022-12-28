@@ -121,7 +121,7 @@ public class ResultActivity extends OptionalActivity{
         inputImagePath = bundle.getString("rgbImagePath");
         Bitmap bitmap = BitmapFactory.decodeFile(inputImagePath);
         ocr(bitmap);
-
+//        detectText(bitmap);
     }
 
     @Override
@@ -242,48 +242,48 @@ public class ResultActivity extends OptionalActivity{
             // Releases model resources if no longer used.
             model.close();
 
-            handleOutputs(bm,outputs.getDetectionResultList());
-//            detectText(bm,outputs.getDetectionResultList());
+//            handleOutputs(bm,outputs.getDetectionResultList());
+            detectText(bm,outputs.getDetectionResultList());
         } catch (IOException e) {
             // TODO Handle the exception
         }
     }
 
-    private void prepareTessData(){
-        try{
-            File dir = getExternalFilesDir(TESS_DATA);
-            if(!dir.exists()){
-                if (!dir.mkdir()) {
-                    Toast.makeText(getApplicationContext(), "The folder " + dir.getPath() + "was not created", Toast.LENGTH_SHORT).show();
-                }
-            }
+//    private void prepareTessData(){
+//        try{
+//            File dir = getExternalFilesDir(TESS_DATA);
+//            if(!dir.exists()){
+//                if (!dir.mkdir()) {
+//                    Toast.makeText(getApplicationContext(), "The folder " + dir.getPath() + "was not created", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            String pathToDataFile = "/storage/emulated/0/Android/data/uit.app.document_scanner/files/tessdata/vie.traineddata";
+//            if(!(new File(pathToDataFile)).exists()){
+//                InputStream in = getAssets().open("vie.traineddata");
+//                OutputStream out = new FileOutputStream(pathToDataFile);
+//                byte [] buff = new byte[1024];
+//                int len ;
+//                while(( len = in.read(buff)) > 0){
+//                    out.write(buff,0,len);
+//                }
+//                in.close();
+//                out.close();
+//            }
+//
+//        } catch (Exception e) {
+//            Log.e(TAG, e.getMessage());
+//        }
+//    }
 
-            String pathToDataFile = "/storage/emulated/0/Android/data/uit.app.document_scanner/files/tessdata/vie.traineddata";
-            if(!(new File(pathToDataFile)).exists()){
-                InputStream in = getAssets().open("vie.traineddata");
-                OutputStream out = new FileOutputStream(pathToDataFile);
-                byte [] buff = new byte[1024];
-                int len ;
-                while(( len = in.read(buff)) > 0){
-                    out.write(buff,0,len);
-                }
-                in.close();
-                out.close();
-            }
-
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
-
-    private void detectText(Bitmap bm){
-        TessBaseAPI tessBaseAPI = new TessBaseAPI();
-        String dataPath = getExternalFilesDir("/").getPath() + "/";
-        tessBaseAPI.init(dataPath,"vie");
-        tessBaseAPI.setImage(bm);
-        Log.d(TAG, "detectText: " + tessBaseAPI.getUTF8Text());
-        tessBaseAPI.end();
-    }
+//    private void detectText(Bitmap bm){
+//        TessBaseAPI tessBaseAPI = new TessBaseAPI();
+//        String dataPath = getExternalFilesDir("/").getPath() + "/";
+//        tessBaseAPI.init(dataPath,"vie");
+//        tessBaseAPI.setImage(bm);
+//        Log.d(TAG, "detectText: " + tessBaseAPI.getUTF8Text());
+//        tessBaseAPI.end();
+//    }
 
     private List<TextResult> sortByX(List<TextResult> list){
 
@@ -326,6 +326,8 @@ public class ResultActivity extends OptionalActivity{
         hashMap.put("line2",line2);
         return hashMap;
     }
+
+    // OCR using Google ML Kit
 
     private void handleOutputs(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
 
@@ -404,6 +406,7 @@ public class ResultActivity extends OptionalActivity{
         }
     }
 
+    // OCR using VietOCR
     private void detectText(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
         List<BitmapResult> id = new ArrayList<>();
         List<BitmapResult> name = new ArrayList<>();
@@ -420,32 +423,32 @@ public class ResultActivity extends OptionalActivity{
             float score = list.get(index).getScoreAsFloat();
             Log.d(TAG, "detectText: " + category +  "_" + score);
 
-            if (score > 0.5) {
+            if (score > 0.45) {
 
                 RectF validLocation = createValidLocation(bm, location);
 
                 Bitmap croppedBm = Bitmap.createBitmap(bm, Math.round(validLocation.left), Math.round(validLocation.top), Math.round(validLocation.width()), Math.round(validLocation.height()));
-                Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm, 500, 500, false);
+                Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm, 300, 300, false);
 
                 switch (category){
                     case "id":
-                        id.add(new BitmapResult(croppedBm,location));
+                        id.add(new BitmapResult(scaledBm,location));
                         break;
 
                     case "name":
-                        name.add(new BitmapResult(croppedBm,location));
+                        name.add(new BitmapResult(scaledBm,location));
                         break;
 
                     case "dob":
-                        dob.add(new BitmapResult(croppedBm,location));
+                        dob.add(new BitmapResult(scaledBm,location));
                         break;
 
                     case "hometown":
-                        hometown.add(new BitmapResult(croppedBm,location));
+                        hometown.add(new BitmapResult(scaledBm,location));
                         break;
 
                     case "address":
-                        address.add(new BitmapResult(croppedBm,location));
+                        address.add(new BitmapResult(scaledBm,location));
                         break;
                 }
 
@@ -473,12 +476,12 @@ public class ResultActivity extends OptionalActivity{
             bm.compress(Bitmap.CompressFormat.JPEG,100,stream);
             byte[] bytes = stream.toByteArray();
             Log.d(TAG, "convertToInputBody: " + "image" + i + "_Android_Flask_" + i + ".jpg" );
-            multipartBodyBuilder.addFormDataPart("image" + i, "Android_Flask_" + i + ".jpg", RequestBody.create(MediaType.parse("image/*jpg"), bytes));
+            multipartBodyBuilder.addFormDataPart("image_" + i, "Android_Flask_" + i + "_" + list.getClass().getSimpleName() + ".jpg", RequestBody.create(MediaType.parse("image/*jpg"), bytes));
             i++;
         }
 
         RequestBody postBodyImage = multipartBodyBuilder.build();
-        String postUrl = "http://192.168.1.57:5001";
+        String postUrl = Constants.URL;
         postRequest(postUrl,postBodyImage);
     }
 
@@ -700,46 +703,6 @@ public class ResultActivity extends OptionalActivity{
             }
         }
     }
-
-
-
-    private ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap) {
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(1 * 28 * 28);
-        byteBuffer.order(ByteOrder.nativeOrder());
-        byteBuffer.rewind();
-
-        int[] pixels = new int[28 * 28];
-        bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-        Log.i("PIXELS", Arrays.toString(pixels));
-        Log.i("PIXELS_SIZE", String.valueOf(pixels.length));
-
-        for (int k = 0; k < 10; k++) {
-            int pixelValue = pixels[k];
-
-            Log.i("PIXEL_NUMBER", String.valueOf(k));
-            int R = Color.red(pixelValue);
-            Log.i("PIXEL_VALUE_R", String.valueOf(R));
-            int G = Color.green(pixelValue);
-            Log.i("PIXEL_VALUE_G", String.valueOf(G));
-            int B = Color.blue(pixelValue);
-            Log.i("PIXEL_VALUE_B", String.valueOf(B));
-        }
-
-        float mean = 0.0f;
-        float std = 1.0f;
-        for (int i = 0; i < 28; ++i) {
-            for (int j = 0; j < 28; ++j) {
-                int pixelValue = pixels[i * 28 + j];
-                byteBuffer.putFloat((((pixelValue >> 16) & 0xFF) - mean) / std);
-                byteBuffer.putFloat((((pixelValue >> 8) & 0xFF) - mean) / std);
-                byteBuffer.putFloat(((pixelValue & 0xFF) - mean) / std);
-
-            }
-        }
-
-        return byteBuffer;
-    }
-
 
     private class CallAPI extends AsyncTask<List<BitmapResult>,Void,Void>{
         @Override
