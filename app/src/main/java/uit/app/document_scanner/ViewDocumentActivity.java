@@ -89,15 +89,6 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
 //        postRequest(postUrl,requestBody);
     }
 
-    private byte[] createByteArray(String filePath){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap bm = BitmapFactory.decodeFile(filePath,options);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG,100,stream);
-        return stream.toByteArray();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.option_view,menu);

@@ -428,7 +428,7 @@ public class ResultActivity extends OptionalActivity{
                 RectF validLocation = createValidLocation(bm, location);
 
                 Bitmap croppedBm = Bitmap.createBitmap(bm, Math.round(validLocation.left), Math.round(validLocation.top), Math.round(validLocation.width()), Math.round(validLocation.height()));
-                Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm, 300, 300, false);
+                Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm, croppedBm.getWidth() * 4, croppedBm.getHeight() * 4, false);
 
                 switch (category){
                     case "id":
