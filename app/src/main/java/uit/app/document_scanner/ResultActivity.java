@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.L;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
@@ -40,6 +41,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.IDN;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -305,6 +307,27 @@ public class ResultActivity extends OptionalActivity{
         return sumOfYCoordinates/list.size();
     }
 
+    private HashMap<String,List<BitmapResult>> sortByYUsingRatio(List<BitmapResult> list, float ratio, int bitmapHeight){
+
+        HashMap<String,List<BitmapResult>> hashMap = new HashMap<>();
+        List<BitmapResult> line1 = new ArrayList<>();
+        List<BitmapResult> line2 = new ArrayList<>();
+
+        for (BitmapResult res : list){
+            float resRatio = (float) (res.getCoordinates().top / bitmapHeight);
+            if(resRatio < ratio){
+                Log.d(TAG, "sortByYUsingRatio: res added: " + resRatio);
+                line1.add(res);
+            }
+            else {
+                line2.add(res);
+            }
+        }
+
+        hashMap.put("line1",line1);
+        hashMap.put("line2",line2);
+        return hashMap;
+    }
 
 
     private HashMap<String, List<TextResult>> sortByY(List<TextResult> list){
@@ -428,7 +451,7 @@ public class ResultActivity extends OptionalActivity{
                 RectF validLocation = createValidLocation(bm, location);
 
                 Bitmap croppedBm = Bitmap.createBitmap(bm, Math.round(validLocation.left), Math.round(validLocation.top), Math.round(validLocation.width()), Math.round(validLocation.height()));
-                Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm, croppedBm.getWidth() * 4, croppedBm.getHeight() * 4, false);
+                Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm, croppedBm.getWidth() * 6, croppedBm.getHeight() * 6, false);
 
                 switch (category){
                     case "id":
@@ -454,10 +477,14 @@ public class ResultActivity extends OptionalActivity{
 
             }
         }
+//
+//        List<BitmapResult> newName = (name);
+//        List<BitmapResult> newHometown = sortBitmap(hometown);
+//        List<BitmapResult> newAddress = sortBitmap(address);
 
-        List<BitmapResult> newName = sortBitmap(name);
-        List<BitmapResult> newHometown = sortBitmap(hometown);
-        List<BitmapResult> newAddress = sortBitmap(address);
+        List<BitmapResult> newName = sortResultsUsingRatio(name,Constants.NAME_RATIO,bm.getHeight());
+        List<BitmapResult> newHometown = sortResultsUsingRatio(hometown,Constants.HOMETOWN_RATIO,bm.getHeight());
+        List<BitmapResult> newAddress = sortResultsUsingRatio(address,Constants.ADDRESS_RATIO,bm.getHeight());
 
         new CallAPI().execute(id);
         new CallAPI().execute(newName);
@@ -473,7 +500,7 @@ public class ResultActivity extends OptionalActivity{
         for (BitmapResult bmRes : list) {
             Bitmap bm = bmRes.getBitmapResult();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG,100,stream);
+            bm.compress(Bitmap.CompressFormat.JPEG,0,stream);
             byte[] bytes = stream.toByteArray();
             Log.d(TAG, "convertToInputBody: " + "image" + i + "_Android_Flask_" + i + ".jpg" );
             multipartBodyBuilder.addFormDataPart("image_" + i, "Android_Flask_" + i + "_" + list.getClass().getSimpleName() + ".jpg", RequestBody.create(MediaType.parse("image/*jpg"), bytes));
@@ -522,20 +549,22 @@ public class ResultActivity extends OptionalActivity{
         });
     }
 
-    private byte[] createByteArray(String filePath){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap bm = BitmapFactory.decodeFile(filePath,options);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG,100,stream);
-        return stream.toByteArray();
-    }
+    private List<BitmapResult> sortResultsUsingRatio(List<BitmapResult> list, float ratio, int bitmapHeight){
+        if (list.size() == 0 || list.size() == 1){
+            return list;
+        }
 
-    private RequestBody createImageIntoBody(byte[] byteArray){
-        MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        multipartBodyBuilder.addFormDataPart("image", "Android_Flask_" + ".jpg", RequestBody.create(MediaType.parse("image/*jpg"), byteArray));
-        RequestBody postBodyImage = multipartBodyBuilder.build();
-        return postBodyImage;
+        else {
+            HashMap<String,List<BitmapResult>> hashMap = sortByYUsingRatio(list,ratio,bitmapHeight);
+            List<BitmapResult> line1 = hashMap.get("line1");
+            List<BitmapResult> line2 = hashMap.get("line2");
+
+            line1 = sortBimapByX(line1);
+            line2 = sortBimapByX(line2);
+
+            line1.addAll(line2);
+            return line1;
+        }
     }
 
     private List<BitmapResult> sortBitmap(List<BitmapResult> list){

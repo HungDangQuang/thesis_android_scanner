@@ -374,7 +374,8 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
             float score = res.getScoreAsFloat();
             if (score > 0.3) {
                 RectF location = res.getLocationAsRectF();
-                canvas.drawRect(location,paint);
+//                canvas.drawRect(location,paint);
+                canvas.drawLine(location.left,0,location.left,location.top,paint);
             }
 
         }
