@@ -35,10 +35,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.mlkit.vision.barcode.BarcodeScanner;
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
-import com.google.mlkit.vision.barcode.BarcodeScanning;
-import com.google.mlkit.vision.barcode.common.Barcode;
+//import com.google.mlkit.vision.barcode.BarcodeScanner;
+//import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
+//import com.google.mlkit.vision.barcode.BarcodeScanning;
+//import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.common.InputImage;
 
 import org.opencv.android.OpenCVLoader;

@@ -18,10 +18,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.Text;
@@ -63,6 +66,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
+import uit.app.document_scanner.model.Person;
+import uit.app.document_scanner.model.PersonDao;
 
 public class ResultActivity extends OptionalActivity{
 
@@ -106,15 +111,17 @@ public class ResultActivity extends OptionalActivity{
             }
         });
 
+        PersonDao personDao = new PersonDao();
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Person person = new Person(editableID.getText().toString(),
-                        editableName.getText().toString(),
-                        editableDOB.getText().toString(),
-                        editableHometown.getText().toString(),
-                        editableAddress.getText().toString());
-                new DatabaseHandler().execute(person);
+                String id = editableID.getText().toString();
+                String fullName = editableName.getText().toString();
+                String dob = editableDOB.getText().toString();
+                String hometown = editableHometown.getText().toString();
+                String address = editableAddress.getText().toString();
+                Person person = new Person(id,fullName,dob,hometown,address);
+                new AddPerson().execute(person);
             }
         });
 
@@ -133,47 +140,6 @@ public class ResultActivity extends OptionalActivity{
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-//        editableID.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                String id = getValueFromSharedPreferences("id");
-//                editableID.setText(id);
-//            }
-//        });
-//
-//        editableName.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                String name = getValueFromSharedPreferences("name");
-//                editableName.setText(name);
-//            }
-//        });
-//
-//        editableDOB.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                String dob = getValueFromSharedPreferences("dob");
-//                editableDOB.setText(dob);
-//            }
-//        });
-//
-//        editableHometown.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                String hometown = getValueFromSharedPreferences("hometown");
-//                editableHometown.setText(hometown);
-//            }
-//        });
-//
-//        editableAddress.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                String address = getValueFromSharedPreferences("address");
-//                editableAddress.setText(address);
-//            }
-//        });
-
     }
 
     @Override
@@ -199,30 +165,6 @@ public class ResultActivity extends OptionalActivity{
         SharedPreferences mPrefs = getSharedPreferences("ordered text", Context.MODE_PRIVATE);
         String str = mPrefs.getString(key, "");
         return str;
-    }
-
-    private class DatabaseHandler extends AsyncTask<Person,Void,Void>{
-
-        @Override
-        protected Void doInBackground(Person... people) {
-            Person person = people[0];
-            PersonRoomDatabase personDatabase = PersonRoomDatabase.getInstance(ResultActivity.this);
-            List<Person> list = personDatabase.personDao().getListOfPeople();
-            Log.d(TAG, "doInBackground: " + list.get(0).personName);
-            personDatabase.personDao().insertPerson(person);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void unused) {
-            super.onPostExecute(unused);
-            Context context = getApplicationContext();
-            CharSequence text = "Information is saved";
-            int duration = Toast.LENGTH_SHORT;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-        }
     }
 
     @Override
@@ -455,23 +397,23 @@ public class ResultActivity extends OptionalActivity{
 
                 switch (category){
                     case "id":
-                        id.add(new BitmapResult(scaledBm,location));
+                        id.add(new BitmapResult(scaledBm,location,category));
                         break;
 
                     case "name":
-                        name.add(new BitmapResult(scaledBm,location));
+                        name.add(new BitmapResult(scaledBm,location,category));
                         break;
 
                     case "dob":
-                        dob.add(new BitmapResult(scaledBm,location));
+                        dob.add(new BitmapResult(scaledBm,location,category));
                         break;
 
                     case "hometown":
-                        hometown.add(new BitmapResult(scaledBm,location));
+                        hometown.add(new BitmapResult(scaledBm,location,category));
                         break;
 
                     case "address":
-                        address.add(new BitmapResult(scaledBm,location));
+                        address.add(new BitmapResult(scaledBm,location,category));
                         break;
                 }
 
@@ -482,20 +424,21 @@ public class ResultActivity extends OptionalActivity{
 //        List<BitmapResult> newHometown = sortBitmap(hometown);
 //        List<BitmapResult> newAddress = sortBitmap(address);
 
-        List<BitmapResult> newName = sortResultsUsingRatio(name,Constants.NAME_RATIO,bm.getHeight());
-        List<BitmapResult> newHometown = sortResultsUsingRatio(hometown,Constants.HOMETOWN_RATIO,bm.getHeight());
-        List<BitmapResult> newAddress = sortResultsUsingRatio(address,Constants.ADDRESS_RATIO,bm.getHeight());
+        name = sortResultsUsingRatio(name,Constants.NAME_RATIO,bm.getHeight());
+        hometown = sortResultsUsingRatio(hometown,Constants.HOMETOWN_RATIO,bm.getHeight());
+        address = sortResultsUsingRatio(address,Constants.ADDRESS_RATIO,bm.getHeight());
 
         new CallAPI().execute(id);
-        new CallAPI().execute(newName);
+        new CallAPI().execute(name);
         new CallAPI().execute(dob);
-        new CallAPI().execute(newHometown);
-        new CallAPI().execute(newAddress);
+        new CallAPI().execute(hometown);
+        new CallAPI().execute(address);
     }
 
     private void convertToInputBody(List<BitmapResult> list){
         MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         int i = 0;
+        String category = list.get(0).getCategory();
         Log.d(TAG, "convertToInputBody: " + list.size());
         for (BitmapResult bmRes : list) {
             Bitmap bm = bmRes.getBitmapResult();
@@ -509,10 +452,10 @@ public class ResultActivity extends OptionalActivity{
 
         RequestBody postBodyImage = multipartBodyBuilder.build();
         String postUrl = Constants.URL;
-        postRequest(postUrl,postBodyImage);
+        postRequest(postUrl,postBodyImage,category);
     }
 
-    void postRequest(String postUrl, RequestBody postBody) {
+    void postRequest(String postUrl, RequestBody postBody, String category) {
 
         OkHttpClient client = new OkHttpClient();
 
@@ -538,13 +481,46 @@ public class ResultActivity extends OptionalActivity{
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
+                Log.d(TAG, "onResponse: category " + category);
+
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
                 try {
                     final String responseData = response.body().string();
-                    Log.d(TAG, "run: SUCCESS " + responseData);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    switch (category){
+                        case "id":
+                            editableID.setText(responseData);
+                            break;
+
+                        case "name":
+                            editableName.setText(responseData);
+                            break;
+
+                        case "dob":
+                            editableDOB.setText(responseData);
+                            break;
+
+                        case "hometown":
+                            editableHometown.setText(responseData);
+                            break;
+
+                        case "address":
+                            editableAddress.setText(responseData);
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
+                catch (Exception e){
+
+                }
+
+//                try {
+//                    final String responseData = response.body().string();
+//                    editableHometown.setText(responseData);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
         });
     }
@@ -738,6 +714,17 @@ public class ResultActivity extends OptionalActivity{
         protected Void doInBackground(List<BitmapResult>... lists) {
             List<BitmapResult> res = lists[0];
             convertToInputBody(res);
+            return null;
+        }
+    }
+
+    private class AddPerson extends AsyncTask<Person,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Person... people) {
+            Person p = people[0];
+            PersonDao personDao = new PersonDao();
+            personDao.add(p);
             return null;
         }
     }
