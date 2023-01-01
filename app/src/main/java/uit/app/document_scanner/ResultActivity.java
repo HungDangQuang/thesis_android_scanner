@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,35 +20,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.airbnb.lottie.L;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.text.Text;
-import com.google.mlkit.vision.text.TextRecognition;
-import com.google.mlkit.vision.text.TextRecognizer;
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
-import com.googlecode.tesseract.android.TessBaseAPI;
-import com.squareup.picasso.Picasso;
+import com.google.android.gms.tasks.Tasks;
 
-import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.image.TensorImage;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.IDN;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -121,7 +102,20 @@ public class ResultActivity extends OptionalActivity{
                 String hometown = editableHometown.getText().toString();
                 String address = editableAddress.getText().toString();
                 Person person = new Person(id,fullName,dob,hometown,address);
-                new AddPerson().execute(person);
+//                new AddPerson().execute(person);
+                Task<Void> allTask;
+                allTask = Tasks.whenAll(personDao.add(person));
+                allTask.addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(ResultActivity.this,"new person added successfully",Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(ResultActivity.this,"fail to add new person",Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
@@ -129,8 +123,7 @@ public class ResultActivity extends OptionalActivity{
         Bundle bundle = ocrIntent.getExtras();
         inputImagePath = bundle.getString("rgbImagePath");
         Bitmap bitmap = BitmapFactory.decodeFile(inputImagePath);
-        ocr(bitmap);
-//        detectText(bitmap);
+        new OCR().execute(bitmap);
     }
 
     @Override
@@ -173,7 +166,7 @@ public class ResultActivity extends OptionalActivity{
         return true;
     }
 
-    public void ocr(Bitmap bm){
+    public List<EfficientdetLiteCid.DetectionResult> detectText(Bitmap bm){
         try {
             EfficientdetLiteCid model = EfficientdetLiteCid.newInstance(getApplicationContext());
 
@@ -186,10 +179,12 @@ public class ResultActivity extends OptionalActivity{
             // Releases model resources if no longer used.
             model.close();
 
-//            handleOutputs(bm,outputs.getDetectionResultList());
-            detectText(bm,outputs.getDetectionResultList());
+            return outputs.getDetectionResultList();
+
+//            detectText(bm,outputs.getDetectionResultList());
         } catch (IOException e) {
             // TODO Handle the exception
+            return null;
         }
     }
 
@@ -229,26 +224,6 @@ public class ResultActivity extends OptionalActivity{
 //        tessBaseAPI.end();
 //    }
 
-    private List<TextResult> sortByX(List<TextResult> list){
-
-        Collections.sort(list, new Comparator<TextResult>() {
-            @Override
-            public int compare(TextResult t0, TextResult t1) {
-                return Float.compare(t0.getCoordinates().left, t1.getCoordinates().left);
-            }
-        });
-
-        return list;
-    }
-
-    private float calculateAverage(List<TextResult> list){
-        float sumOfYCoordinates = 0;
-        for(TextResult res: list){
-            sumOfYCoordinates += res.getCoordinates().top;
-        }
-        return sumOfYCoordinates/list.size();
-    }
-
     private HashMap<String,List<BitmapResult>> sortByYUsingRatio(List<BitmapResult> list, float ratio, int bitmapHeight){
 
         HashMap<String,List<BitmapResult>> hashMap = new HashMap<>();
@@ -271,108 +246,8 @@ public class ResultActivity extends OptionalActivity{
         return hashMap;
     }
 
-
-    private HashMap<String, List<TextResult>> sortByY(List<TextResult> list){
-        float average = calculateAverage(list);
-        HashMap<String,List<TextResult>> hashMap = new HashMap<>();
-        List<TextResult> line1 = new ArrayList<>();
-        List<TextResult> line2 = new ArrayList<>();
-
-        for (TextResult res : list){
-            if(res.getCoordinates().top < average){
-                line1.add(res);
-            }
-            else {
-                line2.add(res);
-            }
-        }
-
-        hashMap.put("line1",line1);
-        hashMap.put("line2",line2);
-        return hashMap;
-    }
-
-    // OCR using Google ML Kit
-
-    private void handleOutputs(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
-
-        List<TextResult> id = new ArrayList<>();
-        List<TextResult> name = new ArrayList<>();
-        List<TextResult> dob = new ArrayList<>();
-        List<TextResult> hometown = new ArrayList<>();
-        List<TextResult> address = new ArrayList<>();
-        for (int i = 0; i  < list.size(); i++){
-
-            int index = i;
-
-            RectF location = list.get(index).getLocationAsRectF();
-            String category = list.get(index).getCategoryAsString();
-
-            RectF validLocation = createValidLocation(bm,location);
-
-            Bitmap croppedBm = Bitmap.createBitmap(bm,Math.round(validLocation.left),Math.round(validLocation.top),Math.round(validLocation.width()),Math.round(validLocation.height()));
-            Bitmap scaledBm = Bitmap.createScaledBitmap(croppedBm,500,500,false);
-
-            TextRecognizer recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-            InputImage image = InputImage.fromBitmap(scaledBm, 0);
-            Task<Text> result =
-                    recognizer.process(image);
-
-
-
-            result.addOnCompleteListener(new OnCompleteListener<Text>() {
-                @Override
-                public void onComplete(Task<Text> task) {
-                    String result = task.getResult().getText();
-                    TextResult textResult = new TextResult(result,location);
-
-                    switch (category){
-
-                        case "id":
-                            id.add(textResult);
-//                            Log.d(TAG, "onComplete: id size: " + id.size());
-                            break;
-
-                        case "name":
-                            name.add(textResult);
-                            break;
-
-                        case "dob":
-                            dob.add(textResult);
-                            break;
-
-                        case "hometown":
-                            hometown.add(textResult);
-                            Log.d(TAG, "home town: " + hometown.size());
-                            break;
-
-                        case "address":
-                            address.add(textResult);
-                            break;
-                    }
-                    int sumOfTexts = id.size() + name.size() + dob.size() + hometown.size() + address.size();
-
-                    if (sumOfTexts == list.size()) {
-                        // create hash map to store key-category and value-list result
-                        InputParam inpId = new InputParam("id",id);
-                        InputParam inpName = new InputParam("name",name);
-                        InputParam inpDob = new InputParam("dob",dob);
-                        InputParam inpHometown = new InputParam("hometown",hometown);
-                        InputParam inpAddress = new InputParam("address",address);
-
-                        new ResultActivity.ReorderTextTask().execute(inpId);
-                        new ResultActivity.ReorderTextTask().execute(inpName);
-                        new ResultActivity.ReorderTextTask().execute(inpDob);
-                        new ResultActivity.ReorderTextTask().execute(inpHometown);
-                        new ResultActivity.ReorderTextTask().execute(inpAddress);
-                    }
-                }
-            });
-        }
-    }
-
     // OCR using VietOCR
-    private void detectText(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
+    private void extractText(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> list){
         List<BitmapResult> id = new ArrayList<>();
         List<BitmapResult> name = new ArrayList<>();
         List<BitmapResult> dob = new ArrayList<>();
@@ -488,23 +363,48 @@ public class ResultActivity extends OptionalActivity{
                     final String responseData = response.body().string();
                     switch (category){
                         case "id":
-                            editableID.setText(responseData);
+                            editableID.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    editableID.setText(responseData);
+                                }
+                            });
                             break;
 
                         case "name":
-                            editableName.setText(responseData);
+                            editableName.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    editableName.setText(responseData);
+                                }
+                            });
                             break;
 
                         case "dob":
-                            editableDOB.setText(responseData);
+                            editableDOB.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    editableDOB.setText(responseData);
+                                }
+                            });
                             break;
 
                         case "hometown":
-                            editableHometown.setText(responseData);
+                            editableHometown.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    editableHometown.setText(responseData);
+                                }
+                            });
                             break;
 
                         case "address":
-                            editableAddress.setText(responseData);
+                            editableAddress.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    editableAddress.setText(responseData);
+                                }
+                            });
                             break;
 
                         default:
@@ -514,13 +414,6 @@ public class ResultActivity extends OptionalActivity{
                 catch (Exception e){
 
                 }
-
-//                try {
-//                    final String responseData = response.body().string();
-//                    editableHometown.setText(responseData);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             }
         });
     }
@@ -543,24 +436,6 @@ public class ResultActivity extends OptionalActivity{
         }
     }
 
-    private List<BitmapResult> sortBitmap(List<BitmapResult> list){
-        if (list.size() == 0 || list.size() == 1){
-            return list;
-        }
-
-        else {
-            HashMap<String,List<BitmapResult>> hashMap = sortBimapByY(list);
-            List<BitmapResult> line1 = hashMap.get("line1");
-            List<BitmapResult> line2 = hashMap.get("line2");
-
-            line1 = sortBimapByX(line1);
-            line2 = sortBimapByX(line2);
-
-            line1.addAll(line2);
-            return line1;
-        }
-    }
-
     private List<BitmapResult> sortBimapByX(List<BitmapResult> list){
         Collections.sort(list, new Comparator<BitmapResult>() {
             @Override
@@ -570,67 +445,6 @@ public class ResultActivity extends OptionalActivity{
         });
 
         return list;
-    }
-
-    private float calculateAverageY(List<BitmapResult> list){
-        float sumOfYCoordinates = 0;
-        for(BitmapResult res: list){
-            sumOfYCoordinates += res.getCoordinates().top;
-        }
-        return sumOfYCoordinates/list.size();
-    }
-
-    private HashMap<String, List<BitmapResult>> sortBimapByY(List<BitmapResult> list){
-
-        float average = calculateAverageY(list);
-        HashMap<String,List<BitmapResult>> hashMap = new HashMap<>();
-        List<BitmapResult> line1 = new ArrayList<>();
-        List<BitmapResult> line2 = new ArrayList<>();
-
-        for (BitmapResult res : list){
-            if(res.getCoordinates().top < average){
-                line1.add(res);
-            }
-            else {
-                line2.add(res);
-            }
-        }
-
-        hashMap.put("line1",line1);
-        hashMap.put("line2",line2);
-        return hashMap;
-
-    }
-
-
-
-    private String sortText(List<TextResult> list){
-
-
-        if(list.size() == 0){
-            return null;
-        }
-        else if (list.size() == 1){
-            return list.get(0).getText();
-        }
-
-        else {
-            HashMap<String,List<TextResult>> hashMap = sortByY(list);
-            List<TextResult> line1 = hashMap.get("line1");
-            List<TextResult> line2 = hashMap.get("line2");
-
-            line1 = sortByX(line1);
-            line2 = sortByX(line2);
-
-            line1.addAll(line2);
-
-            String str = "";
-
-            for(TextResult res : line1) {
-                str = str + " " + res.getText();
-            }
-            return str;
-        }
     }
 
     private RectF createValidLocation(Bitmap bm, RectF location){
@@ -658,57 +472,6 @@ public class ResultActivity extends OptionalActivity{
         return new RectF(x,y,right,bottom);
     }
 
-    private class ReorderTextTask extends AsyncTask<InputParam,Void, List<String>>{
-
-        @Override
-        protected List<String> doInBackground(InputParam... inputParams) {
-
-            InputParam inputParam = inputParams[0];
-            String str = sortText(inputParam.getTextResultList());
-
-            SharedPreferences sharedPreferences = ResultActivity.this.getSharedPreferences("ordered text", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(inputParam.getKeyName(), str);
-            editor.commit();
-            List<String> list = new ArrayList<>();
-            Log.d(TAG, "doInBackground: " + inputParam.getKeyName() + " :" + str);
-            list.add(inputParam.getKeyName());
-            list.add(str);
-            return list;
-        }
-
-        @Override
-        protected void onPostExecute(List<String> strings) {
-            super.onPostExecute(strings);
-            String destination = strings.get(0);
-            String content = strings.get(1);
-            switch (destination){
-                case "id":
-                    editableID.setText(content);
-                    break;
-
-                case "name":
-                    editableName.setText(content);
-                    break;
-
-                case "dob":
-                    editableDOB.setText(content);
-                    break;
-
-                case "hometown":
-                    editableHometown.setText(content);
-                    break;
-
-                case "address":
-                    editableAddress.setText(content);
-                    break;
-
-                default:
-                    break;
-            }
-        }
-    }
-
     private class CallAPI extends AsyncTask<List<BitmapResult>,Void,Void>{
         @Override
         protected Void doInBackground(List<BitmapResult>... lists) {
@@ -718,14 +481,36 @@ public class ResultActivity extends OptionalActivity{
         }
     }
 
-    private class AddPerson extends AsyncTask<Person,Void,Void>{
+    private class AddPerson extends AsyncTask<Person,Void,String>{
 
         @Override
-        protected Void doInBackground(Person... people) {
+        protected String doInBackground(Person... people) {
             Person p = people[0];
             PersonDao personDao = new PersonDao();
-            personDao.add(p);
+            if (personDao.add(p).isSuccessful()) {
+                return "New person added successfully";
+            }
+            else {
+                return "Failed to add new person";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Toast.makeText(ResultActivity.this,s,Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class OCR extends AsyncTask<Bitmap,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Bitmap... bitmaps) {
+            Bitmap bm = bitmaps[0];
+            List<EfficientdetLiteCid.DetectionResult> detectionResultList = detectText(bm);
+            extractText(bm,detectionResultList);
             return null;
         }
     }
+
 }

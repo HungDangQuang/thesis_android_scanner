@@ -11,7 +11,7 @@ public class Constants {
     public static int CANNY_THRESH_U = 185;
     public static int TRUNC_THRESH = 150;
     public static int CUTOFF_THRESH = 155;
-    public static final String URL = "http://192.168.1.17:5002";
+    public static final String URL = "http://192.168.1.54:5002";
 //    public static final float ID_RATIO = (float) (1.7/5.7);
     public static final float NAME_RATIO = (float) (2.1/5.7);
 //    public static final float DOB_RATIO = (float) (3.1/5.7);
