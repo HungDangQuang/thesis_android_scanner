@@ -215,11 +215,11 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
                 try {
 
                     Bitmap bm = appUtils.getBitmap(uri,ReviewImageActivity.this);
+//                    bm = utils.rotate(bm,rotatedAngle);
 //                    int x = (int) (0.75 * bm.getWidth());
 //                    int y = (int) (0.05 * bm.getHeight());
 //                    int width = (int) (0.2 * bm.getWidth());
 //                    Bitmap croppedQRCodeZone = Bitmap.createBitmap(bm,x,y,width,width);
-//                    bm = utils.rotate(bm,rotatedAngle);
 //                    Mat mat = new Mat();
 //                    Utils.bitmapToMat(croppedQRCodeZone,mat);
 //                    Mat points = new Mat();
@@ -227,7 +227,6 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
 //                    boolean data = detector.detect(mat,points);
 //                    Log.d(TAG, "qrcode detection: " + data);
                     int newHeight =  reviewImage.getWidth() * bm.getHeight() / bm.getWidth();
-                    Log.d(TAG, "new height:" + newHeight);
                     Bitmap scaledBitmap = Bitmap.createScaledBitmap(bm,reviewImage.getWidth(), newHeight,false);
 //                    Bitmap croppedQRCodeZone = Bitmap.createBitmap(bm,x,y,width,width);
 //                    bm = utils.rotate(bm,rotatedAngle);
@@ -248,6 +247,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
                         EfficientdetLiteCid.Outputs outputs = model.process(image);
 
                         reviewImage.setImageBitmap(drawDetectionResult(scaledBitmap,outputs.getDetectionResultList()));
+                        reviewImage.setRotation(rotatedAngle);
                         // Releases model resources if no longer used.
                         model.close();
                     } catch (IOException e) {

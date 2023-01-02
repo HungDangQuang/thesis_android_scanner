@@ -76,6 +76,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
     private float screenRatio;
     private Spinner spinner;
     private int rotatedAngle;
+    int angle = 0;
     @Override
     protected void init() {
         super.init();
@@ -88,14 +89,6 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         cropButton = findViewById(R.id.okButton);
         sourceFrame = findViewById(R.id.sourceFrame);
         polygonView = findViewById(R.id.polygonView);
-
-//        spinner = findViewById(R.id.spinner);
-//        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
-//                                                    .createFromResource(this,R.array.document_type,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-//        staticAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-//
-//        spinner.setAdapter(staticAdapter);
-
 
         closeButton.setOnClickListener(this);
         rotateLeftButton.setOnClickListener(this);
@@ -181,21 +174,16 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                 finish();
                 break;
 
-            case R.id.rotateRightButton:
-            case R.id.rotateLeftButton: {
-                int angle;
-                if (view.getId() == R.id.rotateRightButton) {
-                    angle = -90;
-                }
-                else {
-                    angle = 90;
-                }
+            case R.id.rotateRightButton: {
+                rotateRightButton.setEnabled(false);
+                final int rotatedAngle = -90;
+                angle += rotatedAngle;
 
-                sourceImageView.animate().rotationBy(angle).setDuration(200).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+                sourceImageView.animate().rotationBy(rotatedAngle).setDuration(200).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animator) {
 
-                        polygonView.animate().rotationBy(angle).setDuration(200).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+                        polygonView.animate().rotationBy(rotatedAngle).setDuration(200).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
                             @Override
                             public void onAnimationStart(Animator animator) {
 
@@ -223,6 +211,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                                 polygonViewLayoutParams.height = polygonViewHeight;
 
                                 polygonView.requestLayout();
+                                rotateRightButton.setEnabled(true);
                             }
 
                             @Override
@@ -254,7 +243,90 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                         }
                         sourceImageView.requestLayout();
                         // update angle for the next activity
-                        rotatedAngle = angle;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                }).start();
+
+                break;
+            }
+            case R.id.rotateLeftButton: {
+                rotateLeftButton.setEnabled(false);
+                final int rotatedAngle = 90;
+                angle += rotatedAngle;
+
+                sourceImageView.animate().rotationBy(rotatedAngle).setDuration(200).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                        polygonView.animate().rotationBy(rotatedAngle).setDuration(200).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
+
+                                ViewGroup.LayoutParams polygonViewLayoutParams = polygonView.getLayoutParams();
+                                int polygonViewWidth = polygonView.getWidth();
+                                int polygonViewHeight = polygonView.getHeight();
+
+                                if ((polygonView.getRotation()/90)%2 != 0) {
+                                    polygonViewWidth = (int) (polygonViewWidth * screenRatio);
+                                    polygonViewHeight = (int) (polygonViewHeight * screenRatio);
+                                    polygonView.setScaledPoint(screenRatio);
+                                }
+                                else {
+                                    polygonViewWidth = (int) (polygonViewWidth / screenRatio);
+                                    polygonViewHeight = (int) (polygonViewHeight / screenRatio);
+                                    polygonView.setScaledPoint(1/screenRatio);
+                                }
+
+                                polygonViewLayoutParams.width = polygonViewWidth;
+                                polygonViewLayoutParams.height = polygonViewHeight;
+
+                                polygonView.requestLayout();
+                                rotateLeftButton.setEnabled(true);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
+
+                            }
+                        }).start();
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+
+                        ViewGroup.LayoutParams lp = sourceImageView.getLayoutParams();
+                        int w  = sourceImageView.getWidth();
+                        int h = sourceImageView.getHeight();
+
+                        if ((sourceImageView.getRotation() / 90) % 2 != 0) {
+                            lp.width = (int) (w * screenRatio);
+                            lp.height = (int) (h * screenRatio);
+
+                        } else {
+                            lp.width = (int) (w/screenRatio);
+                            lp.height = (int) (h/screenRatio);
+                        }
+                        sourceImageView.requestLayout();
+                        // update angle for the next activity
                     }
 
                     @Override
@@ -282,7 +354,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                 Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("croppedImage",imgUri);
-                intent.putExtra("rotatedAngle",rotatedAngle);
+                intent.putExtra("rotatedAngle",angle);
                 appUtils.deleteImage(imgUri);
                 startActivity(intent);
 //                finish();
