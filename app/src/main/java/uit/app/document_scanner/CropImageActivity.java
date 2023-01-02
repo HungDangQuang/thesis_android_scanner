@@ -89,14 +89,6 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         sourceFrame = findViewById(R.id.sourceFrame);
         polygonView = findViewById(R.id.polygonView);
 
-//        spinner = findViewById(R.id.spinner);
-//        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter
-//                                                    .createFromResource(this,R.array.document_type,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-//        staticAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-//
-//        spinner.setAdapter(staticAdapter);
-
-
         closeButton.setOnClickListener(this);
         rotateLeftButton.setOnClickListener(this);
         rotateRightButton.setOnClickListener(this);
