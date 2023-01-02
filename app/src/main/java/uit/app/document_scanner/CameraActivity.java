@@ -233,7 +233,4 @@ public class CameraActivity extends AppCompatActivity {
 
 }
 
-interface Callback {
-    void SendBitmap(Bitmap bm);
-}
 
