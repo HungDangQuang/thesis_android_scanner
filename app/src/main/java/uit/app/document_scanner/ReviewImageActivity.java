@@ -215,7 +215,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
                 try {
 
                     Bitmap bm = appUtils.getBitmap(uri,ReviewImageActivity.this);
-                    bm = utils.rotate(bm,rotatedAngle);
+//                    bm = utils.rotate(bm,rotatedAngle);
 //                    int x = (int) (0.75 * bm.getWidth());
 //                    int y = (int) (0.05 * bm.getHeight());
 //                    int width = (int) (0.2 * bm.getWidth());
@@ -247,6 +247,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
                         EfficientdetLiteCid.Outputs outputs = model.process(image);
 
                         reviewImage.setImageBitmap(drawDetectionResult(scaledBitmap,outputs.getDetectionResultList()));
+                        reviewImage.setRotation(rotatedAngle);
                         // Releases model resources if no longer used.
                         model.close();
                     } catch (IOException e) {
