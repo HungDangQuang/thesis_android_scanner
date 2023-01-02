@@ -22,6 +22,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -44,7 +45,6 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
     private ImageView imageView;
     private Button addNewDocumentButton;
     private Button ocrButton;
-    private Button shareDocumentButton;
     private String filePath;
     private String colorImageFilePath;
 
@@ -54,12 +54,10 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         imageView = findViewById(R.id.resultImage);
         addNewDocumentButton = findViewById(R.id.addNewDocumentButton);
         ocrButton = findViewById(R.id.ocrButton);
-        shareDocumentButton = findViewById(R.id.shareButton);
 
         // set on click listener
         addNewDocumentButton.setOnClickListener(this);
         ocrButton.setOnClickListener(this);
-        shareDocumentButton.setOnClickListener(this);
 
         // show back button on action bar
         assert getSupportActionBar() != null;
@@ -208,10 +206,6 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 ocrIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 ocrIntent.putExtra("rgbImagePath", colorImageFilePath);
                 startActivity(ocrIntent);
-                break;
-
-            case R.id.shareButton:
-                Log.d(TAG, "onClick: display share pop up");
                 break;
 
             default:

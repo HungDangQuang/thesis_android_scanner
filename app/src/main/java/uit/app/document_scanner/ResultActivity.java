@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -37,6 +38,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -73,6 +76,10 @@ public class ResultActivity extends OptionalActivity{
         editableAddress = findViewById(R.id.editableAddress);
         confirmButton = findViewById(R.id.acceptButton);
         editableDOB.setFocusable(false);
+
+
+        // set limit of characters in text edit id: old cid
+        editableID.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10) });
 
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -360,49 +367,60 @@ public class ResultActivity extends OptionalActivity{
 
                 // In order to access the TextView inside the UI thread, the code is executed inside runOnUiThread()
                 try {
-                    final String responseData = response.body().string();
+                    String responseData = response.body().string();
                     switch (category){
                         case "id":
+                            if (responseData.length() > 9) {
+                                responseData = responseData.substring(1);
+                            }
+                            String finalId = responseData;
                             editableID.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableID.setText(responseData);
+                                    editableID.setText(finalId);
                                 }
                             });
                             break;
 
                         case "name":
+                            String finalName = responseData;
                             editableName.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableName.setText(responseData);
+                                    editableName.setText(finalName);
                                 }
                             });
                             break;
 
                         case "dob":
+                            String finalDob = responseData;
+//                            if (responseData.contains(".")){
+//                                String[] parts = responseData.split(".");
+//                            }
                             editableDOB.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableDOB.setText(responseData);
+                                    editableDOB.setText(finalDob);
                                 }
                             });
                             break;
 
                         case "hometown":
+                            String finalHometown = responseData;
                             editableHometown.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableHometown.setText(responseData);
+                                    editableHometown.setText(finalHometown);
                                 }
                             });
                             break;
 
                         case "address":
+                            String finalAddress = responseData;
                             editableAddress.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableAddress.setText(responseData);
+                                    editableAddress.setText(finalAddress);
                                 }
                             });
                             break;

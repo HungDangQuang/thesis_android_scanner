@@ -58,6 +58,13 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
             <Button
                 android:id="@+id/ocrButton"
                 android:layout_width="30dp"
@@ -67,19 +74,6 @@
                 android:layout_gravity="center"/>
         </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <Button
-                android:id="@+id/shareButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@drawable/ic_baseline_share_24"
-                app:backgroundTint="@null"
-                android:layout_gravity="center"/>
-        </FrameLayout>
 
     </LinearLayout>
 

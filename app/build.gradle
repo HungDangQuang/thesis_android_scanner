@@ -23,22 +23,6 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
-
-        defaultConfig {
-//            python {
-//                version "3.8"
-//                buildPython "/Users/quanghung/opt/anaconda3/envs/downgrade/bin/python"
-//
-//            }
-
-        }
-
-//        sourceSets {
-//            main {
-//                python.srcDirs "src/main/python"
-//            }
-//        }
-
     }
 
     buildTypes {
@@ -109,4 +93,5 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.1.1')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-database'
+
 }
