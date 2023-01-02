@@ -1,9 +1,14 @@
 package uit.app.document_scanner;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -54,6 +59,7 @@ public class CameraActivity extends AppCompatActivity {
     private static int CAPTURING_CAMERA = 10;
     int flashMode = ImageCapture.FLASH_MODE_OFF;
     Preview preview;
+    private AppUtils appUtils = new AppUtils();
 
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
@@ -64,13 +70,6 @@ public class CameraActivity extends AppCompatActivity {
         btnImageCapture = findViewById(R.id.imageCapture);
         btnImageGallery = findViewById(R.id.imageGallery);
         btnFlashMode = findViewById(R.id.flash);
-        Callback callback = new Callback() {
-            @Override
-            public void SendBitmap(Bitmap bm) {
-                Uri imgUri = Uri.parse("file://" + new AppUtils().saveBitmapToFile(bm, SaveOptions.TEMP));
-                startCropImageActivity(imgUri);
-            }
-        };
 
         btnImageCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +78,7 @@ public class CameraActivity extends AppCompatActivity {
                 stopCamera();
                 loadingDialog.startLoadingDialog();
                 view.setEnabled(false);
-                capturePhoto(callback);
+                capturePhoto();
                 view.setEnabled(true);
             }
         });
@@ -111,20 +110,20 @@ public class CameraActivity extends AppCompatActivity {
         cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageCapture);
     }
 
-    private void capturePhoto(Callback callback){
+    private void capturePhoto(){
 
         imageCapture.takePicture(getMainExecutor(), new ImageCapture.OnImageCapturedCallback() {
 
             @Override
             public void onCaptureSuccess(@NonNull ImageProxy image) {
-
                 super.onCaptureSuccess(image);
+
                 Bitmap bm = imageProxyToBitmap(image);
-                callback.SendBitmap(bm);
-                loadingDialog.dismissDialog();
+                new SaveCapturedImage().execute(bm);
                 image.close();
             }
         });
+
     }
 
     private Bitmap imageProxyToBitmap(ImageProxy image) {
@@ -216,9 +215,22 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+    private class SaveCapturedImage extends AsyncTask<Bitmap,Void,Uri>{
+
+
+        @Override
+        protected Uri doInBackground(Bitmap... bitmaps) {
+            Uri imgUri = Uri.parse("file://" + appUtils.saveBitmapToFile(bitmaps[0], SaveOptions.TEMP));
+            return imgUri;
+        }
+
+        @Override
+        protected void onPostExecute(Uri uri) {
+            super.onPostExecute(uri);
+            startCropImageActivity(uri);
+        }
+    }
+
 }
 
-interface Callback {
-    void SendBitmap(Bitmap bm);
-}
 

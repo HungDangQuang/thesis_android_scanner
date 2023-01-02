@@ -8,13 +8,20 @@
     android:weightSum="10"
     android:background="@color/black_primary_dark">
 
-    <ImageView
-        android:id="@+id/resultImage"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/black_primary_dark"
         android:layout_weight="9"
-        android:layout_margin="10dp"/>
+        android:padding="20dp">
+
+        <ImageView
+            android:id="@+id/resultImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:background="@color/black_primary_dark" />
+
+    </FrameLayout>
 
     <View
         android:layout_width="match_parent"
@@ -51,6 +58,13 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
             <Button
                 android:id="@+id/ocrButton"
                 android:layout_width="30dp"
@@ -60,19 +74,6 @@
                 android:layout_gravity="center"/>
         </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <Button
-                android:id="@+id/shareButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:background="@drawable/ic_baseline_share_24"
-                app:backgroundTint="@null"
-                android:layout_gravity="center"/>
-        </FrameLayout>
 
     </LinearLayout>
 
