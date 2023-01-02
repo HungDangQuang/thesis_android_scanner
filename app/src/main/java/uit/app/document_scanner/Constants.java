@@ -22,4 +22,8 @@ public class Constants {
     public static final int DOB = 3;
     public static final int HOMETOWN = 4;
     public static final int ADDRESS = 5;
+
+    public static final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 100;
+    public static final int PERMISSION_REQUEST_CAMERA = 101;
+
 }

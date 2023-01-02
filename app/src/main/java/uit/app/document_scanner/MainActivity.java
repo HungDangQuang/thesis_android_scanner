@@ -105,7 +105,41 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION,this,mLoaderCallback);
         }
 
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},Constants.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
+        }
+
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.CAMERA},Constants.PERMISSION_REQUEST_CAMERA);
+        }
+
         init();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case Constants.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Log.d(TAG, "onRequestPermissionsResult: permission read external storage granted");
+                }
+                else {
+                    Log.d(TAG, "onRequestPermissionsResult: permission read external storage denied");
+                }
+                break;
+            }
+
+            case Constants.PERMISSION_REQUEST_CAMERA: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Log.d(TAG, "onRequestPermissionsResult: permission camera granted");
+                }
+                else {
+                    Log.d(TAG, "onRequestPermissionsResult: permission camera denied");
+                }
+                break;
+            }
+        }
     }
 
     @Override
@@ -253,7 +287,6 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
                 break;
         }
     }
-
 
 
 }
