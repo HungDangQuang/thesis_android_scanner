@@ -175,19 +175,20 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
 
             case R.id.rotateRightButton:
             case R.id.rotateLeftButton: {
-                int angle;
+                int angle = 0;
                 if (view.getId() == R.id.rotateRightButton) {
-                    angle = -90;
+                    angle += -90;
                 }
                 else {
-                    angle = 90;
+                    angle += 90;
                 }
 
+                int finalAngle = angle;
                 sourceImageView.animate().rotationBy(angle).setDuration(200).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animator) {
 
-                        polygonView.animate().rotationBy(angle).setDuration(200).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
+                        polygonView.animate().rotationBy(finalAngle).setDuration(200).setInterpolator(new LinearInterpolator()).setListener(new Animator.AnimatorListener() {
                             @Override
                             public void onAnimationStart(Animator animator) {
 
@@ -246,7 +247,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                         }
                         sourceImageView.requestLayout();
                         // update angle for the next activity
-                        rotatedAngle = angle;
+                        rotatedAngle = finalAngle;
                     }
 
                     @Override
