@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -59,6 +60,7 @@ import java.util.Map;
 
 import uit.app.document_scanner.cropDocument.PolygonView;
 import uit.app.document_scanner.openCV.OpenCVUtils;
+import uit.app.document_scanner.view.LoadingDialog;
 
 public class CropImageActivity extends OptionalActivity implements View.OnClickListener{
 
@@ -77,8 +79,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
     private String TAG = CropImageActivity.class.getSimpleName();
     private AppUtils appUtils = new AppUtils();
     private float screenRatio;
-    private Spinner spinner;
-    private int rotatedAngle;
+    private LoadingDialog loadingDialog;
     int angle = 0;
     @Override
     protected void init() {
@@ -100,7 +101,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         zoomButton.setOnClickListener(this);
         cropButton.setOnClickListener(this);
 
-        rotatedAngle = 0;
+        loadingDialog = new LoadingDialog(this);
     }
 
     @Override
@@ -111,20 +112,8 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_crop_image);
-        init();
 
-//        if (Build.VERSION.SDK_INT < 16) {
-//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        }
-//        else {
-//            View decorView = getWindow().getDecorView();
-//            // Show Status Bar.
-//            int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
-//            decorView.setSystemUiVisibility(uiOptions);
-//        }
-//        OpenCVLoader.initDebug();
-//        init();
+        init();
 
         sourceFrame.post(new Runnable() {
             @Override
@@ -356,15 +345,8 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                 break;
 
             case R.id.okButton:
-                Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-                String savedPath = appUtils.saveBitmapToFile(croppedBitmap,SaveOptions.APP);
-                Uri imgUri = Uri.parse( "file://" + savedPath);
-                Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("croppedImage",imgUri);
-                intent.putExtra("rotatedAngle",angle);
-                appUtils.deleteImage(imgUri);
-                startActivity(intent);
+                loadingDialog.startLoadingDialog();
+                new ImageCroppingTask().execute();
 //                finish();
                 break;
 
@@ -373,5 +355,27 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         }
     }
 
+    private class ImageCroppingTask extends AsyncTask<Void,Void,Intent> {
+
+        @Override
+        protected Intent doInBackground(Void... voids) {
+            Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
+            String savedPath = appUtils.saveBitmapToFile(croppedBitmap,SaveOptions.APP);
+            Uri imgUri = Uri.parse( "file://" + savedPath);
+            Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("croppedImage",imgUri);
+            intent.putExtra("rotatedAngle",angle);
+            appUtils.deleteImage(imgUri);
+            return intent;
+        }
+
+        @Override
+        protected void onPostExecute(Intent intent) {
+            super.onPostExecute(intent);
+            startActivity(intent);
+            loadingDialog.dismissDialog();
+        }
+    }
 
 }
