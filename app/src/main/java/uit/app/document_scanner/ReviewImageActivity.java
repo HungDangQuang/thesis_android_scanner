@@ -369,13 +369,13 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
         Paint paint = new Paint();
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(Color.RED);
-        paint.setStrokeWidth(8f);
+        paint.setStrokeWidth(2f);
         for (EfficientdetLiteCid.DetectionResult res : detectionResults){
             float score = res.getScoreAsFloat();
             if (score > 0.3) {
                 RectF location = res.getLocationAsRectF();
-//                canvas.drawRect(location,paint);
-                canvas.drawLine(location.left,0,location.left,location.top,paint);
+                canvas.drawRect(location,paint);
+//                canvas.drawLine(location.left,0,location.left,location.top,paint);
             }
 
         }

@@ -61,7 +61,7 @@
             android:name=".CropImageActivity"
             android:parentActivityName=".CameraActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Document_Scanner"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
         <activity
             android:name=".ReviewImageActivity"

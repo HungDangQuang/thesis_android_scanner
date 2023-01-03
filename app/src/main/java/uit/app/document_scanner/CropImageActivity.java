@@ -27,6 +27,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +42,7 @@ import com.google.android.gms.tasks.Task;
 //import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.common.InputImage;
 
+import org.apache.commons.io.FilenameUtils;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -69,6 +71,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
     private Button rotateRightButton;
     private Button zoomButton;
     private Button cropButton;
+    private TextView documentNameTextView;
     private Bitmap bm;
     private Uri imgUri;
     private String TAG = CropImageActivity.class.getSimpleName();
@@ -89,6 +92,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         cropButton = findViewById(R.id.okButton);
         sourceFrame = findViewById(R.id.sourceFrame);
         polygonView = findViewById(R.id.polygonView);
+        documentNameTextView = findViewById(R.id.documentNameTextView);
 
         closeButton.setOnClickListener(this);
         rotateLeftButton.setOnClickListener(this);
@@ -128,6 +132,10 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                 Intent intent = getIntent();
                 imgUri = intent.getParcelableExtra("ImagePath");
 
+                File filename = new File(imgUri.getLastPathSegment());
+                String str = filename.toString();
+                str = FilenameUtils.removeExtension(str);
+                documentNameTextView.setText(str);
 
                 try {
                     bm = new AppUtils().getBitmap(imgUri,CropImageActivity.this);
