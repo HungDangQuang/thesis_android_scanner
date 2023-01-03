@@ -95,6 +95,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -103,6 +104,7 @@ import java.util.stream.Collectors;
 
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
 import uit.app.document_scanner.openCV.OpenCVUtils;
+import uit.app.document_scanner.view.LoadingDialog;
 
 public class ReviewImageActivity extends OptionalActivity implements View.OnClickListener {
     
@@ -122,6 +124,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
     private int rotatedAngle;
     private OpenCVUtils utils;
     private AppUtils appUtils;
+    private LoadingDialog loadingDialog;
 
     public static final String TESS_DATA = "/tessdata";
 //    private static final String DATA_PATH = Environment.getExternalStorageDirectory().toString() + "/Tess";
@@ -156,6 +159,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
         binaryModeButton.setOnClickListener(this);
         confirmButton.setOnClickListener(this);
 
+        loadingDialog = new LoadingDialog(this);
 
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -311,34 +315,25 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
                 break;
 
             case R.id.confirmButton:
-                String path = Constants.APP_DIR;
-                OutputStream fOut = null;
-                Integer counter = 0;
-                File file = new File(path, editText.getText().toString() + "_" + getResources().getResourceEntryName(flag) + ".jpg");
-                reviewImage.invalidate();
-                BitmapDrawable drawable = (BitmapDrawable) reviewImage.getDrawable();
-                Bitmap savedBm =  drawable.getBitmap();
-//                savedBm.compress(Bitmap.CompressFormat.JPEG,100,fOut);
-                try {
-                    fOut = new FileOutputStream(file);
-                    savedBm.compress(Bitmap.CompressFormat.JPEG,100,fOut);
-                    fOut.flush();
-                    fOut.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                String filePath = file.getAbsolutePath();
-                Intent intent = new Intent(ReviewImageActivity.this,ViewDocumentActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                intent.putExtra("filePath",filePath);
-                intent.putExtra("rgbImagePath",uri.getPath());
-                startActivity(intent);
-
+                loadingDialog.startLoadingDialog();
+                new SaveDocument().execute(editText.getText().toString());
         }
     }
+
+//    private List<String> getListOfDocuments(){
+//
+//        String path = Constants.APP_DIR;
+//        File directory = new File(path);
+//        List<File> list = Arrays.asList(directory.listFiles());
+//
+//        List<String> listName = new ArrayList<>();
+//        for(File file : list){
+//            String name = file.getName();
+//            name = name.substring(0,name.lastIndexOf("."));
+//            listName.add(name);
+//        }
+//        return listName;
+//    }
 
 
     private void changeIconTintColorToOriginalColor(int id){
@@ -380,5 +375,49 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
 
         }
         return output;
+    }
+
+    private class SaveDocument extends AsyncTask<String,Void,Intent>{
+
+        @Override
+        protected Intent doInBackground(String... strings) {
+            String fileName = strings[0];
+            String path = Constants.APP_DIR;
+            OutputStream fOut = null;
+            Integer counter = 0;
+            File file = new File(path, fileName + ".jpg");
+            while (file.exists()){
+                file = new File(path, fileName + "_" + counter + ".jpg");
+                counter ++;
+            }
+            reviewImage.invalidate();
+            BitmapDrawable drawable = (BitmapDrawable) reviewImage.getDrawable();
+            Bitmap savedBm =  drawable.getBitmap();
+            try {
+                fOut = new FileOutputStream(file);
+                savedBm.compress(Bitmap.CompressFormat.JPEG,100,fOut);
+                fOut.flush();
+                fOut.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            String filePath = file.getAbsolutePath();
+            Intent intent = new Intent(ReviewImageActivity.this,ViewDocumentActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("filePath",filePath);
+            intent.putExtra("rgbImagePath",uri.getPath());
+
+            return intent;
+        }
+
+        @Override
+        protected void onPostExecute(Intent intent) {
+            super.onPostExecute(intent);
+            startActivity(intent);
+            loadingDialog.dismissDialog();
+        }
     }
 }
