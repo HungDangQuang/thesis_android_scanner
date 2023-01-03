@@ -227,8 +227,8 @@ public class CameraActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Uri uri) {
             super.onPostExecute(uri);
-            loadingDialog.dismissDialog();
             startCropImageActivity(uri);
+            loadingDialog.dismissDialog();
         }
     }
 
