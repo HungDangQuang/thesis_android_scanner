@@ -52,7 +52,7 @@ public class CameraActivity extends AppCompatActivity {
     private Button btnImageCapture;
     private Button btnImageGallery;
     private Button btnFlashMode;
-    private Button stopCamerabutton;
+    private Button stopCameraButton;
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
     private LoadingDialog loadingDialog = new LoadingDialog(CameraActivity.this);
     private String TAG = CameraActivity.class.getSimpleName();
@@ -71,7 +71,7 @@ public class CameraActivity extends AppCompatActivity {
         btnImageCapture = findViewById(R.id.imageCapture);
         btnImageGallery = findViewById(R.id.imageGallery);
         btnFlashMode = findViewById(R.id.flash);
-        stopCamerabutton = findViewById(R.id.stopCameraButton);
+        stopCameraButton = findViewById(R.id.stopCameraButton);
 
         btnImageCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,7 +99,7 @@ public class CameraActivity extends AppCompatActivity {
             }
         });
 
-        stopCamerabutton.setOnClickListener(new View.OnClickListener() {
+        stopCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
