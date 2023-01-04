@@ -338,7 +338,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
 
             if (detectedBitmap == null) {
                 Bitmap inputBitmap = bitmaps[0];
-                List<EfficientdetLiteCid.DetectionResult> list = detectText(originalBitmap);
+                List<EfficientdetLiteCid.DetectionResult> list = detectText(inputBitmap);
                 detectedBitmap = drawDetectionResult(originalBitmap, list);
             }
             return detectedBitmap;

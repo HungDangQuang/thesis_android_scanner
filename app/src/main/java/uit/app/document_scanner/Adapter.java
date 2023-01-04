@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.Image;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,8 +83,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, ViewDocumentActivity.class);
-            intent.putExtra("filePath", filePath);
-            intent.putExtra("rgbImagePath",filePath);
+            intent.putExtra("filePath", Uri.parse("file://" + filePath));
+            intent.putExtra("originalImageName",filename.getText() + ".jpg");
             context.startActivity(intent);
         }
     }
