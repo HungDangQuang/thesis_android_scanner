@@ -360,7 +360,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         @Override
         protected Intent doInBackground(Void... voids) {
             Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-            String savedPath = appUtils.saveBitmapToFile(croppedBitmap,SaveOptions.APP);
+            String savedPath = appUtils.saveBitmapToFile(croppedBitmap,SaveOptions.TEMP);
             Uri imgUri = Uri.parse( "file://" + savedPath);
             Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

@@ -132,6 +132,8 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
 //        postRequest(postUrl,requestBody);
     }
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.option_view,menu);
@@ -255,7 +257,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 break;
 
             case R.id.textDetectionButton:
-//                loadingDialog.startLoadingDialog();
+                loadingDialog.startLoadingDialog();
 
                 if (isFocused == false) {
                     new TextDetectionTask().execute(coloredBitmap);
@@ -265,10 +267,11 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 else {
                     imageView.setImageBitmap(originalBitmap);
                     isFocused = false;
-//                    loadingDialog.dismissDialog();
                 }
 
                 changeButtonTintColor(textDetectionButton, isFocused);
+                loadingDialog.dismissDialog();
+
                 break;
 
             default:
