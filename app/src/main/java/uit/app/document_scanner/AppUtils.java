@@ -56,7 +56,9 @@ public class AppUtils {
             case TEMP:
                 mediaStorageDir = new File(Constants.TEMP_DIR);
                 break;
-
+            case ORIGINAL:
+                mediaStorageDir = new File(Constants.ORIGINAL_IMAGE_DIR);
+                break;
 //            break;
 
         }
