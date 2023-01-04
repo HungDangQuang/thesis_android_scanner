@@ -241,22 +241,23 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
 //                    boolean data = detector.detect(mat,points);
 //                    Log.d(TAG, "qrcode detection: " + data);
 
-                    try {
-                        EfficientdetLiteCid model = EfficientdetLiteCid.newInstance(getApplicationContext());
-
-                        // Creates inputs for reference.
-                        TensorImage image = TensorImage.fromBitmap(scaledBitmap);
-
-                        // Runs model inference and gets result.
-                        EfficientdetLiteCid.Outputs outputs = model.process(image);
-
-                        reviewImage.setImageBitmap(drawDetectionResult(scaledBitmap,outputs.getDetectionResultList()));
-                        reviewImage.setRotation(rotatedAngle);
-                        // Releases model resources if no longer used.
-                        model.close();
-                    } catch (IOException e) {
-                        // TODO Handle the exception
-                    }
+//                    try {
+//                        EfficientdetLiteCid model = EfficientdetLiteCid.newInstance(getApplicationContext());
+//
+//                        // Creates inputs for reference.
+//                        TensorImage image = TensorImage.fromBitmap(scaledBitmap);
+//
+//                        // Runs model inference and gets result.
+//                        EfficientdetLiteCid.Outputs outputs = model.process(image);
+//
+//                        reviewImage.setImageBitmap(drawDetectionResult(scaledBitmap,outputs.getDetectionResultList()));
+//                        reviewImage.setRotation(rotatedAngle);
+//                        // Releases model resources if no longer used.
+//                        model.close();
+//                    } catch (IOException e) {
+//                        // TODO Handle the exception
+//                    }
+                    reviewImage.setImageBitmap(scaledBitmap);
                     originalBitmap = scaledBitmap;
 
                 } catch (FileNotFoundException e) {
@@ -407,8 +408,8 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
             String filePath = file.getAbsolutePath();
             Intent intent = new Intent(ReviewImageActivity.this,ViewDocumentActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.putExtra("filePath",filePath);
-            intent.putExtra("rgbImagePath",uri.getPath());
+            intent.putExtra("filePath",Uri.parse("file://" + filePath));
+            intent.putExtra("rgbImagePath",uri);
 
             return intent;
         }

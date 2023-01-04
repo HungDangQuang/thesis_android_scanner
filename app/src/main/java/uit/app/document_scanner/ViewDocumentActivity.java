@@ -7,6 +7,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,14 +29,20 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.squareup.picasso.Picasso;
 
+import org.checkerframework.checker.units.qual.A;
+import org.tensorflow.lite.support.image.TensorImage;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -38,6 +52,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import uit.app.document_scanner.ml.EfficientdetLiteCid;
+import uit.app.document_scanner.view.LoadingDialog;
 
 public class ViewDocumentActivity extends OptionalActivity implements View.OnClickListener {
 
@@ -45,8 +61,15 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
     private ImageView imageView;
     private Button addNewDocumentButton;
     private Button ocrButton;
+    private Button textDetectionButton;
     private String filePath;
     private String colorImageFilePath;
+    private Bitmap detectedBitmap;
+    private Bitmap originalBitmap;
+    private Bitmap coloredBitmap;
+    private LoadingDialog loadingDialog;
+    private Boolean isFocused;
+    private AppUtils appUtils;
 
     @Override
     protected void init() {
@@ -54,10 +77,20 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         imageView = findViewById(R.id.resultImage);
         addNewDocumentButton = findViewById(R.id.addNewDocumentButton);
         ocrButton = findViewById(R.id.ocrButton);
+        textDetectionButton = findViewById(R.id.textDetectionButton);
 
         // set on click listener
         addNewDocumentButton.setOnClickListener(this);
         ocrButton.setOnClickListener(this);
+        textDetectionButton.setOnClickListener(this);
+
+        detectedBitmap = null;
+        loadingDialog = new LoadingDialog(this);
+
+        isFocused = false;
+        originalBitmap = null;
+
+        appUtils = new AppUtils();
 
         // show back button on action bar
         assert getSupportActionBar() != null;
@@ -75,12 +108,25 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         init();
         Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        filePath = bundle.getString("filePath");
-        colorImageFilePath = bundle.getString("rgbImagePath");
-        Log.d(TAG, "onCreate: " + colorImageFilePath);
-        File image = new File(filePath);
-        Picasso.get().load(image).into(imageView);
+//        Bundle bundle = intent.getExtras();
+//        filePath = bundle.getString("filePath");
+        Uri modeImage = intent.getParcelableExtra("filePath");
+        try {
+            originalBitmap = appUtils.getBitmap(modeImage,this);
+            imageView.setImageBitmap(originalBitmap);
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "onCreate: failed to get rgb bitmap");
+        }
+//        colorImageFilePath = bundle.getString("rgbImagePath");
+        Uri uri = intent.getParcelableExtra("rgbImagePath");
+//        File image = new File(filePath);
+//        Picasso.get().load(image).into(imageView);
+        try {
+            coloredBitmap = appUtils.getBitmap(uri,this);
+            coloredBitmap = Bitmap.createScaledBitmap(coloredBitmap,originalBitmap.getWidth(),originalBitmap.getHeight(),false);
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "onCreate: failed to get rgb bitmap");
+        }
 //        String postUrl = "http://192.168.1.57:5001";
 //        byte[] bytes = createByteArray(filePath);
 //        RequestBody requestBody = createImageIntoBody(bytes);
@@ -180,6 +226,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 AlertDialog renameDialog = renameBuilder.create();
                 renameDialog.show();
                 break;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -208,8 +255,104 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 startActivity(ocrIntent);
                 break;
 
+            case R.id.textDetectionButton:
+//                loadingDialog.startLoadingDialog();
+
+                if (isFocused == false) {
+                    imageView.invalidate();
+                    BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+                    originalBitmap = drawable.getBitmap();
+                    new TextDetectionTask().execute(coloredBitmap);
+                    isFocused = true;
+                }
+
+                else {
+                    imageView.setImageBitmap(detectedBitmap);
+                    isFocused = false;
+//                    loadingDialog.dismissDialog();
+                }
+
+                changeButtonTintColor(textDetectionButton, isFocused);
+                break;
+
             default:
                 break;
+        }
+    }
+
+    private void changeButtonTintColor(View view, boolean isFocused){
+        Drawable unwrappedDrawable = view.getBackground();
+        Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
+
+        if(isFocused == true) {
+            DrawableCompat.setTint(wrappedDrawable, getColor(R.color.teal_font));
+        }
+
+        else {
+            DrawableCompat.setTint(wrappedDrawable, getColor(R.color.white_font));
+        }
+    }
+
+    private List<EfficientdetLiteCid.DetectionResult> detectText(Bitmap bm){
+        try {
+            EfficientdetLiteCid model = EfficientdetLiteCid.newInstance(getApplicationContext());
+
+            // Creates inputs for reference.
+            TensorImage image = TensorImage.fromBitmap(bm);
+
+            // Runs model inference and gets result.
+            EfficientdetLiteCid.Outputs outputs = model.process(image);
+
+            // Releases model resources if no longer used.
+            model.close();
+
+            return outputs.getDetectionResultList();
+
+//            detectText(bm,outputs.getDetectionResultList());
+        } catch (IOException e) {
+            // TODO Handle the exception
+            return null;
+        }
+    }
+
+    private Bitmap drawDetectionResult(Bitmap bm, List<EfficientdetLiteCid.DetectionResult> detectionResults){
+
+
+        Bitmap output = bm.copy(Bitmap.Config.ARGB_8888,true);
+        Canvas canvas = new Canvas(output);
+        Paint paint = new Paint();
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(2f);
+        for (EfficientdetLiteCid.DetectionResult res : detectionResults){
+            float score = res.getScoreAsFloat();
+            if (score > 0.3) {
+                RectF location = res.getLocationAsRectF();
+                canvas.drawRect(location,paint);
+//                canvas.drawLine(location.left,0,location.left,location.top,paint);
+            }
+        }
+        return output;
+    }
+
+    private class TextDetectionTask extends AsyncTask<Bitmap,Void,Bitmap>{
+
+        @Override
+        protected Bitmap doInBackground(Bitmap... bitmaps) {
+
+            if (detectedBitmap == null) {
+                Bitmap inputBitmap = bitmaps[0];
+                List<EfficientdetLiteCid.DetectionResult> list = detectText(inputBitmap);
+                detectedBitmap = drawDetectionResult(originalBitmap, list);
+            }
+            return detectedBitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            imageView.setImageBitmap(bitmap);
+//            loadingDialog.dismissDialog();
         }
     }
 
