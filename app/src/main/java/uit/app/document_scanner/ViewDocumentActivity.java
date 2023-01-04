@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.List;
 
 import okhttp3.Call;
@@ -63,14 +64,14 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
     private Button ocrButton;
     private Button textDetectionButton;
     private String filePath;
-    private String colorImageFilePath;
     private Bitmap detectedBitmap;
     private Bitmap originalBitmap;
     private Bitmap coloredBitmap;
     private LoadingDialog loadingDialog;
     private Boolean isFocused;
     private AppUtils appUtils;
-
+    private Uri modifiedImageURI;
+    private Uri colorImageURI;
     @Override
     protected void init() {
         super.init();
@@ -108,25 +109,23 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         init();
         Intent intent = getIntent();
-//        Bundle bundle = intent.getExtras();
-//        filePath = bundle.getString("filePath");
-        Uri modeImage = intent.getParcelableExtra("filePath");
+
+        // converted image
+        modifiedImageURI = intent.getParcelableExtra("filePath");
+        // color image
+        colorImageURI = intent.getParcelableExtra("rgbImagePath");
         try {
-            originalBitmap = appUtils.getBitmap(modeImage,this);
+            // get and set image bitmap
+            originalBitmap = appUtils.getBitmap(modifiedImageURI,this);
             imageView.setImageBitmap(originalBitmap);
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, "onCreate: failed to get rgb bitmap");
-        }
-//        colorImageFilePath = bundle.getString("rgbImagePath");
-        Uri uri = intent.getParcelableExtra("rgbImagePath");
-//        File image = new File(filePath);
-//        Picasso.get().load(image).into(imageView);
-        try {
-            coloredBitmap = appUtils.getBitmap(uri,this);
+
+            // get and resize color bitmap
+            coloredBitmap = appUtils.getBitmap(colorImageURI,this);
             coloredBitmap = Bitmap.createScaledBitmap(coloredBitmap,originalBitmap.getWidth(),originalBitmap.getHeight(),false);
         } catch (FileNotFoundException e) {
-            Log.d(TAG, "onCreate: failed to get rgb bitmap");
+            Log.d(TAG, "onCreate: failed to get bitmap");
         }
+
 //        String postUrl = "http://192.168.1.57:5001";
 //        byte[] bytes = createByteArray(filePath);
 //        RequestBody requestBody = createImageIntoBody(bytes);
@@ -251,7 +250,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 // for testing
                 Intent ocrIntent = new Intent(ViewDocumentActivity.this, ResultActivity.class);
                 ocrIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                ocrIntent.putExtra("rgbImagePath", colorImageFilePath);
+                ocrIntent.putExtra("rgbImagePath", colorImageURI);
                 startActivity(ocrIntent);
                 break;
 
@@ -259,15 +258,12 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
 //                loadingDialog.startLoadingDialog();
 
                 if (isFocused == false) {
-                    imageView.invalidate();
-                    BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-                    originalBitmap = drawable.getBitmap();
                     new TextDetectionTask().execute(coloredBitmap);
                     isFocused = true;
                 }
 
                 else {
-                    imageView.setImageBitmap(detectedBitmap);
+                    imageView.setImageBitmap(originalBitmap);
                     isFocused = false;
 //                    loadingDialog.dismissDialog();
                 }
@@ -342,7 +338,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
 
             if (detectedBitmap == null) {
                 Bitmap inputBitmap = bitmaps[0];
-                List<EfficientdetLiteCid.DetectionResult> list = detectText(inputBitmap);
+                List<EfficientdetLiteCid.DetectionResult> list = detectText(originalBitmap);
                 detectedBitmap = drawDetectionResult(originalBitmap, list);
             }
             return detectedBitmap;
