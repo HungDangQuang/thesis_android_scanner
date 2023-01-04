@@ -5,6 +5,7 @@ import android.os.Environment;
 public class Constants {
     public static final String APP_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/MyCameraApp";
     public static final String TEMP_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/Temp";
+    public static final String ORIGINAL_IMAGE_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/OriginalImages";
     public static int K_SIZE_BLUR = 3;
     public static int KSIZE_CLOSE = 10;
     public static int CANNY_THRESH_L = 85;
