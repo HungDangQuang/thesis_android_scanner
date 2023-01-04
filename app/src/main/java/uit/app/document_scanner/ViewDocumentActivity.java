@@ -71,7 +71,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
     private Boolean isFocused;
     private AppUtils appUtils;
     private Uri modifiedImageURI;
-    private Uri colorImageURI;
+    private String colorImageName;
     @Override
     protected void init() {
         super.init();
@@ -110,18 +110,18 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         init();
         Intent intent = getIntent();
 
+
         // converted image
         modifiedImageURI = intent.getParcelableExtra("filePath");
         // color image
-        colorImageURI = intent.getParcelableExtra("rgbImagePath");
+        colorImageName = intent.getExtras().getString("originalImageName");
         try {
             // get and set image bitmap
             originalBitmap = appUtils.getBitmap(modifiedImageURI,this);
-            imageView.setImageBitmap(originalBitmap);
 
-            // get and resize color bitmap
-            coloredBitmap = appUtils.getBitmap(colorImageURI,this);
-            coloredBitmap = Bitmap.createScaledBitmap(coloredBitmap,originalBitmap.getWidth(),originalBitmap.getHeight(),false);
+            coloredBitmap = BitmapFactory.decodeFile(Constants.ORIGINAL_IMAGE_DIR + "/" + colorImageName);
+
+            imageView.setImageBitmap(originalBitmap);
         } catch (FileNotFoundException e) {
             Log.d(TAG, "onCreate: failed to get bitmap");
         }
@@ -250,7 +250,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 // for testing
                 Intent ocrIntent = new Intent(ViewDocumentActivity.this, ResultActivity.class);
                 ocrIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                ocrIntent.putExtra("rgbImagePath", colorImageURI);
+//                ocrIntent.putExtra("rgbImagePath", colorImageURI);
                 startActivity(ocrIntent);
                 break;
 

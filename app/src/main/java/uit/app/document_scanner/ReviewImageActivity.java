@@ -383,20 +383,56 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
         @Override
         protected Intent doInBackground(String... strings) {
             String fileName = strings[0];
+
             String path = Constants.APP_DIR;
+
+            File appFolder = new File(path);
+
+            if (!appFolder.exists()){
+                appFolder.mkdirs();
+            }
+
+            String originalImagePath = Constants.ORIGINAL_IMAGE_DIR;
+
+            File originalFolder = new File(originalImagePath);
+
+            if(!originalFolder.exists()){
+                originalFolder.mkdirs();
+            }
+
+            OutputStream fOutOriginal = null;
+
             OutputStream fOut = null;
+
             Integer counter = 0;
+
             File file = new File(path, fileName + ".jpg");
+
+            File originalFile = new File(originalImagePath, fileName + ".jpg");
+
             while (file.exists()){
                 file = new File(path, fileName + "_" + counter + ".jpg");
+                originalFile = new File(originalImagePath,fileName + "_" + counter + ".jpg");
                 counter ++;
             }
             reviewImage.invalidate();
             BitmapDrawable drawable = (BitmapDrawable) reviewImage.getDrawable();
-            Bitmap savedBm =  drawable.getBitmap();
+            Bitmap bitmap =  drawable.getBitmap();
+
+            try {
+                fOutOriginal = new FileOutputStream(originalFile);
+                originalBitmap.compress(Bitmap.CompressFormat.JPEG,100,fOutOriginal);
+                fOutOriginal.flush();
+                fOutOriginal.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             try {
                 fOut = new FileOutputStream(file);
-                savedBm.compress(Bitmap.CompressFormat.JPEG,100,fOut);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,100,fOut);
                 fOut.flush();
                 fOut.close();
             } catch (FileNotFoundException e) {
@@ -409,7 +445,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
             Intent intent = new Intent(ReviewImageActivity.this,ViewDocumentActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("filePath",Uri.parse("file://" + filePath));
-            intent.putExtra("rgbImagePath",uri);
+            intent.putExtra("originalImageName",file.getName());
 
             return intent;
         }
