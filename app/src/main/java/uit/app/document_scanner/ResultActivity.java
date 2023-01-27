@@ -1,6 +1,7 @@
 package uit.app.document_scanner;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -30,6 +32,7 @@ import org.tensorflow.lite.support.image.TensorImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,11 +55,13 @@ import okhttp3.Response;
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
 import uit.app.document_scanner.model.Person;
 import uit.app.document_scanner.model.PersonDao;
+import uit.app.document_scanner.view.LoadingDialog;
 
 public class ResultActivity extends OptionalActivity{
 
     private static String TAG = ResultActivity.class.getSimpleName();
     final Calendar myCalendar= Calendar.getInstance();
+    private LoadingDialog loadingDialog;
 
     private EditText editableID;
     private EditText editableName;
@@ -64,8 +69,11 @@ public class ResultActivity extends OptionalActivity{
     private EditText editableHometown;
     private EditText editableAddress;
     private Button confirmButton;
-    public static final String TESS_DATA = "/tessdata";
-    private String inputImagePath;
+    private String originalImageName;
+    int numOfRes = 5;
+
+    int returnedYear,returnedMonth,returnedDay;
+
     @Override
     protected void init() {
         super.init();
@@ -77,6 +85,13 @@ public class ResultActivity extends OptionalActivity{
         confirmButton = findViewById(R.id.acceptButton);
         editableDOB.setFocusable(false);
 
+        numOfRes = 0;
+
+        returnedYear = 0;
+        returnedMonth = 0;
+        returnedDay = 0;
+
+        loadingDialog = new LoadingDialog(this);
 
         // set limit of characters in text edit id: old cid
         editableID.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10) });
@@ -84,18 +99,25 @@ public class ResultActivity extends OptionalActivity{
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int day) {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH,month);
-                myCalendar.set(Calendar.DAY_OF_MONTH,day);
-                updateLabel();
+//                myCalendar.set(Calendar.YEAR, year);
+//                myCalendar.set(Calendar.MONTH,month);
+//                myCalendar.set(Calendar.DAY_OF_MONTH,day);
+//                updateLabel();
+                returnedDay = day;
+                returnedMonth = month + 1;
+                returnedYear = year;
+                editableDOB.setText(returnedDay + "-" + returnedMonth + "-" + returnedYear);
+
             }
         };
 
         editableDOB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerDialog datePickerDialog = new DatePickerDialog(ResultActivity.this,date,myCalendar.get(Calendar.DAY_OF_MONTH),myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.YEAR));
-                datePickerDialog.show();
+//                DatePickerDialog datePickerDialog = new DatePickerDialog(ResultActivity.this,date,myCalendar.get(Calendar.DAY_OF_MONTH),myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.YEAR));
+//                datePickerDialog.show();
+                new DatePickerDialog(ResultActivity.this, date,returnedYear,returnedMonth-1,returnedDay).show();
+
             }
         });
 
@@ -109,34 +131,82 @@ public class ResultActivity extends OptionalActivity{
                 String hometown = editableHometown.getText().toString();
                 String address = editableAddress.getText().toString();
                 Person person = new Person(id,fullName,dob,hometown,address);
+
+                if (id.length() == 0){
+                    Toast.makeText(ResultActivity.this,"ID is empty",Toast.LENGTH_SHORT).show();
+                }
+                else if (TextUtils.isDigitsOnly(id) == false){
+                    Toast.makeText(ResultActivity.this,"ID is not valid",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else if (isValidName(fullName) == false){
+                    Toast.makeText(ResultActivity.this,"Name is not valid",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else if(dob.length() == 0 ){
+                    Toast.makeText(ResultActivity.this,"Dob is empty",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else if(hometown.length() == 0){
+                    Toast.makeText(ResultActivity.this,"Hometown is empty",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else if(address.length() == 0){
+                    Toast.makeText(ResultActivity.this,"Address is empty",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                else {
+
+                    Task<Void> allTask;
+                    allTask = Tasks.whenAll(personDao.add(person));
+                    allTask.addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(ResultActivity.this,"new person added successfully",Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(ResultActivity.this,MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(ResultActivity.this,"fail to add new person",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
 //                new AddPerson().execute(person);
-                Task<Void> allTask;
-                allTask = Tasks.whenAll(personDao.add(person));
-                allTask.addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Toast.makeText(ResultActivity.this,"new person added successfully",Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ResultActivity.this,"fail to add new person",Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
         });
 
         Intent ocrIntent = getIntent();
         Bundle bundle = ocrIntent.getExtras();
-        inputImagePath = bundle.getString("rgbImagePath");
-        Bitmap bitmap = BitmapFactory.decodeFile(inputImagePath);
+        originalImageName = bundle.getString("originalImageName");
+        Bitmap bitmap = BitmapFactory.decodeFile(Constants.ORIGINAL_IMAGE_DIR + "/" + originalImageName);
         new OCR().execute(bitmap);
+    }
+
+
+
+    private Boolean isValidName(String str){
+
+        if (str.length() == 0){
+            return false;
+        }
+
+        if (str.matches(".*[0-9].*")){
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
+        loadingDialog.startLoadingDialog();
 
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -147,24 +217,10 @@ public class ResultActivity extends OptionalActivity{
         return R.layout.activity_result;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.option_view,menu);
-
-        return super.onCreateOptionsMenu(menu);
-
-    }
-
     private void updateLabel(){
-        String myFormat="dd-MM-yyyy";
-        SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
-        editableDOB.setText(dateFormat.format(myCalendar.getTime()));
-    }
-
-    private String getValueFromSharedPreferences(String key){
-        SharedPreferences mPrefs = getSharedPreferences("ordered text", Context.MODE_PRIVATE);
-        String str = mPrefs.getString(key, "");
-        return str;
+//        String myFormat="dd-MM-yyyy";
+//        SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
+        editableDOB.setText(returnedDay + "-" + returnedMonth +"-" + returnedYear);
     }
 
     @Override
@@ -195,42 +251,6 @@ public class ResultActivity extends OptionalActivity{
         }
     }
 
-//    private void prepareTessData(){
-//        try{
-//            File dir = getExternalFilesDir(TESS_DATA);
-//            if(!dir.exists()){
-//                if (!dir.mkdir()) {
-//                    Toast.makeText(getApplicationContext(), "The folder " + dir.getPath() + "was not created", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            String pathToDataFile = "/storage/emulated/0/Android/data/uit.app.document_scanner/files/tessdata/vie.traineddata";
-//            if(!(new File(pathToDataFile)).exists()){
-//                InputStream in = getAssets().open("vie.traineddata");
-//                OutputStream out = new FileOutputStream(pathToDataFile);
-//                byte [] buff = new byte[1024];
-//                int len ;
-//                while(( len = in.read(buff)) > 0){
-//                    out.write(buff,0,len);
-//                }
-//                in.close();
-//                out.close();
-//            }
-//
-//        } catch (Exception e) {
-//            Log.e(TAG, e.getMessage());
-//        }
-//    }
-
-//    private void detectText(Bitmap bm){
-//        TessBaseAPI tessBaseAPI = new TessBaseAPI();
-//        String dataPath = getExternalFilesDir("/").getPath() + "/";
-//        tessBaseAPI.init(dataPath,"vie");
-//        tessBaseAPI.setImage(bm);
-//        Log.d(TAG, "detectText: " + tessBaseAPI.getUTF8Text());
-//        tessBaseAPI.end();
-//    }
-
     private HashMap<String,List<BitmapResult>> sortByYUsingRatio(List<BitmapResult> list, float ratio, int bitmapHeight){
 
         HashMap<String,List<BitmapResult>> hashMap = new HashMap<>();
@@ -260,6 +280,7 @@ public class ResultActivity extends OptionalActivity{
         List<BitmapResult> dob = new ArrayList<>();
         List<BitmapResult> hometown = new ArrayList<>();
         List<BitmapResult> address = new ArrayList<>();
+
 
         for (int i = 0; i  < list.size(); i++) {
 
@@ -301,14 +322,11 @@ public class ResultActivity extends OptionalActivity{
 
             }
         }
-//
-//        List<BitmapResult> newName = (name);
-//        List<BitmapResult> newHometown = sortBitmap(hometown);
-//        List<BitmapResult> newAddress = sortBitmap(address);
 
         name = sortResultsUsingRatio(name,Constants.NAME_RATIO,bm.getHeight());
         hometown = sortResultsUsingRatio(hometown,Constants.HOMETOWN_RATIO,bm.getHeight());
         address = sortResultsUsingRatio(address,Constants.ADDRESS_RATIO,bm.getHeight());
+
 
         new CallAPI().execute(id);
         new CallAPI().execute(name);
@@ -393,16 +411,30 @@ public class ResultActivity extends OptionalActivity{
                             break;
 
                         case "dob":
+                            responseData = responseData.replace(".","-");
                             String finalDob = responseData;
-//                            if (responseData.contains(".")){
-//                                String[] parts = responseData.split(".");
-//                            }
+
+                            String[] separated = responseData.split("-");
+                            Log.d(TAG, "separated: " + separated[0]);
+
                             editableDOB.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     editableDOB.setText(finalDob);
                                 }
                             });
+                            String strYear = separated[2];
+                            Integer iYear = new Integer(strYear);
+                            returnedYear = Integer.parseInt(iYear.toString());
+
+                            String strMonth = separated[1];
+                            Integer iMonth = new Integer(strMonth);
+                            returnedMonth = Integer.parseInt(iMonth.toString());
+
+                            String strDay = separated[0];
+                            Integer iDay = new Integer(strDay);
+                            returnedDay = Integer.parseInt(iDay.toString());
+
                             break;
 
                         case "hometown":
@@ -431,6 +463,10 @@ public class ResultActivity extends OptionalActivity{
                 }
                 catch (Exception e){
 
+                }
+                numOfRes++;
+                if (numOfRes == 5){
+                    loadingDialog.dismissDialog();
                 }
             }
         });
@@ -496,27 +532,6 @@ public class ResultActivity extends OptionalActivity{
             List<BitmapResult> res = lists[0];
             convertToInputBody(res);
             return null;
-        }
-    }
-
-    private class AddPerson extends AsyncTask<Person,Void,String>{
-
-        @Override
-        protected String doInBackground(Person... people) {
-            Person p = people[0];
-            PersonDao personDao = new PersonDao();
-            if (personDao.add(p).isSuccessful()) {
-                return "New person added successfully";
-            }
-            else {
-                return "Failed to add new person";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            Toast.makeText(ResultActivity.this,s,Toast.LENGTH_SHORT).show();
         }
     }
 

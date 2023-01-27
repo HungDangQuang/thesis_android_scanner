@@ -63,7 +63,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
     private Button addNewDocumentButton;
     private Button ocrButton;
     private Button textDetectionButton;
-    private String filePath;
+//    private String filePath;
     private Bitmap detectedBitmap;
     private Bitmap originalBitmap;
     private Bitmap coloredBitmap;
@@ -153,7 +153,9 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        File file = new File(filePath);
+                        File file = new File(modifiedImageURI.getPath());
+                        File originalFile = new File(Constants.ORIGINAL_IMAGE_DIR + "/" + colorImageName);
+
                         file.delete();
                         if(file.exists()){
                             try {
@@ -165,6 +167,20 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                                 getApplicationContext().deleteFile(file.getName());
                             }
                         }
+
+                        originalFile.delete();
+                        if(originalFile.exists()){
+                            try {
+                                originalFile.getCanonicalFile().delete();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if(originalFile.exists()){
+                                getApplicationContext().deleteFile(originalFile.getName());
+                            }
+                        }
+
+
                         dialogInterface.dismiss();
                         finish();
                     }
@@ -182,17 +198,20 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
 
                 break;
             case R.id.rename:
-                File originalFile = new File(filePath);
-                String dir = originalFile.getParent();
+                File modifiedFile = new File(modifiedImageURI.getPath());
+                String modifiedFileParent = modifiedFile.getParent();
 
                 AlertDialog.Builder renameBuilder = new AlertDialog.Builder(ViewDocumentActivity.this);
                 renameBuilder.setTitle("Document Scanner");
                 renameBuilder.setCancelable(false);
 
 //                final EditText input = new EditText(ViewDocumentActivity.this);
-                String fileName = originalFile.getName();
+                String fileName = modifiedFile.getName();
                 String extension = fileName.substring(fileName.lastIndexOf("."));
                 Log.d(TAG, "extension: " + extension);
+
+                // change name of original file
+                File originalFile = new File(Constants.ORIGINAL_IMAGE_DIR + "/" + colorImageName);
 
 
                 LayoutInflater layoutInflater = getLayoutInflater();
@@ -206,13 +225,20 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                         String newName = input.getText().toString() + extension;
-                        File renamedFile = new File(dir,newName);
+                        colorImageName = newName;
+
+                        File renamedFile = new File(modifiedFileParent,newName);
+                        File renamedOriginalFile = new File(Constants.ORIGINAL_IMAGE_DIR,newName);
+
                         Log.d(TAG, "renamed file: " + renamedFile);
-                        originalFile.renameTo(renamedFile);
+                        modifiedFile.renameTo(renamedFile);
+
+                        originalFile.renameTo(renamedOriginalFile);
 
                         // update the file path
-                        filePath = renamedFile.getAbsolutePath();
-                        Log.d(TAG, "file path name: " + filePath);
+                        modifiedImageURI = Uri.fromFile(renamedFile);
+//                        filePath = renamedFile.getAbsolutePath();
+//                        Log.d(TAG, "file path name: " + filePath);
                         dialogInterface.dismiss();
                     }
                 });
@@ -252,7 +278,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
                 // for testing
                 Intent ocrIntent = new Intent(ViewDocumentActivity.this, ResultActivity.class);
                 ocrIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//                ocrIntent.putExtra("rgbImagePath", colorImageURI);
+                ocrIntent.putExtra("originalImageName", colorImageName);
                 startActivity(ocrIntent);
                 break;
 
