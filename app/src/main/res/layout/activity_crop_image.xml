@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black_primary_dark"
     android:orientation="vertical"
-    android:id="@+id/mainLayout"
-    android:weightSum="10">
+    android:id="@+id/mainLayout">
 
-
-    <View
-        android:id="@+id/topLine"
+    <TextView
+        android:id="@+id/documentNameTextView"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/white_font"/>
+        android:layout_height="?android:attr/actionBarSize"
+        android:textColor="@color/white_font"
+        android:gravity="left|center_vertical"
+        android:layout_alignParentTop="true"
+        android:background="@color/black_color_primary"
+        android:padding="10dp"
+        android:textSize="15dp"/>
+
 
     <FrameLayout
         android:id="@+id/sourceFrame"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
         android:layout_margin="10dp"
-        android:layout_weight="9.1">
+        android:background="@color/black_primary_dark"
+        android:layout_below="@id/documentNameTextView"
+        android:layout_above="@+id/options">
 
         <ImageView
             android:id="@+id/sourceImageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:layout_gravity="center"
@@ -43,20 +49,14 @@
 
     </FrameLayout>
 
-    <View
-        android:id="@+id/line"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/white_font"/>
-
     <LinearLayout
         android:id="@+id/options"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="?android:attr/actionBarSize"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:weightSum="5"
-        android:layout_weight="0.9">
+        android:background="@color/black_color_primary">
 
         <FrameLayout
             android:layout_width="0dp"
@@ -135,4 +135,4 @@
 
 
 
-</LinearLayout>
+</RelativeLayout>

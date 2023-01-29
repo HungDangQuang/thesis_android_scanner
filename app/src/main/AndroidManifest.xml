@@ -40,14 +40,14 @@
 <!--            android:value="barcode" />-->
 
         <activity
-            android:name=".CameraActivity"
+            android:name=".activity.CameraActivity"
             android:configChanges="orientation"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation"
             android:exported="true"
             android:screenOrientation="portrait">
@@ -58,23 +58,23 @@
         </activity>
 
         <activity
-            android:name=".CropImageActivity"
-            android:parentActivityName=".CameraActivity"
+            android:name=".activity.CropImageActivity"
+            android:parentActivityName=".activity.CameraActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Document_Scanner"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
         <activity
-            android:name=".ReviewImageActivity"
-            android:parentActivityName=".CropImageActivity"
+            android:name=".activity.ReviewImageActivity"
+            android:parentActivityName=".activity.CropImageActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".ResultActivity"
+            android:name=".activity.ResultActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ResultActivityTheme"
             />
 
-        <activity android:name=".ViewDocumentActivity"
+        <activity android:name=".activity.ViewDocumentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Document_Scanner"/>
 

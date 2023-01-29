@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
 
-import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -26,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uit.app.document_scanner.Constants;
+import uit.app.document_scanner.constants.Constants;
 import uit.app.document_scanner.cropDocument.PolygonView;
 
 public class OpenCVUtils {

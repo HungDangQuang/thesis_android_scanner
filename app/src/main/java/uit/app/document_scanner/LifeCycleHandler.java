@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
+import uit.app.document_scanner.constants.Constants;
+
 public class LifeCycleHandler implements Application.ActivityLifecycleCallbacks {
 
     private static String TAG = LifeCycleHandler.class.getSimpleName();
