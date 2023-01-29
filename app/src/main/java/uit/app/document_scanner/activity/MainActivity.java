@@ -176,27 +176,22 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     }
 
     private List<String> createSampleFolders(){
-//        for(int i = 0; i < 10; i++){
-//            File dir = new File(Constants.APP_DIR + "/" + i);
-//
-//            try {
-//                if(dir.mkdir()){
-//                    Log.d(TAG,"new folder created");
-//                }
-//                else {
-//                    Log.d(TAG,"failed to create folder");
-//                }
-//            }
-//            catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
         List<String> names = new ArrayList<>();
         names.add("CID");
         names.add("Annual report");
         names.add("English");
         names.add("Script");
         names.add("Meeting");
+
+        for (String s : names){
+            File folderDir = new File(Constants.FOLDER_DIR + "/" + s);
+            if(!folderDir.exists()){
+                if (!folderDir.mkdirs()){
+                    Log.d(TAG, "failed to create folder directory");
+                }
+            }
+        }
+
         return names;
     }
     @Override
@@ -236,7 +231,16 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         String path = Constants.APP_DIR;
         Log.d("Files", "Path: " + path);
         File directory = new File(path);
-        images = Arrays.asList(directory.listFiles());
+        if(!directory.exists()){
+            if (!directory.mkdirs()){
+                Log.d(TAG, "failed to create directory");
+                return;
+            }
+        }
+        else {
+            images = Arrays.asList(directory.listFiles());
+        }
+
     }
 
     @Override
