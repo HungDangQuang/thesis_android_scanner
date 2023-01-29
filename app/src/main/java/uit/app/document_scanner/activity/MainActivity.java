@@ -42,7 +42,6 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
 
     private static final String[] CAMERA_PERMISSION = new String[]{Manifest.permission.CAMERA};
     private static final int CAMERA_REQUEST_CODE = 10;
-    private LoadingDialog loadingDialog;
     private RecyclerView recyclerView;
     private List<File> images;
     private AppUtils appUtils;
@@ -159,7 +158,6 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         openCameraButton = findViewById(R.id.openCameraButton);
         openCameraButton.setOnClickListener(this);
 
-        loadingDialog = new LoadingDialog(MainActivity.this);
         appUtils = new AppUtils();
 
         openOptionsMenu();
