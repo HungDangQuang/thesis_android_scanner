@@ -32,7 +32,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
     LayoutInflater inflater;
 
     public Adapter(Context context, List<File> images){
-//        this.filenames = filenames;
         this.images = images;
         this.filteredImages = images;
         this.inflater = LayoutInflater.from(context);
@@ -45,7 +44,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        View view = inflater.inflate(R.layout.custom_grid_layout,parent,false);
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_grid_layout,parent,false);
         return new ViewHolder(view);
     }
@@ -58,7 +56,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
         holder.filename.setText(name.substring(0,name.lastIndexOf(".")));
         Picasso.get().load(file).into(holder.img);
         holder.filePath = file.getAbsolutePath();
-        Log.d("binding", "onBindViewHolder: " + getItemId(position));
     }
 
     @Override
@@ -88,12 +85,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
             context.startActivity(intent);
         }
     }
-
-//    @Override
-//    public void setHasStableIds(boolean hasStableIds) {
-//        super.setHasStableIds(hasStableIds);
-//    }
-
 
     @Override
     public long getItemId(int position) {
