@@ -389,7 +389,7 @@ public class ResultActivity extends OptionalActivity {
                             editableID.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableID.setText("371960702");
+                                    editableID.setText(finalId);
                                 }
                             });
                             break;
@@ -399,7 +399,7 @@ public class ResultActivity extends OptionalActivity {
                             editableName.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableName.setText("ĐẶNG QUANG HƯNG");
+                                    editableName.setText(finalName);
                                 }
                             });
                             break;
@@ -414,7 +414,7 @@ public class ResultActivity extends OptionalActivity {
                             editableDOB.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableDOB.setText("27-11-2000");
+                                    editableDOB.setText(finalDob);
                                 }
                             });
                             String strYear = separated[2];
@@ -436,7 +436,7 @@ public class ResultActivity extends OptionalActivity {
                             editableHometown.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableHometown.setText("Tp Rạch Giá, Kiên Giang");
+                                    editableHometown.setText(finalHometown);
                                 }
                             });
                             break;
@@ -446,7 +446,7 @@ public class ResultActivity extends OptionalActivity {
                             editableAddress.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableAddress.setText("64 Nguyễn An Ninh, P.Vĩnh Bảo, Tp Rạch Giá, Kiên Giang");
+                                    editableAddress.setText(finalAddress);
                                 }
                             });
                             break;
