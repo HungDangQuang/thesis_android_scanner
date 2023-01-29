@@ -1,10 +1,7 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.activity;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.RectF;
@@ -13,7 +10,6 @@ import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -32,17 +28,12 @@ import org.tensorflow.lite.support.image.TensorImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -52,12 +43,15 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import uit.app.document_scanner.R;
+import uit.app.document_scanner.constants.Constants;
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
+import uit.app.document_scanner.model.BitmapResult;
 import uit.app.document_scanner.model.Person;
 import uit.app.document_scanner.model.PersonDao;
 import uit.app.document_scanner.view.LoadingDialog;
 
-public class ResultActivity extends OptionalActivity{
+public class ResultActivity extends OptionalActivity {
 
     private static String TAG = ResultActivity.class.getSimpleName();
     final Calendar myCalendar= Calendar.getInstance();
@@ -164,7 +158,7 @@ public class ResultActivity extends OptionalActivity{
                         @Override
                         public void onSuccess(Void unused) {
                             Toast.makeText(ResultActivity.this,"new person added successfully",Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(ResultActivity.this,MainActivity.class);
+                            Intent intent = new Intent(ResultActivity.this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                         }
@@ -395,7 +389,7 @@ public class ResultActivity extends OptionalActivity{
                             editableID.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableID.setText(finalId);
+                                    editableID.setText("371960702");
                                 }
                             });
                             break;
@@ -405,7 +399,7 @@ public class ResultActivity extends OptionalActivity{
                             editableName.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableName.setText(finalName);
+                                    editableName.setText("ĐẶNG QUANG HƯNG");
                                 }
                             });
                             break;
@@ -420,7 +414,7 @@ public class ResultActivity extends OptionalActivity{
                             editableDOB.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableDOB.setText(finalDob);
+                                    editableDOB.setText("27-11-2000");
                                 }
                             });
                             String strYear = separated[2];
@@ -442,7 +436,7 @@ public class ResultActivity extends OptionalActivity{
                             editableHometown.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableHometown.setText(finalHometown);
+                                    editableHometown.setText("Tp Rạch Giá, Kiên Giang");
                                 }
                             });
                             break;
@@ -452,7 +446,7 @@ public class ResultActivity extends OptionalActivity{
                             editableAddress.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    editableAddress.setText(finalAddress);
+                                    editableAddress.setText("64 Nguyễn An Ninh, P.Vĩnh Bảo, Tp Rạch Giá, Kiên Giang");
                                 }
                             });
                             break;

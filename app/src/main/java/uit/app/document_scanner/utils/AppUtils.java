@@ -1,21 +1,22 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.utils;
 
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import uit.app.document_scanner.SaveOptions;
+import uit.app.document_scanner.constants.Constants;
 
 public class AppUtils {
 

@@ -2,6 +2,8 @@ package uit.app.document_scanner;
 
 import java.util.List;
 
+import uit.app.document_scanner.model.TextResult;
+
 public class InputParam {
     private String name;
     private List<TextResult> list;

@@ -1,8 +1,6 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.activity;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,7 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -21,39 +18,25 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.squareup.picasso.Picasso;
-
-import org.checkerframework.checker.units.qual.A;
 import org.tensorflow.lite.support.image.TensorImage;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import uit.app.document_scanner.R;
+import uit.app.document_scanner.constants.Constants;
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
+import uit.app.document_scanner.utils.AppUtils;
 import uit.app.document_scanner.view.LoadingDialog;
 
 public class ViewDocumentActivity extends OptionalActivity implements View.OnClickListener {
@@ -270,7 +253,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         switch (view.getId()) {
 
             case R.id.addNewDocumentButton:
-                Intent addDocumentIntent = new Intent(ViewDocumentActivity.this,CameraActivity.class);
+                Intent addDocumentIntent = new Intent(ViewDocumentActivity.this, CameraActivity.class);
                 startActivity(addDocumentIntent);
                 break;
 

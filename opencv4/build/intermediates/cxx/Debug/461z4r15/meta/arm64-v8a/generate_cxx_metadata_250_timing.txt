@@ -8,3 +8,6 @@ generate_cxx_metadata completed in 65ms
 
 # C/C++ build system timings
 
+# C/C++ build system timings
+generate_cxx_metadata 12ms
+

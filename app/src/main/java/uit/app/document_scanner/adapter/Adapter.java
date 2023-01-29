@@ -1,9 +1,7 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +20,9 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
+import uit.app.document_scanner.R;
+import uit.app.document_scanner.activity.ViewDocumentActivity;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements Filterable {
 

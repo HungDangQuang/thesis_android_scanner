@@ -1,65 +1,41 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.activity;
 
 import android.animation.Animator;
-import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.LinearInterpolator;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 //import com.google.mlkit.vision.barcode.BarcodeScanner;
 //import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 //import com.google.mlkit.vision.barcode.BarcodeScanning;
 //import com.google.mlkit.vision.barcode.common.Barcode;
-import com.google.mlkit.vision.common.InputImage;
 
 import org.apache.commons.io.FilenameUtils;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.objdetect.QRCodeDetector;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import uit.app.document_scanner.R;
+import uit.app.document_scanner.SaveOptions;
 import uit.app.document_scanner.cropDocument.PolygonView;
 import uit.app.document_scanner.openCV.OpenCVUtils;
+import uit.app.document_scanner.utils.AppUtils;
 import uit.app.document_scanner.view.LoadingDialog;
 
 public class CropImageActivity extends OptionalActivity implements View.OnClickListener{
@@ -360,7 +336,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         @Override
         protected Intent doInBackground(Void... voids) {
             Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-            String savedPath = appUtils.saveBitmapToFile(croppedBitmap,SaveOptions.TEMP);
+            String savedPath = appUtils.saveBitmapToFile(croppedBitmap, SaveOptions.TEMP);
             Uri imgUri = Uri.parse( "file://" + savedPath);
             Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

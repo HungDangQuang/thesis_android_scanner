@@ -1,4 +1,4 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
+import uit.app.document_scanner.R;
 
 public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder> implements Filterable {
     private List<String> folderNamesList;

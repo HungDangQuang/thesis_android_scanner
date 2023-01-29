@@ -1,4 +1,4 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.model;
 
 import android.graphics.Bitmap;
 import android.graphics.RectF;

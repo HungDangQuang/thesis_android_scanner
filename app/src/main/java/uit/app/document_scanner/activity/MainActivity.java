@@ -1,12 +1,8 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.activity;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.ActionBarOverlayLayout;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,43 +13,29 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.media.Image;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.TableLayout;
-import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Mat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import uit.app.document_scanner.PreCachingLayoutManager;
+import uit.app.document_scanner.R;
+import uit.app.document_scanner.adapter.Adapter;
+import uit.app.document_scanner.adapter.FolderAdapter;
+import uit.app.document_scanner.constants.Constants;
+import uit.app.document_scanner.utils.AppUtils;
 import uit.app.document_scanner.view.LoadingDialog;
 
 public class MainActivity extends OptionalActivity implements View.OnClickListener {
@@ -106,7 +88,7 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         }
 
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},Constants.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, Constants.PERMISSION_REQUEST_READ_EXTERNAL_STORAGE);
         }
 
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
@@ -212,9 +194,11 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
 //            }
 //        }
         List<String> names = new ArrayList<>();
-        for (int i = 0; i < 10; i++){
-            names.add(String.valueOf(i));
-        }
+        names.add("CID");
+        names.add("Annual report");
+        names.add("English");
+        names.add("Script");
+        names.add("Meeting");
         return names;
     }
     @Override
@@ -245,7 +229,7 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     }
 
     private void enableCamera(){
-        Intent intent = new Intent(this,CameraActivity.class);
+        Intent intent = new Intent(this, CameraActivity.class);
 //        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
     }

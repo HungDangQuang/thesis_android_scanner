@@ -1,4 +1,4 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.activity;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -9,7 +9,10 @@ import androidx.annotation.Nullable;
 
 import org.opencv.android.OpenCVLoader;
 
-public class OptionalActivity extends BaseActivity{
+import uit.app.document_scanner.LifeCycleHandler;
+import uit.app.document_scanner.activity.BaseActivity;
+
+public class OptionalActivity extends BaseActivity {
 
 
     @Override

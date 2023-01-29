@@ -1,14 +1,10 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,26 +12,17 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 
@@ -47,42 +34,14 @@ import androidx.core.graphics.drawable.DrawableCompat;
 //import com.google.mlkit.vision.text.TextRecognition;
 //import com.google.mlkit.vision.text.TextRecognizer;
 //import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.text.Text;
-import com.google.mlkit.vision.text.TextRecognition;
-import com.google.mlkit.vision.text.TextRecognizer;
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
-import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.apache.commons.io.FilenameUtils;
 //import org.checkerframework.checker.nullness.qual.NonNull;
 //import org.checkerframework.checker.nullness.qual.NonNull;
 import org.opencv.android.Utils;
-import org.opencv.core.CvType;
-import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.features2d.AgastFeatureDetector;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.objdetect.QRCodeDetector;
-import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.Interpreter;
-import org.tensorflow.lite.Tensor;
-import org.tensorflow.lite.support.common.ops.CastOp;
-import org.tensorflow.lite.support.common.ops.NormalizeOp;
-import org.tensorflow.lite.support.image.ImageProcessor;
-import org.tensorflow.lite.support.image.TensorImage;
-import org.tensorflow.lite.support.image.ops.ResizeOp;
 //import org.tensorflow.lite.support.image.ops.TransformToGrayscaleOp;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 //import org.tensorflow.lite.task.vision.detector.Detection;
 //import org.tensorflow.lite.task.vision.detector.ObjectDetector;
 
@@ -90,20 +49,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import uit.app.document_scanner.R;
+import uit.app.document_scanner.constants.Constants;
 import uit.app.document_scanner.ml.EfficientdetLiteCid;
 import uit.app.document_scanner.openCV.OpenCVUtils;
+import uit.app.document_scanner.utils.AppUtils;
 import uit.app.document_scanner.view.LoadingDialog;
 
 public class ReviewImageActivity extends OptionalActivity implements View.OnClickListener {
@@ -442,7 +395,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
             }
 
             String filePath = file.getAbsolutePath();
-            Intent intent = new Intent(ReviewImageActivity.this,ViewDocumentActivity.class);
+            Intent intent = new Intent(ReviewImageActivity.this, ViewDocumentActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("filePath",Uri.parse("file://" + filePath));
             intent.putExtra("originalImageName",file.getName());

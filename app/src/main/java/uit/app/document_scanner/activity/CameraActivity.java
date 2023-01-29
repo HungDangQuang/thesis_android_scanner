@@ -1,19 +1,12 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
-import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -22,9 +15,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.CameraX;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
@@ -35,13 +26,12 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 
+import uit.app.document_scanner.R;
+import uit.app.document_scanner.SaveOptions;
+import uit.app.document_scanner.utils.AppUtils;
 import uit.app.document_scanner.view.LoadingDialog;
 
 public class CameraActivity extends AppCompatActivity {
@@ -167,7 +157,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void startCropImageActivity(Uri uri){
-        Intent intent = new Intent(CameraActivity.this,CropImageActivity.class);
+        Intent intent = new Intent(CameraActivity.this, CropImageActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("ImagePath",uri);
         startActivity(intent);

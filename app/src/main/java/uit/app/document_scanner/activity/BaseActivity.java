@@ -1,4 +1,4 @@
-package uit.app.document_scanner;
+package uit.app.document_scanner.activity;
 
 import android.app.Activity;
 import android.os.Build;
