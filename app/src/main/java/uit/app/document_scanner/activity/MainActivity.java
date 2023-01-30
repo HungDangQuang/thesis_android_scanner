@@ -42,13 +42,13 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
 
     private static final String[] CAMERA_PERMISSION = new String[]{Manifest.permission.CAMERA};
     private static final int CAMERA_REQUEST_CODE = 10;
-    private RecyclerView recyclerView;
+    protected RecyclerView recyclerView;
     private List<File> images;
     private AppUtils appUtils;
     private Adapter adapter;
     private List<String> folderList;
     private FolderAdapter folderAdapter;
-    private RecyclerView folderRecyclerView;
+    protected RecyclerView folderRecyclerView;
     private SearchView searchView;
 
     private MaterialButton openCameraButton;
@@ -165,12 +165,10 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         // Set up folder recycler view
         folderList = createSampleFolders();
         folderRecyclerView = findViewById(R.id.folderList);
-        folderAdapter = new FolderAdapter(folderList);
         LinearLayoutManager folderLayoutManager = new LinearLayoutManager(getApplicationContext());
         folderLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         folderRecyclerView.setLayoutManager(folderLayoutManager);
 //        folderRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        folderRecyclerView.setAdapter(folderAdapter);
         folderRecyclerView.setFocusable(false);
         folderRecyclerView.setNestedScrollingEnabled(false);
     }
@@ -211,6 +209,9 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
 
         adapter = new Adapter(this, images);
         recyclerView.setAdapter(adapter);
+
+        folderAdapter = new FolderAdapter(folderList);
+        folderRecyclerView.setAdapter(folderAdapter);
     }
 
     private boolean hasCameraPermission(){
