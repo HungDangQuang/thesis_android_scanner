@@ -52,7 +52,7 @@ public class CameraActivity extends AppCompatActivity {
     int flashMode = ImageCapture.FLASH_MODE_OFF;
     Preview preview;
     private AppUtils appUtils = new AppUtils();
-
+    private String folderName;
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +96,9 @@ public class CameraActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        Intent intent = getIntent();
+        folderName = intent.getExtras().getString("folderName");
     }
 
 
@@ -159,6 +162,7 @@ public class CameraActivity extends AppCompatActivity {
         Intent intent = new Intent(CameraActivity.this, CropImageActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("ImagePath",uri);
+        intent.putExtra("folderName",folderName);
         startActivity(intent);
     }
 

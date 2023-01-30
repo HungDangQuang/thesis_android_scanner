@@ -78,7 +78,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
     private OpenCVUtils utils;
     private AppUtils appUtils;
     private LoadingDialog loadingDialog;
-
+    private String folderName;
     public static final String TESS_DATA = "/tessdata";
 //    private static final String DATA_PATH = Environment.getExternalStorageDirectory().toString() + "/Tess";
 
@@ -163,6 +163,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
             public void run() {
                 Intent intent = getIntent();
                 uri = intent.getParcelableExtra("croppedImage");
+                folderName = intent.getExtras().getString("folderName");
                 File filename = new File(uri.getLastPathSegment());
                 String str = filename.toString();
                 str = FilenameUtils.removeExtension(str);
@@ -337,7 +338,13 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
         protected Intent doInBackground(String... strings) {
             String fileName = strings[0];
 
-            String path = Constants.APP_DIR;
+            String path = null;
+            if (folderName == null){
+                path = Constants.APP_DIR;
+            }
+            else {
+                path = Constants.FOLDER_DIR + "/" + folderName;
+            }
 
             File appFolder = new File(path);
 

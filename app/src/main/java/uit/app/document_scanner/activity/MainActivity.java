@@ -50,7 +50,7 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     private FolderAdapter folderAdapter;
     protected RecyclerView folderRecyclerView;
     private SearchView searchView;
-
+    protected String folderName;
     private MaterialButton openCameraButton;
     private static String TAG = MainActivity.class.getSimpleName();
 
@@ -171,6 +171,8 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
 //        folderRecyclerView.setItemAnimator(new DefaultItemAnimator());
         folderRecyclerView.setFocusable(false);
         folderRecyclerView.setNestedScrollingEnabled(false);
+
+        folderName = null;
     }
 
     private List<String> createSampleFolders(){
@@ -225,6 +227,7 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     private void enableCamera(){
         Intent intent = new Intent(this, CameraActivity.class);
 //        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("folderName", folderName);
         startActivity(intent);
     }
 

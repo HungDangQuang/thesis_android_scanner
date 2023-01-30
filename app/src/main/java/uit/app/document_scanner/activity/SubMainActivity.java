@@ -14,8 +14,6 @@ import uit.app.document_scanner.constants.Constants;
 
 public class SubMainActivity extends MainActivity{
 
-    String folderName;
-
     @Override
     protected void init() {
         super.init();

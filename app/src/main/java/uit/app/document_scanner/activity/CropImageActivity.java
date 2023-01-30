@@ -58,6 +58,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
     private float screenRatio;
     private LoadingDialog loadingDialog;
     int angle = 0;
+    private String folderName;
     @Override
     protected void init() {
         super.init();
@@ -97,6 +98,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
             public void run() {
                 Intent intent = getIntent();
                 imgUri = intent.getParcelableExtra("ImagePath");
+                folderName = intent.getExtras().getString("folderName");
 
                 File filename = new File(imgUri.getLastPathSegment());
                 String str = filename.toString();
@@ -339,6 +341,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("croppedImage",imgUri);
             intent.putExtra("rotatedAngle",angle);
+            intent.putExtra("folderName",folderName);
             appUtils.deleteImage(imgUri);
             return intent;
         }
