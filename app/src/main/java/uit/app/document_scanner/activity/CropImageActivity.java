@@ -33,6 +33,7 @@ import java.util.Map;
 
 import uit.app.document_scanner.R;
 import uit.app.document_scanner.SaveOptions;
+import uit.app.document_scanner.constants.Constants;
 import uit.app.document_scanner.cropDocument.PolygonView;
 import uit.app.document_scanner.openCV.OpenCVUtils;
 import uit.app.document_scanner.utils.AppUtils;
@@ -114,7 +115,6 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
 
 
                     sourceImageView.setImageBitmap(scaledBitmap);
-                    Log.d(TAG, "run: bitmap width and height:" + scaledBitmap.getWidth() +" "+ scaledBitmap.getHeight());
 
                     Map<Integer, Point> pointFs = new HashMap<>();
                     pointFs = new OpenCVUtils().getEdgePoints(scaledBitmap,polygonView);
@@ -124,7 +124,6 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
                     FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(sourceFrame.getWidth(), sourceFrame.getHeight());
                     layoutParams.gravity = Gravity.CENTER;
                     polygonView.setLayoutParams(layoutParams);
-                    Log.d(TAG, "polygon view: " + polygonView.getX());
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -136,7 +135,6 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause: executed");
 //        finish();
     }
 
@@ -317,7 +315,6 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
             case R.id.zoomButton:
                 polygonView.setCornerListPoints();
                 polygonView.requestLayout();
-                Log.d(TAG, "onClick: zoom button");
                 break;
 
             case R.id.okButton:
@@ -336,7 +333,7 @@ public class CropImageActivity extends OptionalActivity implements View.OnClickL
         @Override
         protected Intent doInBackground(Void... voids) {
             Bitmap croppedBitmap = new OpenCVUtils().cropImageByFourPoints(bm,polygonView.getListPoint(), sourceImageView.getWidth(),sourceImageView.getHeight());
-            String savedPath = appUtils.saveBitmapToFile(croppedBitmap, SaveOptions.TEMP);
+            String savedPath = appUtils.saveBitmapToFile(croppedBitmap, Constants.TEMP_DIR);
             Uri imgUri = Uri.parse( "file://" + savedPath);
             Intent intent = new Intent(CropImageActivity.this, ReviewImageActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
