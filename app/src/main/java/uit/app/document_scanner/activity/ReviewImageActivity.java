@@ -212,6 +212,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
 //                        // TODO Handle the exception
 //                    }
                     reviewImage.setImageBitmap(scaledBitmap);
+                    reviewImage.setRotation(rotatedAngle);
                     originalBitmap = scaledBitmap;
 
                 } catch (FileNotFoundException e) {
@@ -406,7 +407,7 @@ public class ReviewImageActivity extends OptionalActivity implements View.OnClic
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("filePath",Uri.parse("file://" + filePath));
             intent.putExtra("originalImageName",file.getName());
-
+            intent.putExtra("rotatedAngle",rotatedAngle);
             return intent;
         }
 

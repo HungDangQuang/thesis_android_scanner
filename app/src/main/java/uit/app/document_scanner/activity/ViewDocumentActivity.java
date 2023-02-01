@@ -55,6 +55,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
     private AppUtils appUtils;
     private Uri modifiedImageURI;
     private String colorImageName;
+    private int rotatedAngle;
     @Override
     protected void init() {
         super.init();
@@ -93,6 +94,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         init();
         Intent intent = getIntent();
 
+        rotatedAngle = intent.getExtras().getInt("rotatedAngle");
 
         // converted image
         modifiedImageURI = intent.getParcelableExtra("filePath");
@@ -105,6 +107,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
             coloredBitmap = BitmapFactory.decodeFile(Constants.ORIGINAL_IMAGE_DIR + "/" + colorImageName);
 
             imageView.setImageBitmap(originalBitmap);
+            imageView.setRotation(rotatedAngle);
         } catch (FileNotFoundException e) {
             Log.d(TAG, "onCreate: failed to get bitmap");
         }
@@ -360,6 +363,7 @@ public class ViewDocumentActivity extends OptionalActivity implements View.OnCli
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
             imageView.setImageBitmap(bitmap);
+            imageView.setRotation(rotatedAngle);
 //            loadingDialog.dismissDialog();
         }
     }

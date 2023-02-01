@@ -12,7 +12,7 @@ public class Constants {
     public static int CANNY_THRESH_L = 85;
     public static int CANNY_THRESH_U = 185;
     public static int TRUNC_THRESH = 150;
-    public static final String URL = "http://192.168.3.197:5002";
+    public static final String URL = "http://192.168.3.199:5002";
     public static final float NAME_RATIO = (float) (2.1/5.7);
     public static final float HOMETOWN_RATIO = (float) (3.85/5.7);
     public static final float ADDRESS_RATIO = (float) (4.85/5.7);
