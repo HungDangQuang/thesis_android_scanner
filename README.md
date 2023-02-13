@@ -10,4 +10,6 @@ The architecture of this application is described in the figure below:
 ---
   
 ### General processing flow
+  The document must be followed these steps in order to extract the information:
+  <a href="https://drive.google.com/uc?export=view&id=1f_OMTgDBz2Xf9TRmxq9-1nsvQ0lt-ear"><img src="https://drive.google.com/uc?export=view&id=1f_OMTgDBz2Xf9TRmxq9-1nsvQ0lt-ear" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
   
