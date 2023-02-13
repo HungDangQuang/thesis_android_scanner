@@ -151,7 +151,8 @@ public class ResultActivity extends OptionalActivity {
                 }
 
                 else {
-
+                    loadingDialog = new LoadingDialog(ResultActivity.this);
+                    loadingDialog.startLoadingDialog();
                     Task<Void> allTask;
                     allTask = Tasks.whenAll(personDao.add(person));
                     allTask.addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -161,11 +162,14 @@ public class ResultActivity extends OptionalActivity {
                             Intent intent = new Intent(ResultActivity.this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
+                            loadingDialog.dismissDialog();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            loadingDialog.dismissDialog();
                             Toast.makeText(ResultActivity.this,"fail to add new person",Toast.LENGTH_SHORT).show();
+
                         }
                     });
 
