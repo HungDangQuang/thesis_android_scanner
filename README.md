@@ -21,4 +21,4 @@ The architecture of this application is described in the figure below:
    
 ---      
 ### Demo
-   <video src='https://youtu.be/PtJSEI1Jd4I' width=180/>
+   [![](https://markdown-videos.deta.dev/youtube/{PtJSEI1Jd4I})](https://youtu.be/{PtJSEI1Jd4I})
