@@ -42,16 +42,15 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
 
     private static final String[] CAMERA_PERMISSION = new String[]{Manifest.permission.CAMERA};
     private static final int CAMERA_REQUEST_CODE = 10;
-    private LoadingDialog loadingDialog;
-    private RecyclerView recyclerView;
+    protected RecyclerView recyclerView;
     private List<File> images;
     private AppUtils appUtils;
     private Adapter adapter;
     private List<String> folderList;
     private FolderAdapter folderAdapter;
-    private RecyclerView folderRecyclerView;
+    protected RecyclerView folderRecyclerView;
     private SearchView searchView;
-
+    protected String folderName;
     private MaterialButton openCameraButton;
     private static String TAG = MainActivity.class.getSimpleName();
 
@@ -159,7 +158,6 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         openCameraButton = findViewById(R.id.openCameraButton);
         openCameraButton.setOnClickListener(this);
 
-        loadingDialog = new LoadingDialog(MainActivity.this);
         appUtils = new AppUtils();
 
         openOptionsMenu();
@@ -167,38 +165,33 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         // Set up folder recycler view
         folderList = createSampleFolders();
         folderRecyclerView = findViewById(R.id.folderList);
-        folderAdapter = new FolderAdapter(folderList);
         LinearLayoutManager folderLayoutManager = new LinearLayoutManager(getApplicationContext());
         folderLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         folderRecyclerView.setLayoutManager(folderLayoutManager);
 //        folderRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        folderRecyclerView.setAdapter(folderAdapter);
         folderRecyclerView.setFocusable(false);
         folderRecyclerView.setNestedScrollingEnabled(false);
+
+        folderName = null;
     }
 
     private List<String> createSampleFolders(){
-//        for(int i = 0; i < 10; i++){
-//            File dir = new File(Constants.APP_DIR + "/" + i);
-//
-//            try {
-//                if(dir.mkdir()){
-//                    Log.d(TAG,"new folder created");
-//                }
-//                else {
-//                    Log.d(TAG,"failed to create folder");
-//                }
-//            }
-//            catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
         List<String> names = new ArrayList<>();
         names.add("CID");
         names.add("Annual report");
         names.add("English");
         names.add("Script");
         names.add("Meeting");
+
+        for (String s : names){
+            File folderDir = new File(Constants.FOLDER_DIR + "/" + s);
+            if(!folderDir.exists()){
+                if (!folderDir.mkdirs()){
+                    Log.d(TAG, "failed to create folder directory");
+                }
+            }
+        }
+
         return names;
     }
     @Override
@@ -218,6 +211,9 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
 
         adapter = new Adapter(this, images);
         recyclerView.setAdapter(adapter);
+
+        folderAdapter = new FolderAdapter(folderList);
+        folderRecyclerView.setAdapter(folderAdapter);
     }
 
     private boolean hasCameraPermission(){
@@ -231,6 +227,7 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
     private void enableCamera(){
         Intent intent = new Intent(this, CameraActivity.class);
 //        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("folderName", folderName);
         startActivity(intent);
     }
 
@@ -238,7 +235,16 @@ public class MainActivity extends OptionalActivity implements View.OnClickListen
         String path = Constants.APP_DIR;
         Log.d("Files", "Path: " + path);
         File directory = new File(path);
-        images = Arrays.asList(directory.listFiles());
+        if(!directory.exists()){
+            if (!directory.mkdirs()){
+                Log.d(TAG, "failed to create directory");
+                return;
+            }
+        }
+        else {
+            images = Arrays.asList(directory.listFiles());
+        }
+
     }
 
     @Override

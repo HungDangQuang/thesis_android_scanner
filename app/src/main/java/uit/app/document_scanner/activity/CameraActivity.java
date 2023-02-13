@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 
 import uit.app.document_scanner.R;
 import uit.app.document_scanner.SaveOptions;
+import uit.app.document_scanner.constants.Constants;
 import uit.app.document_scanner.utils.AppUtils;
 import uit.app.document_scanner.view.LoadingDialog;
 
@@ -42,7 +43,7 @@ public class CameraActivity extends AppCompatActivity {
     private Button btnImageCapture;
     private Button btnImageGallery;
     private Button btnFlashMode;
-    private Button stopCamerabutton;
+    private Button stopCameraButton;
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
     private LoadingDialog loadingDialog = new LoadingDialog(CameraActivity.this);
     private String TAG = CameraActivity.class.getSimpleName();
@@ -51,7 +52,7 @@ public class CameraActivity extends AppCompatActivity {
     int flashMode = ImageCapture.FLASH_MODE_OFF;
     Preview preview;
     private AppUtils appUtils = new AppUtils();
-
+    private String folderName;
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +62,7 @@ public class CameraActivity extends AppCompatActivity {
         btnImageCapture = findViewById(R.id.imageCapture);
         btnImageGallery = findViewById(R.id.imageGallery);
         btnFlashMode = findViewById(R.id.flash);
-        stopCamerabutton = findViewById(R.id.stopCameraButton);
+        stopCameraButton = findViewById(R.id.stopCameraButton);
 
         btnImageCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,12 +90,15 @@ public class CameraActivity extends AppCompatActivity {
             }
         });
 
-        stopCamerabutton.setOnClickListener(new View.OnClickListener() {
+        stopCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+
+        Intent intent = getIntent();
+        folderName = intent.getExtras().getString("folderName");
     }
 
 
@@ -143,7 +147,6 @@ public class CameraActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == PICK_PHOTO_FROM_GALLERY && resultCode == Activity.RESULT_OK){
             if (data == null){
-                Log.d(TAG, "onActivityResult: cannot open image because data is null");
                 return;
             }
             Uri uri = data.getData();
@@ -151,7 +154,6 @@ public class CameraActivity extends AppCompatActivity {
         }
 
         else if(requestCode == CAPTURING_CAMERA){
-            Log.d(TAG, "onActivityResult: case 2");
             startActivity(data);
         }
     }
@@ -160,6 +162,7 @@ public class CameraActivity extends AppCompatActivity {
         Intent intent = new Intent(CameraActivity.this, CropImageActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("ImagePath",uri);
+        intent.putExtra("folderName",folderName);
         startActivity(intent);
     }
 
@@ -219,7 +222,7 @@ public class CameraActivity extends AppCompatActivity {
 
         @Override
         protected Uri doInBackground(Bitmap... bitmaps) {
-            Uri imgUri = Uri.parse("file://" + appUtils.saveBitmapToFile(bitmaps[0], SaveOptions.TEMP));
+            Uri imgUri = Uri.parse("file://" + appUtils.saveBitmapToFile(bitmaps[0], Constants.TEMP_DIR));
             return imgUri;
         }
 

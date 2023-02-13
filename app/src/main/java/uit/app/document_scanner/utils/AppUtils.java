@@ -30,9 +30,9 @@ public class AppUtils {
         return BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(),null,options);
     }
 
-    public String saveBitmapToFile(Bitmap bm, SaveOptions option){
+    public String saveBitmapToFile(Bitmap bm, String dir){
 
-        File file = getOutputMediaFile(option);
+        File file = getOutputMediaFile(dir);
         try {
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
@@ -46,23 +46,26 @@ public class AppUtils {
         return file.getAbsolutePath();
     }
 
-    public File getOutputMediaFile(SaveOptions option){
+    public File getOutputMediaFile(String dir){
 
-        File mediaStorageDir = null;
+//        File mediaStorageDir = null;
+//
+//        switch (option){
+//            case APP:
+//                mediaStorageDir = new File(Constants.APP_DIR);
+//                break;
+//            case TEMP:
+//                mediaStorageDir = new File(Constants.TEMP_DIR);
+//                break;
+//            case ORIGINAL:
+//                mediaStorageDir = new File(Constants.ORIGINAL_IMAGE_DIR);
+//                break;
+////            break;
+//
+//        }
 
-        switch (option){
-            case APP:
-                mediaStorageDir = new File(Constants.APP_DIR);
-                break;
-            case TEMP:
-                mediaStorageDir = new File(Constants.TEMP_DIR);
-                break;
-            case ORIGINAL:
-                mediaStorageDir = new File(Constants.ORIGINAL_IMAGE_DIR);
-                break;
-//            break;
+        File mediaStorageDir = new File(dir);
 
-        }
         if(!mediaStorageDir.exists()){
             if (!mediaStorageDir.mkdirs()){
                 Log.d(TAG, "failed to create directory");

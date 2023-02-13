@@ -1,5 +1,7 @@
 package uit.app.document_scanner.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uit.app.document_scanner.R;
+import uit.app.document_scanner.activity.SubMainActivity;
 
 public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder> implements Filterable {
     private List<String> folderNamesList;
@@ -41,12 +44,22 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
         return folderNamesList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView folderName;
+        Context context;
 
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             folderName = itemView.findViewById(R.id.folderName);
+            context = itemView.getContext();
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(context, SubMainActivity.class);
+            intent.putExtra("folderName",folderName.getText().toString());
+            context.startActivity(intent);
         }
     }
 
