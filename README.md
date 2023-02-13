@@ -4,8 +4,13 @@ This is an application running on the Android platform that enables users to sca
 
 ### System architecture
 
-The general architecture of this application is described in the figure below:
+The architecture of this application is described in the figure below:
 <a href="https://drive.google.com/uc?export=view&id=1SRXPUwPOQujK8zeQtftqah4OYAG_vAmq"><img src="https://drive.google.com/uc?export=view&id=1SRXPUwPOQujK8zeQtftqah4OYAG_vAmq" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
   
-  https://drive.google.com/file/d/1SRXPUwPOQujK8zeQtftqah4OYAG_vAmq/view?usp=share_link
+---
+  
+### General processing flow
+
+The general processing flow is followed as:
+<a href="https://drive.google.com/uc?export=view&id=1f_OMTgDBz2Xf9TRmxq9-1nsvQ0lt-ear"><img src="https://drive.google.com/uc?export=view&id=1f_OMTgDBz2Xf9TRmxq9-1nsvQ0lt-ear" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
   
