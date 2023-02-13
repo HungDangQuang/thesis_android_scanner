@@ -21,6 +21,6 @@ The architecture of this application is described in the figure below:
    
 ---      
 ### Demo
-   
-   [<img src="https://drive.google.com/uc?export=view&id=1tGQwVUgwkya2uwAf3-Cao3Ye8rzV0I-O" width="50%">](https://youtu.be/PtJSEI1Jd4I"Document Scanner: 55")
+   [![Youtube link](https://drive.google.com/uc?export=view&id=1tGQwVUgwkya2uwAf3-Cao3Ye8rzV0I-O)](https://www.youtube.com/watch?v=PtJSEI1Jd4I)
+
    
